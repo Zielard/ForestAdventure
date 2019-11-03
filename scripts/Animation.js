@@ -100,21 +100,27 @@
 
                     this.doFilp = false;
                     this.falseDelta = 10;
+                    this.left = false;
                 }
                 setDirection(newDirection)
                     {
                         this.push = true;
                         if(this.direction != newDirection)
                         {
-                            console.log(newDirection);
                             this.direction = newDirection;
                             this.startSprite = this.direction * this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE;
                             this.endSprite = this.startSprite + this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE;
                             this.currentSprite = this.startSprite;
-                            this.row = this.direction;
+                            if(this.direction == this.LEFT)
+                            {
+                                this.row = 4;
+                            }
+                            else
+                            {
+                                this.row = this.direction;
+                            }
                             this.column = 0;
                         }
-                        this.doFilp = true;
                       //renderCanvas();
                     };
                 update()
@@ -126,6 +132,7 @@
                             {
                                 this.centreX -= stepSize;
                                 lastPushButton = 1;
+                                this.left = true;
                             } 
                              else if (this.direction === this.UP && gravity == false) // up
                             {
@@ -138,7 +145,8 @@
                                 //ctx.translate(width, 0);
                                 lastPushButton = 4;
                                 //ctx.scale(-1, 1);
-        
+                                this.left = false;
+
                             } else if (this.direction === this.DOWN) // down
                             {
                                 lastPushButton = 2;
@@ -151,7 +159,14 @@
     
                     if (this.currentSprite >= this.endSprite)
                     {
-                        this.row = this.direction;
+                        if(this.direction == this.LEFT)
+                        {
+                            this.row = 4;
+                        }
+                        else
+                        {
+                            this.row = this.direction;
+                        }
                         this.column = 0;
                         this.currentSprite = this.startSprite;
                         
@@ -170,7 +185,15 @@
                         this.endSprite = 0;
                         this.currentSprite = this.startSprite;
                         this.row = 8;
-                        this.column = 0;
+                        if(true == this.left)
+                        {
+                            this.column = 7;
+                        }
+                        else
+                        {
+                            this.column = 0;
+                        }
+
                     }
 
                     document.getElementById("positionX").innerHTML= "X "+this.centreX;
@@ -192,14 +215,29 @@
                     this.doFilp = false;
                    }
                    
+                   if(this.left == false)
+                   {
                     ctx.drawImage(this.Player.Image,
-                         this.column * this.SPRITE_WIDTH,
-                          this.row * this.SPRITE_WIDTH,
-                           this.SPRITE_WIDTH, 
-                           this.SPRITE_HEIGHT-5,
-                            this.centreX - parseInt(this.size / 2),
-                             this.centreY - parseInt(this.size / 2),
-                              this.size, this.size);
+                        this.column * this.SPRITE_WIDTH,
+                         this.row * this.SPRITE_WIDTH,
+                          this.SPRITE_WIDTH, 
+                          this.SPRITE_HEIGHT-5,
+                           this.centreX - parseInt(this.size / 2),
+                            this.centreY - parseInt(this.size / 2),
+                             this.size, this.size);
+                   }
+                   else
+                   {
+                    ctx.drawImage(this.Player.ImageLeft,
+                        this.column * this.SPRITE_WIDTH,
+                         this.row * this.SPRITE_WIDTH,
+                          this.SPRITE_WIDTH, 
+                          this.SPRITE_HEIGHT-5,
+                           this.centreX - parseInt(this.size / 2),
+                            this.centreY - parseInt(this.size / 2),
+                             this.size, this.size);
+                   }
+
                 }
             }
             /******************************************************************************/

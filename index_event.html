@@ -119,7 +119,7 @@ function onAllAssetsLoaded()
     canvas.width = CANVAS_WIDTH;
     canvas.height = CANVAS_HEIGHT;
     
-    Player = new Player( 100, 370,"images/defaultperson.png");
+    Player = new Player( 100, 370,"images/defaultperson.png","images/defaultpersonleft.png");
     ObjectsGame[0] = new PlayerAnimation(ctx, Player);  
 
     ObjectsGame[1] = new CoinsAnimation(ctx, new Coin(190, 410,"images/coin.png"));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
