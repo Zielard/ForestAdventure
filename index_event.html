@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forest Adventure</title>
+<script src="scripts/Animation.js"></script> 
+<script src="scripts/Collison.js"></script> 
+<script src="scripts/Character.js"></script> 
+<style>
+#keyboardCanvas
+{
+    border:1px solid black;
+    width:1000px;
+    height:500px;
+}
+
+#loadingMessage
+{
+    position:absolute;
+    top:100px;
+    left:100px;
+    z-index:100;
+    font-size:50px;
+}
+</style>
+
+<script>
+
+let backgroundImage = new Image();
+backgroundImage.src = "images/board/forest_cut.png";
+
+
+
+/* ObjectsGame array */
+let ObjectsGame = [];
+
+
+let lastPushButton = 0;
+const CANVAS_WIDTH = 1000;
+const CANVAS_HEIGHT = 500;
+
+let canvas = null;
+let ctx = null;
+
+let animationIndex = 1;
+let flagNoAnimation = true;
+let showCollisonLine = false;
+let score = 0;
+
+let flagRight = true;
+
+var gravity = true;
+var offgravity = false;
+var falseDelta = 0;
+var falseDeltaUP =10;
+
+var colisionFigure = [];
+
+
+
+function playAudio() { 
+    var x = document.getElementById("myAudio");
+  x.play(); 
+} 
+
+function pauseAudio() { 
+    var x = document.getElementById("myAudio");
+  x.pause(); 
+}
+window.onload = onAllAssetsLoaded;
+document.write("<div id='loadingMessage'>Loading...</div>");
+function onAllAssetsLoaded()
+{
+    colisionFigure.push(new Collsion_CubeDown(new Point(0, 390),new Point(15, 390)));
+    colisionFigure.push(new Collsion_CubeDown(new Point(15, 440),new Point(50, 440)));
+    colisionFigure.push(new Collsion_CubeDown(new Point(50, 400),new Point(130, 400)));
+    colisionFigure.push(new Collsion_CubeDown(new Point(130, 440),new Point(250, 440)));
+    colisionFigure.push(new Collsion_CubeDown(new Point(250, 400),new Point(460, 400)));
+    colisionFigure.push(new Collsion_CubeDown(new Point(460, 290),new Point(520, 290)));
+    colisionFigure.push(new Collsion_CubeDown(new Point(520, 380),new Point(640, 380)));
+
+    colisionFigure.push(new Collsion_CubeDown(new Point(690, 290),new Point(705, 246)));
+    colisionFigure.push(new Collsion_CubeDown(new Point(705, 246),new Point(735, 246))); 
+    colisionFigure.push(new Collsion_CubeDown(new Point(735, 246),new Point(735, 0))); 
+
+    colisionFigure.push(new Collsion_CubeRelative(new Point(650, 300),new Point(690, 300),new Point(690, 320),new Point(690, 320)));
+    // hide the webpage loading message
+    document.getElementById('loadingMessage').style.visibility = "hidden";
+
+    canvas = document.getElementById("keyboardCanvas");
+    ctx = canvas.getContext("2d");
+    canvas.width = CANVAS_WIDTH;
+    canvas.height = CANVAS_HEIGHT;
+    
+    Player = new Player( 100, 370,"images/defaultperson.png");
+    ObjectsGame[0] = new PlayerAnimation(ctx, Player);  
+
+    ObjectsGame[1] = new CoinsAnimation(ctx, new Coin(190, 410,"images/coin.png"));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[2] = new CoinsAnimation(ctx, new Coin( 340, 380,"images/coin.png"));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[3] = new CoinsAnimation(ctx, new Coin( 85, 270,"images/coin.png"));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[4] = new CoinsAnimation(ctx, new Coin( 480, 270,"images/coin.png"));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+
+    document.addEventListener('keydown', keydownHandler);
+    renderCanvas();
+    
+}
+
+
+function renderCanvas()
+{
+    document.getElementById("Score").innerHTML= "Score : "+score;
+    ObjectsGame[0].flagColision = false;
+    requestAnimationFrame(renderCanvas);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+                /* Step 3 of 3 */
+                /* Draw the animations */
+                for (let i = 0; i < ObjectsGame.length; i++)
+                {
+                    ObjectsGame[i].renderObject();
+                }
+                checkGravitiColison();
+                checkCoinColision();
+                drawLine();
+}
+
+function checkCoinColision()
+{
+                //OBJECT COLLISION
+                for (let i = 1; i < ObjectsGame.length; i++)
+                {
+                        if((ObjectsGame[0].centreX < ObjectsGame[i].centreX + 20) &&
+                        (ObjectsGame[0].centreX > ObjectsGame[i].centreX - 20) && 
+                        (ObjectsGame[0].centreY < ObjectsGame[i].centreY + 20) &&
+                        (ObjectsGame[0].centreY > ObjectsGame[i].centreY - 20) &&
+                         (ObjectsGame[i].animationIsDisplayed == true))
+                        {
+                            score++;
+                            ObjectsGame[i].stopAndHide();
+                        }
+                }
+}
+
+function checkGravitiColison()
+{
+                //GENERAL COLLISION
+                for (let i = 0; i < colisionFigure.length; i++)
+                {
+                    if((ObjectsGame[0].centreX >= colisionFigure[i].point1.x) && (ObjectsGame[0].centreX <= colisionFigure[i].point2.x)
+                    && (ObjectsGame[0].centreY >= colisionFigure[i].point1.y) && (ObjectsGame[0].centreY <= colisionFigure[i].downY) 
+                    && ( colisionFigure[i].name == "DownCube"))
+                    {
+                        let stepSize = 5;
+                        console.log("colison!");
+                        //console.log(ObjectsGame[0].direction);
+                            if (ObjectsGame[0].direction === ObjectsGame[0].UP)
+                            {
+                                //console.log("1");
+                                ObjectsGame[0].centreY += stepSize*3;
+                            } 
+                            else if (ObjectsGame[0].direction === ObjectsGame[0].LEFT)
+                            {
+                                //console.log("2");
+                                ObjectsGame[0].centreX += stepSize*3;
+                            }
+                            else if (ObjectsGame[0].direction === ObjectsGame[0].DOWN)
+                            {
+                                //console.log("3");
+                                ObjectsGame[0].centreY -= stepSize;
+                            } 
+                            else if (ObjectsGame[0].direction === ObjectsGame[0].RIGHT)
+                            {
+                                //console.log("4");
+                                ObjectsGame[0].centreX -= stepSize*3;
+                            }
+                            else if (ObjectsGame[0].direction === 0)
+                            {
+                                if(lastPushButton === ObjectsGame[0].LEFT)
+                                {
+                                    ObjectsGame[0].centreX += stepSize*3;
+                                }
+                                else if(lastPushButton === ObjectsGame[0].RIGHT)
+                                {
+                                    ObjectsGame[0].centreX -= stepSize*3;
+                                }
+                                //console.log("5");
+                                //ObjectsGame[0].centreY = colisionFigure[i].point1.y -10;
+                            }
+                    }
+                    else  if((ObjectsGame[0].centreX >= colisionFigure[i].point1.x) && (ObjectsGame[0].centreX <= colisionFigure[i].point2.x)
+                    && (ObjectsGame[0].centreY >= colisionFigure[i].point1.y) && (ObjectsGame[0].centreY <= colisionFigure[i].point4.y) 
+                    && ( colisionFigure[i].name == "RelativeCube"))
+                    {
+                        let stepSize = 5;
+                        console.log("colison! Relative");
+                        //console.log(ObjectsGame[0].direction);
+                            if (ObjectsGame[0].direction === ObjectsGame[0].UP)
+                            {
+                                //console.log("1");
+                                ObjectsGame[0].centreY += stepSize*3;
+                            } 
+                            else if (ObjectsGame[0].direction === ObjectsGame[0].LEFT)
+                            {
+                                //console.log("2");
+                               // ObjectsGame[0].centreX += stepSize*3;
+                            }
+                            else if (ObjectsGame[0].direction === ObjectsGame[0].DOWN)
+                            {
+                                //console.log("3");
+                                //ObjectsGame[0].centreY -= stepSize;
+                            } 
+                            else if (ObjectsGame[0].direction === ObjectsGame[0].RIGHT)
+                            {
+                                //console.log("4");
+                                //ObjectsGame[0].centreX -= stepSize*3;
+                            }
+                            else if (ObjectsGame[0].direction === 0)
+                            {
+                            //     if(lastPushButton === ObjectsGame[0].LEFT)
+                            //     {
+                            //         ObjectsGame[0].centreX += stepSize*3;
+                            //     }
+                            //     else if(lastPushButton === ObjectsGame[0].RIGHT)
+                            //     {
+                            //         ObjectsGame[0].centreX -= stepSize*3;
+                            //     }
+                                //console.log("5");
+                                ObjectsGame[0].centreY = colisionFigure[i].point1.y -15;
+                            }
+                    }
+                    else if((ObjectsGame[0].centreX >= colisionFigure[i].point1.x)
+                     && (ObjectsGame[0].centreX <= colisionFigure[i].point2.x))
+                    {
+                        console.log("colison! Gravity");
+                        //Gravitation
+                        if((ObjectsGame[0].centreY+15 < colisionFigure[i].point1.y) && offgravity == false)
+                        {
+                            gravity = true;
+                            falseDelta +=0.4;
+                            ObjectsGame[0].centreY+=falseDelta;
+                        }
+                        else
+                        {
+                            falseDelta =0;
+                            gravity = false;
+                        }
+                    }
+                }
+                if(true == offgravity)
+                   {
+                       this.falseDeltaUP -= 0.4;
+                       ObjectsGame[0].centreY -= falseDeltaUP;
+                       if( this.falseDeltaUP < 0)
+                         {
+                            this.falseDeltaUP = 10;
+                            offgravity = false;
+                         }
+                    }
+}
+
+function drawLine()
+{
+    if(true == showCollisonLine)
+                {
+                ctx.beginPath();
+                ctx.strokeStyle = "#FF0000";
+
+                ctx.moveTo(0, 390);
+                ctx.lineTo(15, 390);
+
+                ctx.lineTo(15, 440);
+                ctx.lineTo(50, 440);
+
+
+                ctx.lineTo(50, 400);
+                ctx.lineTo(130, 400);
+
+                ctx.lineTo(130, 440);
+                ctx.lineTo(250, 440);
+
+                ctx.lineTo(250, 400);
+                ctx.lineTo(460, 400);
+
+                ctx.lineTo(460, 280);
+                ctx.lineTo(520, 280);
+                ctx.lineTo(520, 400);
+                ctx.lineTo(640, 400);
+
+                ctx.stroke();
+
+                ctx.moveTo(650, 290);
+                ctx.lineTo(690, 290);
+                ctx.lineTo(650, 320);
+                ctx.lineTo(690, 320);
+                ctx.stroke();
+
+                ctx.moveTo(690, 290);
+                ctx.lineTo(705, 246);
+                ctx.lineTo(735, 246);
+                ctx.lineTo(735, 0);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(ObjectsGame[0].centreX, ObjectsGame[0].centreY, 20, 0, 2 * Math.PI);
+                ctx.stroke(); 
+                }
+}
+
+function keydownHandler(e)
+{
+    let UP = 0;
+let LEFT = 1;
+let DOWN = 2;
+let RIGHT = 3;
+let stepSize = 10;
+console.log(keydownHandler);
+
+                if (e.keyCode === 37)  // left
+                {
+                   // ObjectsGame[0].centreX -= stepSize;
+                    ObjectsGame[0].setDirection(1);
+                } else if (e.keyCode === 32) // attack
+                {
+                 //   ObjectsGame[0].centreX += stepSize;
+                 //ObjectsGame[0].ctx.scale(-1, 1);
+                    ObjectsGame[0].setDirection(3);
+                }
+                 else if (e.keyCode === 38) // up
+                {
+                    offgravity = true;
+                    ObjectsGame[0].setDirection(5);
+                } else if (e.keyCode === 39 && flagRight == true) // right
+                {
+                  //  ObjectsGame[0].centreX += stepSize;
+                    ObjectsGame[0].setDirection(4);
+                } else if (e.keyCode === 40) // down
+                {
+                  //  ObjectsGame[0].centreY += stepSize;
+                    ObjectsGame[0].setDirection(2);
+                }
+                else if(e.keyCode === 67 || e.keyCode === 99)
+                {
+                    showCollisonLine = !showCollisonLine;
+                }
+                pushbutton = true;
+}
+</script>
+</head>
+
+<body>
+<canvas id = "keyboardCanvas" tabindex="1">
+Your browser does not support the HTML5 'Canvas' tag.
+</canvas>
+<audio id="myAudio">
+        <source src="mp3/Hyrule.mp3" />  
+</audio>         
+<!-- <audio autoplay="autoplay" onload="play()">
+        <source src="mp3/Hyrule.mp3" />     
+    </audio> -->
+
+<p id = "positionX"></p>
+<p id = "positionY"></p>
+<p id = "Score"></p>
+<button onclick="playAudio()" type="button">Play Audio</button>
+<button onclick="pauseAudio()" type="button">Pause Audio</button> 
+</body>
+</html>
