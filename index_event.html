@@ -36,6 +36,23 @@ backgroundImage.src = "images/board/forest_cut.png";
 let ObjectsGame = [];
 
 
+/* virtual joy*/
+let activeX =100;
+            let activeY =100;
+
+            let vjoyX =40;
+            let vjoyY =450;
+
+            let FramevjoyX =40;
+            let FramevjoyY =450;
+
+            let newPositionx =700;
+            let newPositiony =200;
+
+            let activeMouseClickx = null;
+            let activeMouseClicky = null;
+
+
 let lastPushButton = 0;
 const CANVAS_WIDTH = 1000;
 const CANVAS_HEIGHT = 500;
@@ -70,6 +87,15 @@ function pauseAudio() {
 }
 window.onload = onAllAssetsLoaded;
 document.write("<div id='loadingMessage'>Loading...</div>");
+
+function getMousePos(canvas, evt) {
+        var rect = canvas.getBoundingClientRect();
+        return {
+          x: evt.clientX - rect.left,
+          y: evt.clientY - rect.top
+        };
+      }
+
 function onAllAssetsLoaded()
 {
     colisionFigure.push(new Collsion_CubeDown(new Point(0, 390),new Point(15, 390)));
@@ -102,10 +128,28 @@ function onAllAssetsLoaded()
     ObjectsGame[4] = new CoinsAnimation(ctx, new Coin( 480, 270,"images/coin.png"));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
 
     document.addEventListener('keydown', keydownHandler);
+
+    canvas.addEventListener('mousemove', function(evt) {
+    var mousePos = getMousePos(canvas, evt);
+    var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
+    activeMouseClickx = mousePos.x;
+    activeMouseClicky = mousePos.y;
+    document.getElementById("positionMX").innerHTML= "Mouse X "+activeMouseClickx;
+    document.getElementById("positionMY").innerHTML= "Mouse Y "+activeMouseClicky;
+    
+    }, false);
+
+    canvas.addEventListener("click", function (evt) {
+    var mousePos = getMousePos(canvas, evt);
+                //alert(mousePos.x + ',' + mousePos.y);
+                // activeMouseClickx = mousePos.x;
+                // activeMouseClicky = mousePos.y;
+                //activeX + ',' + activeY );
+    }, false);
+
     renderCanvas();
     
 }
-
 
 function renderCanvas()
 {
@@ -123,6 +167,7 @@ function renderCanvas()
                 checkGravitiColison();
                 checkCoinColision();
                 drawLine();
+                vJoyFun();
 }
 
 function checkCoinColision()
@@ -345,6 +390,122 @@ console.log(keydownHandler);
                 }
                 pushbutton = true;
 }
+
+function vJoyFun()
+{
+    ctx.strokeStyle = "yellow";
+                ctx.beginPath();
+                ctx.arc(40, 450, 20, 0, 2 * Math.PI);
+                ctx.stroke(); 
+
+                ctx.beginPath();
+                ctx.arc(vjoyX, vjoyY, 5, 0, 2 * Math.PI);
+                ctx.stroke();
+
+            //if((activeX > 0) && (activeX < 500) && (activeY > 0) && (activeY < 500))
+            //{
+                vjoyX = FramevjoyX;
+                vjoyY = FramevjoyY;
+                line();
+            //}
+}
+
+function line()
+            {
+                if((activeMouseClickx >= vjoyX - 20 && activeMouseClickx <= vjoyX + 20) && (activeMouseClicky >= vjoyY - 20 && activeMouseClicky <= vjoyY + 20))
+                {
+                    vjoyX = activeMouseClickx;
+                    vjoyY = activeMouseClicky;
+                    deltX = null;
+                    deltY = null;
+
+                    if(activeMouseClickx > FramevjoyX)
+                    {
+                        deltX = activeMouseClickx - FramevjoyX;
+                    }
+                    else
+                    {
+                        deltX = FramevjoyX - activeMouseClickx;
+                    }
+
+                    if( activeMouseClicky > FramevjoyY)
+                    {
+                        deltY = activeMouseClicky - FramevjoyY;
+                    }
+                    else
+                    {
+                        deltY = FramevjoyY - activeMouseClicky;
+                    }
+
+                   var a = ((FramevjoyY - activeMouseClicky) / (FramevjoyX - activeMouseClickx));
+                   var b =  activeY - (activeX*a);
+
+                    if(a <= 2 && a >= -2)
+                    {
+                        
+                        if(FramevjoyX < activeMouseClickx)
+                        {
+                            //newPositionx = 0;
+                            //activeX += 1;//(deltY+deltX)/2;
+                            ObjectsGame[0].setDirection(4);
+                            document.getElementById("positionMX").innerHTML= "Right "+activeMouseClickx;
+                        }
+                        else if(FramevjoyX > activeMouseClickx)
+                        {
+                            //newPositionx = 500;
+                            //activeX -= 1;//(deltY+deltX)/2;
+                            ObjectsGame[0].setDirection(1);
+                            document.getElementById("positionMX").innerHTML= "Left "+activeMouseClickx;         
+                        }
+
+                                console.log("a : " + a);
+                            //console.log("b : " + b);
+                            //console.log("activeX : " + activeX);
+                            //console.log("activeY : " + activeY);
+                            //activeY = (activeX*(-a)) - (b);
+                            //newPositiony = (newPositionx*(-a)) - (b);
+                            
+                            //if(activeY < 0)
+                            //{
+                           //     activeY = - activeY;
+                            //}
+                    }
+                    else(a <= 2 && a >= -2)
+                    {
+                        if(a > 0 && FramevjoyY > activeMouseClicky)
+                        {
+                            //activeY -= 1;//(deltY+deltX)/2;
+                        }
+                        else if(a < 0 && FramevjoyY > activeMouseClicky)
+                        {
+                            //activeY -= 1;//(deltY+deltX)/2;
+                        }
+                        else if(a < 0 && FramevjoyY < activeMouseClicky)
+                        {
+                            //activeY += 1;//(deltY+deltX)/2;
+                        }
+                        else if(a > 0 && FramevjoyY < activeMouseClicky)
+                        {
+                            //activeY += 1;//(deltY+deltX)/2;
+                        }
+
+                        //activeY = (activeX*(-a)) - (b);
+                        //newPositiony = (newPositionx*(-a)) - (b);
+                        //activeX = (activeY-b/a);
+                        
+                        
+                    }
+
+                        
+
+
+                    //s
+
+                }
+                
+
+            }
+
 </script>
 </head>
 
@@ -361,6 +522,8 @@ Your browser does not support the HTML5 'Canvas' tag.
 
 <p id = "positionX"></p>
 <p id = "positionY"></p>
+<p id = "positionMX"></p>
+<p id = "positionMY"></p>
 <p id = "Score"></p>
 <button onclick="playAudio()" type="button">Play Audio</button>
 <button onclick="pauseAudio()" type="button">Pause Audio</button> 
