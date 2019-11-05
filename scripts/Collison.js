@@ -20,6 +20,7 @@ class Point
             this.spriteCol =10;
             this.spriteRow =0;
             this.numberSprite=10;
+            this.name = "coin";
         }
     }
 

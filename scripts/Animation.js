@@ -16,7 +16,7 @@
                 start()
                 {
                     this.animationIsDisplayed = true;
-                    this.row =0;
+                    this.row =2;
                     this.column =0;
                     this.currentSprite =0;
                     this.animationInterval = setInterval(this.update.bind(this), this.frameRate);
@@ -58,7 +58,7 @@
             class PlayerAnimation extends Animation
             {
                //constructor(ctx, centreX, centreY, width, height, skeletonframeRate, canvasWidth, canvasHeight, person)
-               constructor(ctx, Player)
+               constructor(ctx, Gameobject)
                 {                  
 
                     //this.animationStartDelay= false;
@@ -68,15 +68,15 @@
                     /* These variables depend on the animation */
                     //this.person = person;
                     this.flagFirstCall = true;
-                    this.centreX = Player.x;
-                    this.centreY = Player.y;
-                    this.Player = Player;
+                    this.centreX = Gameobject.x;
+                    this.centreY = Gameobject.y;
+                    this.Gameobject = Gameobject;
                     this.size = 50;
                     this.ctx = ctx;
                     this.direction = 0;
-                    this.NUMBER_OF_SPRITES = Player.numberSprite; // the number of sprites in the sprite image
-                    this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE = Player.spriteCol; // the number of columns in the sprite image
-                    this.NUMBER_OF_ROWS_IN_SPRITE_IMAGE = Player.spriteRow; // the number of rows in the sprite image	
+                    this.NUMBER_OF_SPRITES = Gameobject.numberSprite; // the number of sprites in the sprite image
+                    this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE = Gameobject.spriteCol; // the number of columns in the sprite image
+                    this.NUMBER_OF_ROWS_IN_SPRITE_IMAGE = Gameobject.spriteRow; // the number of rows in the sprite image	
                     this.START_ROW = 0;
                     this.START_COLUMN = 0;
                     this.currentSprite = 0; // the current sprite to be displayed from the sprite image  
@@ -94,7 +94,7 @@
                     this.currentSprite = this.startSprite;
                     this.row = 8;
                     this.column = 0;
-
+                    this.isdead= false;
                     this.SPRITE_WIDTH = 45;
                     this.SPRITE_HEIGHT = 30;
 
@@ -105,7 +105,7 @@
                 setDirection(newDirection)
                     {
                         this.push = true;
-                        if(this.direction != newDirection)
+                        if(this.direction != newDirection && this.isdead == false)
                         {
                             this.direction = newDirection;
                             this.startSprite = this.direction * this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE;
@@ -123,88 +123,111 @@
                         }
                       //renderCanvas();
                     };
+                    stayPosition()
+                    {
+                         //stay for first run
+                         gravity = true;
+                         this.direction = 0;
+                         this.startSprite = this.direction * this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE;
+                         this.endSprite = 0;
+                         this.currentSprite = this.startSprite;
+                         this.row = 8;
+                         if(true == this.left)
+                         {
+                             this.column = 7;
+                         }
+                         else
+                         {
+                             this.column = 0;
+                         }
+                      //renderCanvas();
+                    };
                 update()
                 {
-                    if(false == this.flagColision)
+                    if(this.isdead == false)
                     {
-                            let stepSize = 5;
-                            if (this.direction === 1)  // left
-                            {
-                                this.centreX -= stepSize;
-                                lastPushButton = 1;
-                                this.left = true;
-                            } 
-                             else if (this.direction === this.UP && gravity == false) // up
-                            {
-                                lastPushButton = 5;
-        
-                            } else if (this.direction === this.RIGHT) // right
-                            {
-                                //console.log("person update " + this.direction);
-                                this.centreX += stepSize;
-                                //ctx.translate(width, 0);
-                                lastPushButton = 4;
-                                //ctx.scale(-1, 1);
-                                this.left = false;
-
-                            } else if (this.direction === this.DOWN) // down
-                            {
-                                lastPushButton = 2;
-                                this.centreY += stepSize;
-                            }
-                    }
-
-                    this.column++;
-                    this.currentSprite++;
+                        if(false == this.flagColision)
+                        {
+                                let stepSize = 5;
+                                if (this.direction === 1)  // left
+                                {
+                                    this.centreX -= stepSize;
+                                    lastPushButton = 1;
+                                    this.left = true;
+                                } 
+                                else if (this.direction === this.UP && gravity == false) // up
+                                {
+                                    lastPushButton = 5;
+            
+                                }
+                                else if (this.direction === this.RIGHT) // right
+                                {
+                                    //console.log("person update " + this.direction);
+                                    this.centreX += stepSize;
+                                    //ctx.translate(width, 0);
+                                    lastPushButton = 4;
+                                    //ctx.scale(-1, 1);
+                                    this.left = false;
+                                } 
+                                else if (this.direction === this.DOWN) // down
+                                {
+                                    lastPushButton = 2;
+                                    this.centreY += stepSize;
+                                }
+                        }
     
-                    if (this.currentSprite >= this.endSprite)
-                    {
-                        if(this.direction == this.LEFT)
-                        {
-                            this.row = 4;
-                        }
-                        else
-                        {
-                            this.row = this.direction;
-                        }
-                        this.column = 0;
-                        this.currentSprite = this.startSprite;
+                        this.column++;
+                        this.currentSprite++;
                         
-                    } else if (this.column >= this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE)
-                    {
-                        this.column = 0;
-                        this.row++;
-                    }
-                    
-                    if(this.push == false)
-                    {
-                        //stay for first run
-                        gravity = true;
-                        this.direction = 0;
-                        this.startSprite = this.direction * this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE;
-                        this.endSprite = 0;
-                        this.currentSprite = this.startSprite;
-                        this.row = 8;
-                        if(true == this.left)
+                        if (this.currentSprite >= this.endSprite)
                         {
-                            this.column = 7;
-                        }
-                        else
+                            if(this.direction == this.LEFT)
+                            {
+                                this.row = 4;
+                            }
+                            else
+                            {
+                                this.row = this.direction;
+                            }
+                            this.column = 0;
+                            this.currentSprite = this.startSprite;
+                            
+                        } else if (this.column >= this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE)
                         {
                             this.column = 0;
+                            this.row++;
                         }
-
+                        
+                        if(this.push == false)
+                        {
+                            //stay for first run
+                            gravity = true;
+                            this.direction = 0;
+                            this.startSprite = this.direction * this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE;
+                            this.endSprite = 0;
+                            this.currentSprite = this.startSprite;
+                            this.row = 8;
+                            if(true == this.left)
+                            {
+                                this.column = 7;
+                            }
+                            else
+                            {
+                                this.column = 0;
+                            }
+    
+                        }
+    
+                        document.getElementById("positionX").innerHTML= "X "+this.centreX;
+                        document.getElementById("positionY").innerHTML= "Y "+this.centreY;
+                        this.push = false;
                     }
-
-                    document.getElementById("positionX").innerHTML= "X "+this.centreX;
-                    document.getElementById("positionY").innerHTML= "Y "+this.centreY;
-                    this.push = false;
                 }
                 render()
                 {
                     
-                    this.SPRITE_WIDTH = (this.Player.Image.width / this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE);
-                    this.SPRITE_HEIGHT = (this.Player.Image.height / this.NUMBER_OF_ROWS_IN_SPRITE_IMAGE);
+                    this.SPRITE_WIDTH = (this.Gameobject.Image.width / this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE);
+                    this.SPRITE_HEIGHT = (this.Gameobject.Image.height / this.NUMBER_OF_ROWS_IN_SPRITE_IMAGE);
 
                    if((this.direction == this.LEFT) && (this.doFilp == true))
                    {
@@ -217,7 +240,7 @@
                    
                    if(this.left == false)
                    {
-                    ctx.drawImage(this.Player.Image,
+                    ctx.drawImage(this.Gameobject.Image,
                         this.column * this.SPRITE_WIDTH,
                          this.row * this.SPRITE_WIDTH,
                           this.SPRITE_WIDTH, 
@@ -228,7 +251,7 @@
                    }
                    else
                    {
-                    ctx.drawImage(this.Player.ImageLeft,
+                    ctx.drawImage(this.Gameobject.ImageLeft,
                         this.column * this.SPRITE_WIDTH,
                          this.row * this.SPRITE_WIDTH,
                           this.SPRITE_WIDTH, 
@@ -240,18 +263,114 @@
 
                 }
             }
+            class EnemyAnimation extends Animation
+            {
+                constructor(ctx, Gameobject)
+                {                  
+
+                    //this.animationStartDelay= false;
+                    super(false, 50);
+                    this.Gameobject = Gameobject;
+                    this.centreX = Gameobject.x;
+                    this.centreY = Gameobject.y;
+                    this.size = 40;
+                    this.ctx = ctx;
+                    this.direction = 1;
+                    this.NUMBER_OF_SPRITES = 36; // the number of sprites in the sprite image
+                    this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE = 9; // the number of columns in the sprite image
+                    this.NUMBER_OF_ROWS_IN_SPRITE_IMAGE = 4; // the number of rows in the sprite image	
+                    this.currentSprite = 2; // the current sprite to be displayed from the sprite image  
+                    this.row = this.START_ROW; // current row in sprite image
+                    this.column = this.START_COLUMN; // current column in sprite image
+                    this.flagColision = false;
+                    //stay for first run
+                    this.direction = 1;
+                    this.startSprite = 4;
+                    this.endSprite = 8;
+                    this.currentSprite = this.startSprite;
+                    this.row = 2;
+                    this.column = 3;
+                    this.doFlip = false;
+                    this.SPRITE_WIDTH = 45;
+                    this.SPRITE_HEIGHT = 30;
+                    this.setDirection(2);
+                }
+                setDirection(newDirection)
+                {
+                    this.push = true;
+                    if(this.direction != newDirection)
+                    {
+                        this.direction = newDirection;
+                        this.startSprite = 4;
+                        this.endSprite = 8;
+                        this.currentSprite = this.startSprite;
+                        this.column = 3;
+                        this.row = this.direction;
+                    }
+                  //renderCanvas();
+                };
+                update()
+                {
+                    //console.log(" this.direction " + this.direction);
+                    //console.log(" this.currentSprite " +this.currentSprite);
+                    //console.log(" this.endSprite " +this.endSprite);
+                    //console.log(" this.startSprite " +this.startSprite);
+
+                    let stepSize = 5;
+                    if (this.direction === 1)  // left
+                    {
+                            this.centreX -= stepSize;
+                    } 
+                    else if (this.direction === 2) // right
+                    {
+                            this.centreX += stepSize;
+                    } 
+
+                    this.column++;
+                    this.currentSprite++;
+    
+                    if (this.currentSprite >= this.endSprite)
+                    {
+                        
+                        this.column = 3;
+                        this.currentSprite = this.startSprite;
+                        //this.endSprite = 0;
+
+                    } else if (this.column >= this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE)
+                    {
+                        this.column = 0;
+                        //this.row++;
+                    }
+                    
+                }
+                render()
+                {
+                    
+                    this.SPRITE_WIDTH = (this.Gameobject.Image.width / this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE);
+                    this.SPRITE_HEIGHT = (this.Gameobject.Image.height / this.NUMBER_OF_ROWS_IN_SPRITE_IMAGE);
+                    ctx.drawImage(this.Gameobject.Image,
+                        this.column * this.SPRITE_WIDTH, 
+                        this.row* this.SPRITE_HEIGHT,
+                         this.SPRITE_WIDTH,
+                          this.SPRITE_HEIGHT, 
+                          this.centreX - parseInt(this.size / 2),
+                          this.centreY - parseInt(this.size / 2),
+                            this.size,
+                             this.size);
+               }
+            }
             /******************************************************************************/
                         /* ImageAnimation Object */
                         class CoinsAnimation extends Animation
                         {
-                            constructor(ctx, Coin)
+                            constructor(ctx, Gameobject)
                             {                  
             
                                 //this.animationStartDelay= false;
                                 super(false, 50);
-                                this.Coin = Coin;
-                                this.centreX = Coin.x;
-                                this.centreY = Coin.y;
+                                this.Gameobject = Gameobject;
+                                this.centreX = Gameobject.x;
+                                this.centreY = Gameobject.y;
                                 this.size = 20;
                                 this.ctx = ctx;
                                 this.direction = 0;
@@ -274,6 +393,7 @@
             
                                 this.SPRITE_WIDTH = 45;
                                 this.SPRITE_HEIGHT = 30;
+                                
                             }
                             update()
                             {
@@ -298,15 +418,15 @@
                             render()
                             {
                                 
-                                this.SPRITE_WIDTH = (this.Coin.Image.width / this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE);
-                                this.SPRITE_HEIGHT = (this.Coin.Image.height / this.NUMBER_OF_ROWS_IN_SPRITE_IMAGE);
-                                ctx.drawImage(this.Coin.Image,
+                                this.SPRITE_WIDTH = (this.Gameobject.Image.width / this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE);
+                                this.SPRITE_HEIGHT = (this.Gameobject.Image.height / this.NUMBER_OF_ROWS_IN_SPRITE_IMAGE);
+                                ctx.drawImage(this.Gameobject.Image,
                                     this.column * this.SPRITE_WIDTH, 
                                      0, 
                                      this.SPRITE_WIDTH,
                                       this.SPRITE_HEIGHT, 
-                                      this.centreX,
-                                      this.centreY,
+                                      this.centreX - parseInt(this.size / 2),
+                                      this.centreY - parseInt(this.size / 2),
                                         this.size,
                                          this.size);
                            }

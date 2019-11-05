@@ -28,6 +28,7 @@ class Player extends GameObject
         this.numberSprite = 65;
         this.ImageLeft = new Image();
         this.ImageLeft.src = pathImageLeft;
+        this.name = "player";
     }
 }
 
@@ -36,5 +37,6 @@ class Enemy extends GameObject
     constructor(x,y,pathImage)
     {
         super(x,y,pathImage);
+        this.name = "enemy";
     }
 }
