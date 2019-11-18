@@ -41,11 +41,11 @@ let ObjectsGame = [];
             let activeX =100;
             let activeY =100;
 
-            let vjoyX =window.innerWidth * 0.05;
-            let vjoyY =window.innerHeight* 0.8;
+            let vjoyX =window.innerWidth * 0.1;
+            let vjoyY =window.innerHeight* 0.9;
 
-            let FramevjoyX =window.innerWidth*  0.05;
-            let FramevjoyY =window.innerHeight* 0.8;
+            let FramevjoyX =window.innerWidth*  0.1;
+            let FramevjoyY =window.innerHeight* 0.9;
 
             let newPositionx =700;
             let newPositiony =200;
@@ -55,6 +55,16 @@ let ObjectsGame = [];
 
 /*Szablony dla sprite*/
 //(pathImage,size,spriteCol,spriteRow,numberSprite,spriteStart,spriteEnd)
+
+let circleButton = new Image();
+circleButton.src = "images/button/ps3-512.png";
+
+let crossButton = new Image();
+crossButton.src = "images/button/ps0-512.png";
+
+let reloadButton = new Image();
+reloadButton.src = "images/button/reload.png";
+
 let CoinSprite = new Sprite("images/coin.png",20,10,1,10,0,10); 
 let EnemySprite = new Sprite("images/enemy/2enemy.png",40,9,4,36,4,8);  
 let FireBallSprite = new Sprite("images/fireball/fireball_1.png",40,8,8,64,0,8) 
@@ -94,6 +104,13 @@ function pauseAudio() {
     //var x = document.getElementById("myAudio");
   //x.pause(); 
 }
+var supportsOrientationChange = "onorientationchange" in window,
+    orientationEvent = supportsOrientationChange ? "orientationchange" : "resize";
+
+window.addEventListener(orientationEvent, function() {
+    alert('HOLY ROTATING SCREENS BATMAN:' + window.orientation + " " + screen.width);
+}, false);
+
 //Dla cordovy
 //document.addEventListener("load", onAllAssetsLoaded); 
 window.onload = onAllAssetsLoaded;
@@ -202,8 +219,8 @@ canvas.addEventListener('touchstart', function(e) {
   // Cache the client X/Y coordinates
   activeMouseClickx = e.touches[0].clientX;
   activeMouseClicky = e.touches[0].clientY;
-  document.getElementById("positionMX").innerHTML= "Mouse X "+activeMouseClickx;
-    document.getElementById("positionMY").innerHTML= "Mouse Y "+activeMouseClicky;
+  //document.getElementById("positionMX").innerHTML= "Mouse X "+activeMouseClickx;
+    //document.getElementById("positionMY").innerHTML= "Mouse Y "+activeMouseClicky;
 }, false);
 
 canvas.addEventListener('touchend', function(e) {
@@ -214,8 +231,8 @@ canvas.addEventListener('touchend', function(e) {
   // list is the touch point that was just removed from the surface.
   activeMouseClicky = e.changedTouches[0].clientX - activeMouseClicky;
   activeMouseClicky = e.changedTouches[0].clientY - activeMouseClicky;
-  document.getElementById("positionMX").innerHTML= "Mouse X "+activeMouseClickx;
-    document.getElementById("positionMY").innerHTML= "Mouse Y "+activeMouseClicky;
+  //document.getElementById("positionMX").innerHTML= "Mouse X "+activeMouseClickx;
+    //document.getElementById("positionMY").innerHTML= "Mouse Y "+activeMouseClicky;
 
   // Process the data ... 
 }, false);
@@ -252,6 +269,7 @@ function renderCanvas()
                 checkGravitiColison();
                 checkColisionForEnemy();
                 checkCollisionForFireBall();
+                psButton();
 }
 
 function checkCoinColision()
@@ -664,11 +682,11 @@ function vJoyFun()
 {
     ctx.strokeStyle = "yellow";
                 ctx.beginPath();
-                ctx.arc(FramevjoyX, FramevjoyY, (window.innerHeight* 0.05), 0, 2 * Math.PI);
+                ctx.arc(FramevjoyX, FramevjoyY, (window.innerHeight* 0.1), 0, 2 * Math.PI);
                 ctx.stroke(); 
 
                 ctx.beginPath();
-                ctx.arc(vjoyX, vjoyY, (window.innerHeight* 0.025), 0, 2 * Math.PI);
+                ctx.arc(vjoyX, vjoyY, (window.innerHeight* 0.05), 0, 2 * Math.PI);
                 ctx.stroke();
 
             //if((activeX > 0) && (activeX < 500) && (activeY > 0) && (activeY < 500))
@@ -679,9 +697,56 @@ function vJoyFun()
             //}
 }
 
+function psButton()
+{
+    ctx.drawImage(reloadButton, window.innerWidth*0.9, window.innerHeight*0.1,window.innerHeight*0.1, window.innerHeight*0.1);
+    ctx.drawImage(crossButton, window.innerWidth*0.8, window.innerHeight*0.9,window.innerHeight*0.1, window.innerHeight*0.1);
+    ctx.drawImage(circleButton, window.innerWidth*0.9, window.innerHeight*0.9,window.innerHeight*0.1, window.innerHeight*0.1);
+
+    let xjump =window.innerWidth*0.8 + window.innerHeight*0.05;
+    let yjump = window.innerHeight*0.9 + window.innerHeight*0.05;
+
+    let xfire =window.innerWidth*0.9 + window.innerHeight*0.05;
+    let yfire =window.innerHeight*0.9 + window.innerHeight*0.05;
+
+                ctx.strokeStyle = "yellow";
+                ctx.beginPath();
+                ctx.arc(xfire, yfire,  window.innerHeight*0.05, 0, 2 * Math.PI);
+                ctx.stroke(); 
+
+                ctx.beginPath();
+                ctx.arc(xjump, yjump,  window.innerHeight*0.05, 0, 2 * Math.PI);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(window.innerWidth*0.9 + window.innerHeight*0.05, window.innerHeight*0.1 + window.innerHeight*0.05,  window.innerHeight*0.05, 0, 2 * Math.PI);
+                ctx.stroke();
+
+                //fire button
+                if((activeMouseClickx >= xjump - (window.innerHeight* 0.05) && activeMouseClickx <= xjump +  (window.innerHeight* 0.05)) && (activeMouseClicky >= yfire - (window.innerWidth* 0.05) && activeMouseClicky <= yfire + (window.innerWidth* 0.05)))
+                {
+                    offgravity = true;
+                    ObjectsGame[0].setDirection(5);
+                }
+                if((activeMouseClickx >= xfire - (window.innerHeight* 0.05) && activeMouseClickx <= xfire +  (window.innerHeight* 0.05)) && (activeMouseClicky >= yjump - (window.innerWidth* 0.05) && activeMouseClicky <= yjump + (window.innerWidth* 0.05)))
+                {
+                    ObjectsGame.push(new FireBallAnimation(ctx,  new FireBall(ObjectsGame[0].centreX, ObjectsGame[0].centreY,FireBallSprite)));
+                    if(ObjectsGame[0].left == true)
+                    {
+                        ObjectsGame[ObjectsGame.length-1].setDirection(0);
+                        ObjectsGame[0].setDirection(2);
+                    }
+                    else
+                    {
+                        ObjectsGame[ObjectsGame.length-1].setDirection(4);
+                        ObjectsGame[0].setDirection(2);
+                    }
+                }
+}
+
 function line()
             {
-                if((activeMouseClickx >= vjoyX - (window.innerHeight* 0.05) && activeMouseClickx <= vjoyX +  (window.innerHeight* 0.05)) && (activeMouseClicky >= vjoyY - (window.innerWidth* 0.05) && activeMouseClicky <= vjoyY + (window.innerWidth* 0.05)))
+                if((activeMouseClickx >= vjoyX - (window.innerHeight* 0.1) && activeMouseClickx <= vjoyX +  (window.innerHeight* 0.1)) && (activeMouseClicky >= vjoyY - (window.innerWidth* 0.1) && activeMouseClicky <= vjoyY + (window.innerWidth* 0.1)))
                 {
                     vjoyX = activeMouseClickx;
                     vjoyY = activeMouseClicky;
@@ -791,9 +856,9 @@ Your browser does not support the HTML5 'Canvas' tag.
 <!-- <audio autoplay="autoplay" onload="play()">
         <source src="mp3/Hyrule.mp3" />     
     </audio> -->
-    <p id = "positionMX"></p>
+<!--    <p id = "positionMX"></p>
     <p id = "positionMY"></p>
-<!-- <p id = "positionX"></p>
+ <p id = "positionX"></p>
 <p id = "positionY"></p>
 <p id = "positionMX"></p>
 <p id = "positionMY"></p>
