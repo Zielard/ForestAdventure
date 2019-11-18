@@ -102,8 +102,8 @@ document.write("<div id='loadingMessage'>Loading...</div>");
 function getMousePos(canvas, evt) {
         var rect = canvas.getBoundingClientRect();
         return {
-          x: evt.clientX - rect.left,
-          y: evt.clientY - rect.top
+          //x: evt.clientX - rect.left,
+         // y: evt.clientY - rect.top
         };
       }
 
@@ -188,13 +188,37 @@ function onAllAssetsLoaded()
 
     canvas.addEventListener('mousemove', function(evt) {
     var mousePos = getMousePos(canvas, evt);
-    var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
-    activeMouseClickx = mousePos.x;
-    activeMouseClicky = mousePos.y;
+    //var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
+
     //document.getElementById("positionMX").innerHTML= "Mouse X "+activeMouseClickx;
     //document.getElementById("positionMY").innerHTML= "Mouse Y "+activeMouseClicky;
     
     }, false);
+
+
+var clientX, clientY;
+
+canvas.addEventListener('touchstart', function(e) {
+  // Cache the client X/Y coordinates
+  activeMouseClickx = e.touches[0].clientX;
+  activeMouseClicky = e.touches[0].clientY;
+  document.getElementById("positionMX").innerHTML= "Mouse X "+activeMouseClickx;
+    document.getElementById("positionMY").innerHTML= "Mouse Y "+activeMouseClicky;
+}, false);
+
+canvas.addEventListener('touchend', function(e) {
+  var deltaX, deltaY;
+
+  // Compute the change in X and Y coordinates. 
+  // The first touch point in the changedTouches
+  // list is the touch point that was just removed from the surface.
+  activeMouseClicky = e.changedTouches[0].clientX - activeMouseClicky;
+  activeMouseClicky = e.changedTouches[0].clientY - activeMouseClicky;
+  document.getElementById("positionMX").innerHTML= "Mouse X "+activeMouseClickx;
+    document.getElementById("positionMY").innerHTML= "Mouse Y "+activeMouseClicky;
+
+  // Process the data ... 
+}, false);
 
     canvas.addEventListener("click", function (evt) {
     var mousePos = getMousePos(canvas, evt);
@@ -767,9 +791,9 @@ Your browser does not support the HTML5 'Canvas' tag.
 <!-- <audio autoplay="autoplay" onload="play()">
         <source src="mp3/Hyrule.mp3" />     
     </audio> -->
-   <!--<p id = "positionMX"></p>
+    <p id = "positionMX"></p>
     <p id = "positionMY"></p>
- <p id = "positionX"></p>
+<!-- <p id = "positionX"></p>
 <p id = "positionY"></p>
 <p id = "positionMX"></p>
 <p id = "positionMY"></p>
