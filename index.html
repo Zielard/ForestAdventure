@@ -325,7 +325,7 @@ function checkCoinColision()
                         (ObjectsGame[j].centreY < ObjectsGame[i].centreY + 20) &&
                         (ObjectsGame[j].centreY > ObjectsGame[i].centreY - 20) &&
                          (ObjectsGame[j].animationIsDisplayed == true) 
-                         && (ObjectsGame[i].Gameobject.name == "enemy")
+                         && (ObjectsGame[i].Gameobject.name == "enemy") && (ObjectsGame[i].animationIsDisplayed == true)
                          && (ObjectsGame[j].Gameobject.name == "FireBall"))
                         {
                             //animationIsDisplayed
@@ -547,6 +547,8 @@ function checkCollisionForFireBall()
                         ( ObjectsGame[j].Gameobject.name == "FireBall")))
                     {
                         ObjectsGame[j].stopAndHide();
+                        //ObjectsGame.splice(j, 1);
+                        //j--;
                     } 
                 }
             }
@@ -709,6 +711,9 @@ function psButton()
     let xfire =window.innerWidth*0.9 + window.innerHeight*0.05;
     let yfire =window.innerHeight*0.9 + window.innerHeight*0.05;
 
+    let xreset =window.innerWidth*0.9 + window.innerHeight*0.05;
+    let yreset =window.innerHeight*0.1 + window.innerHeight*0.05;
+
                 ctx.strokeStyle = "yellow";
                 ctx.beginPath();
                 ctx.arc(xfire, yfire,  window.innerHeight*0.05, 0, 2 * Math.PI);
@@ -741,6 +746,10 @@ function psButton()
                         ObjectsGame[ObjectsGame.length-1].setDirection(4);
                         ObjectsGame[0].setDirection(2);
                     }
+                }
+                if((activeMouseClickx >= xreset - (window.innerHeight* 0.05) && activeMouseClickx <= xreset +  (window.innerHeight* 0.05)) && (activeMouseClicky >= yreset - (window.innerWidth* 0.05) && activeMouseClicky <= yreset + (window.innerWidth* 0.05)))
+                {
+                    reset();
                 }
 }
 
@@ -840,6 +849,24 @@ function line()
 
             }
 
+function reset()
+{
+        //Player
+        activeX =100;
+        activeY =100;
+
+        //Player = new Player( window.innerWidth*0.1, window.innerHeight*0.5,"images/defaultperson.png","images/defaultpersonleft.png");
+        ObjectsGame[0] = new PlayerAnimation(ctx, Player);  
+    ObjectsGame[0].isdead = false;
+    //Coins
+    ObjectsGame[1] = new CoinsAnimation(ctx, new Coin(190, 410,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[2] = new CoinsAnimation(ctx, new Coin( 340, 380,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[3] = new CoinsAnimation(ctx, new Coin( 85, 270,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[4] = new CoinsAnimation(ctx, new Coin( 480, 270,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+
+    //Enemy
+        ObjectsGame[5] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.3,window.innerHeight*0.5,EnemySprite));  
+}
 </script>
 </head>
 
@@ -853,17 +880,5 @@ Your browser does not support the HTML5 'Canvas' tag.
 <audio autoplay loop>
     <source src="mp3/Hyrule.mp3">
 </audio>
-<!-- <audio autoplay="autoplay" onload="play()">
-        <source src="mp3/Hyrule.mp3" />     
-    </audio> -->
-<!--    <p id = "positionMX"></p>
-    <p id = "positionMY"></p>
- <p id = "positionX"></p>
-<p id = "positionY"></p>
-<p id = "positionMX"></p>
-<p id = "positionMY"></p>
-<p id = "Score"></p>
-<button onclick="playAudio()" type="button">Play Audio</button>
-<button onclick="pauseAudio()" type="button">Pause Audio</button>  -->
 </body>
 </html>
