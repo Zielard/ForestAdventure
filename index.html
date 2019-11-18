@@ -52,6 +52,11 @@ let activeX =100;
             let activeMouseClickx = null;
             let activeMouseClicky = null;
 
+/*Szablony dla sprite*/
+//(pathImage,size,spriteCol,spriteRow,numberSprite,spriteStart,spriteEnd)
+let CoinSprite = new Sprite("images/coin.png",20,10,1,10,0,10); 
+let EnemySprite = new Sprite("images/enemy/2enemy.png",40,9,4,36,4,8);  
+let FireBallSprite = new Sprite("images/fireball/fireball_1.png",40,8,8,64,0,8) 
 
 let lastPushButton = 0;
 const CANVAS_WIDTH = 1000;
@@ -76,7 +81,8 @@ var falseDeltaEnemy = 0;
 
 var colisionFigure = [];
 
-
+var backgroundSong = new Audio();
+backgroundSong.src = 'mp3/Hyrule.mp3';
 
 function playAudio() { 
     var x = document.getElementById("myAudio");
@@ -87,6 +93,8 @@ function pauseAudio() {
     var x = document.getElementById("myAudio");
   x.pause(); 
 }
+//Dla cordovy
+//document.addEventListener("load", onAllAssetsLoaded); 
 window.onload = onAllAssetsLoaded;
 document.write("<div id='loadingMessage'>Loading...</div>");
 
@@ -98,21 +106,27 @@ function getMousePos(canvas, evt) {
         };
       }
 
+      Player.prototype.start = function ()
+            {
+                backgroundSong.play();
+            };
+
 function onAllAssetsLoaded()
 {
-    colisionFigure.push(new Collsion_CubeDown(new Point(0, 390),new Point(15, 390)));
-    colisionFigure.push(new Collsion_CubeDown(new Point(15, 440),new Point(50, 440)));
-    colisionFigure.push(new Collsion_CubeDown(new Point(50, 400),new Point(130, 400)));
-    colisionFigure.push(new Collsion_CubeDown(new Point(130, 440),new Point(250, 440)));
-    colisionFigure.push(new Collsion_CubeDown(new Point(250, 400),new Point(460, 400)));
-    colisionFigure.push(new Collsion_CubeDown(new Point(460, 290),new Point(520, 290)));
-    colisionFigure.push(new Collsion_CubeDown(new Point(520, 380),new Point(640, 380)));
+    colisionFigure.push(new Collsion_CubeDown(new Point(0, 390),new Point(15, 390),false));
+    colisionFigure.push(new Collsion_CubeDown(new Point(15, 440),new Point(50, 440),false));
+    colisionFigure.push(new Collsion_CubeDown(new Point(50, 400),new Point(130, 400),false));
+    colisionFigure.push(new Collsion_CubeDown(new Point(130, 440),new Point(250, 440),false));
+    colisionFigure.push(new Collsion_CubeDown(new Point(250, 400),new Point(460, 400),false));
+    colisionFigure.push(new Collsion_CubeDown(new Point(460, 290),new Point(520, 290),false));
+    colisionFigure.push(new Collsion_CubeDown(new Point(520, 380),new Point(640, 380),false));
 
-    colisionFigure.push(new Collsion_CubeDown(new Point(690, 290),new Point(705, 246)));
-    colisionFigure.push(new Collsion_CubeDown(new Point(705, 246),new Point(735, 246))); 
-    colisionFigure.push(new Collsion_CubeDown(new Point(735, 246),new Point(735, 0))); 
+    colisionFigure.push(new Collsion_CubeDown(new Point(690, 290),new Point(705, 246),false));
+    colisionFigure.push(new Collsion_CubeDown(new Point(705, 246),new Point(735, 246),false)); 
+    colisionFigure.push(new Collsion_CubeDown(new Point(735, 0),new Point(795, 0),false)); 
 
     colisionFigure.push(new Collsion_CubeRelative(new Point(650, 300),new Point(690, 300),new Point(690, 320),new Point(690, 320)));
+    colisionFigure.push(new Collsion_CubeDown(new Point(641, 425),new Point(691, 425),true)); 
     // hide the webpage loading message
     document.getElementById('loadingMessage').style.visibility = "hidden";
 
@@ -126,14 +140,15 @@ function onAllAssetsLoaded()
     ObjectsGame[0] = new PlayerAnimation(ctx, Player);  
 
     //Coins
-    ObjectsGame[1] = new CoinsAnimation(ctx, new Coin(190, 410,"images/coin.png"));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
-    ObjectsGame[2] = new CoinsAnimation(ctx, new Coin( 340, 380,"images/coin.png"));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
-    ObjectsGame[3] = new CoinsAnimation(ctx, new Coin( 85, 270,"images/coin.png"));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
-    ObjectsGame[4] = new CoinsAnimation(ctx, new Coin( 480, 270,"images/coin.png"));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[1] = new CoinsAnimation(ctx, new Coin(190, 410,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[2] = new CoinsAnimation(ctx, new Coin( 340, 380,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[3] = new CoinsAnimation(ctx, new Coin( 85, 270,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[4] = new CoinsAnimation(ctx, new Coin( 480, 270,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
 
     //Enemy
-        ObjectsGame[5] = new EnemyAnimation(ctx,  new Enemy(340, 380,"images/enemy/2enemy.png"));  
-
+        ObjectsGame[5] = new EnemyAnimation(ctx,  new Enemy(340, 380,EnemySprite));  
+        //ObjectsGame[6] = new FireBallAnimation(ctx,  new FireBall(340, 380,FireBallSprite)); 
+        
 
     document.addEventListener('keydown', keydownHandler);
 
@@ -178,11 +193,12 @@ function renderCanvas()
                 vJoyFun();
                 checkGravitiColison();
                 checkColisionForEnemy();
+                checkCollisionForFireBall();
 }
 
 function checkCoinColision()
 {
-                //OBJECT COLLISION
+                //Get coin
                 for (let i = 1; i < ObjectsGame.length; i++)
                 {
                         if((ObjectsGame[0].centreX < ObjectsGame[i].centreX + 20) &&
@@ -211,30 +227,65 @@ function checkCoinColision()
                             ObjectsGame[0].stopAndHide();
                         }
                 }
+
+                //DEAD CUBE COLLISION
+                for (let i = 1; i < colisionFigure.length; i++)
+                {
+                    if((ObjectsGame[0].centreX >= colisionFigure[i].point1.x) && (ObjectsGame[0].centreX <= colisionFigure[i].point2.x)
+                    && (ObjectsGame[0].centreY+20 > colisionFigure[i].point1.y)
+                    && ( colisionFigure[i].name == "DownCube") && ( colisionFigure[i].deadColision == true))
+                        {
+                            ObjectsGame[0].isdead = true;
+                            ObjectsGame[0].stopAndHide();
+                        }
+                }
+
+            for(let j = 0; j < ObjectsGame.length; j++)
+            {
+                for (let i = 0; i <  ObjectsGame.length; i++)
+                {
+                        if((ObjectsGame[j].centreX < ObjectsGame[i].centreX + 20) &&
+                        (ObjectsGame[j].centreX > ObjectsGame[i].centreX - 20) && 
+                        (ObjectsGame[j].centreY < ObjectsGame[i].centreY + 20) &&
+                        (ObjectsGame[j].centreY > ObjectsGame[i].centreY - 20) &&
+                         (ObjectsGame[j].animationIsDisplayed == true) 
+                         && (ObjectsGame[i].Gameobject.name == "enemy")
+                         && (ObjectsGame[j].Gameobject.name == "FireBall"))
+                        {
+                            //animationIsDisplayed
+                            ObjectsGame[i].stopAndHide();
+                            ObjectsGame[j].stopAndHide();
+                        }
+                }
+            }
 }
+
 function checkColisionForEnemy()
 {
+
                     //GENERAL COLLISION "DownCube" ENEMY
             let flagBreak = false;
             for(let j = 0; j < ObjectsGame.length; j++)
             {
                 for (let i = 0; i < colisionFigure.length; i++)
                 {
-                    if((ObjectsGame[j].centreX+10 >= colisionFigure[i].point1.x) && (ObjectsGame[j].centreX <= colisionFigure[i].point2.x)
+                    if((ObjectsGame[j].centreX >= colisionFigure[i].point1.x) && (ObjectsGame[j].centreX <= colisionFigure[i].point2.x)
                     && (ObjectsGame[j].centreY >= colisionFigure[i].point1.y) && (ObjectsGame[j].centreY <= colisionFigure[i].downY) 
                     && ( colisionFigure[i].name == "DownCube") && 
                         ( ObjectsGame[j].Gameobject.name == "enemy"))
                     {
-                                if((ObjectsGame[j].direction == 1) &&(ObjectsGame[j].Gameobject.name == "enemy"))
+                                if((ObjectsGame[j].direction == 1) && (ObjectsGame[j].Gameobject.name == "enemy"))
                                 {
-                                    console.log("colison! enemy");
+                                    console.log("colison! enemy change to right");
+                                    ObjectsGame[j].centreX += 5;
                                     ObjectsGame[j].setDirection(2);
                                     flagBreak = true;
                                     break;
                                 }
-                                else if((ObjectsGame[j].direction == 2) &&(ObjectsGame[j].Gameobject.name == "enemy"))
+                                else if((ObjectsGame[j].direction == 2) && (ObjectsGame[j].Gameobject.name == "enemy"))
                                 {
-                                    console.log("colison! enemy");
+                                    console.log("colison! enemy change to left");
+                                    ObjectsGame[j].centreX -= 5;
                                     ObjectsGame[j].setDirection(1);
                                     flagBreak = true;
                                     break;
@@ -264,61 +315,65 @@ function checkColisionForEnemy()
                     break;
                 }
             }
+                
 }
+
 function checkGravitiColison()
 {
-    let flagBreak = false;
+    //let flagBreak = false;
                 //GENERAL COLLISION
-            for(let j = 0; j < ObjectsGame.length; j++)
-            {
+                let stepSize = 5;
                 for (let i = 0; i < colisionFigure.length; i++)
                 {
-                    if((ObjectsGame[j].centreX >= colisionFigure[i].point1.x) && (ObjectsGame[j].centreX <= colisionFigure[i].point2.x)
-                    && (ObjectsGame[j].centreY >= colisionFigure[i].point1.y) && (ObjectsGame[j].centreY <= colisionFigure[i].downY) 
+                    if((ObjectsGame[0].centreX >= colisionFigure[i].point1.x) && (ObjectsGame[0].centreX <= colisionFigure[i].point2.x)
+                    && (ObjectsGame[0].centreY >= colisionFigure[i].point1.y) && (ObjectsGame[0].centreY <= colisionFigure[i].downY) 
                     && ( colisionFigure[i].name == "DownCube") && (
-                        ( ObjectsGame[j].Gameobject.name == "player")))
+                        ( ObjectsGame[0].Gameobject.name == "player")))
                     {
-                        let stepSize = 5;
                         console.log("colison!");
                         //console.log(ObjectsGame[0].direction);
 
-                            if (ObjectsGame[j].direction === ObjectsGame[0].UP)
+                            if (ObjectsGame[0].direction === ObjectsGame[0].UP)
                             {
                                 //console.log("1");
-                                ObjectsGame[j].centreY += stepSize*3;
-                                
+                                ObjectsGame[0].centreY += stepSize*3;
+                                break;
                             } 
-                            else if (ObjectsGame[j].direction === ObjectsGame[0].LEFT)
+                            else if (ObjectsGame[0].direction === ObjectsGame[0].LEFT)
                             {
                                 //console.log("2");
                                 //ObjectsGame[0].centreX += stepSize*3;
-                                ObjectsGame[j].stayPosition();
-                                flagBreak = true;
+                                ObjectsGame[0].stayPosition("left");
+                                //flagBreak = true;
                                 break;
                             }
-                            else if (ObjectsGame[j].direction === ObjectsGame[j].DOWN)
+                            else if (ObjectsGame[0].direction === ObjectsGame[0].DOWN)
                             {
                                 //console.log("3");
                                 ObjectsGame[j].centreY -= stepSize;
+                                break;
                             } 
-                            else if (ObjectsGame[j].direction === ObjectsGame[j].RIGHT)
+                            else if (ObjectsGame[0].direction === ObjectsGame[0].RIGHT)
                             {
                                 //console.log("4");
                                //ObjectsGame[0].centreX -= stepSize*3;
-                                ObjectsGame[0].stayPosition();
-                                flagBreak = true;
+                                ObjectsGame[0].stayPosition("right");
+                                //flagBreak = true;
                                 break;
                             }
-                            else if (ObjectsGame[j].direction === 0)
+                            else if (ObjectsGame[0].direction === 0)
                             {
-                                if(lastPushButton === ObjectsGame[j].LEFT)
+                                if(lastPushButton === ObjectsGame[0].LEFT)
                                 {
-                                    ObjectsGame[j].centreX += stepSize*3;
+                                   ObjectsGame[0].centreX += stepSize;
+                                    break;
                                 }
-                                else if(lastPushButton === ObjectsGame[j].RIGHT)
+                                else if(lastPushButton === ObjectsGame[0].RIGHT)
                                 {
-                                    ObjectsGame[j].centreX -= stepSize*3;
+                                    ObjectsGame[0].centreX -= stepSize;
+                                    break;
                                 }
+                                
                                 //console.log("5");
                                 //ObjectsGame[0].centreY = colisionFigure[i].point1.y -10;
                             }
@@ -335,25 +390,30 @@ function checkGravitiColison()
                             {
                                 //console.log("1");
                                 ObjectsGame[0].centreY += stepSize*3;
+                                break;
                                 //ObjectsGame[0].stayPosition();
                             } 
                             else if (ObjectsGame[0].direction === ObjectsGame[0].LEFT)
                             {
+                                break;
                                 //console.log("2");
                                // ObjectsGame[0].centreX += stepSize*3;
                             }
                             else if (ObjectsGame[0].direction === ObjectsGame[0].DOWN)
                             {
+                                break;
                                 //console.log("3");
                                 //ObjectsGame[0].centreY -= stepSize;
                             } 
                             else if (ObjectsGame[0].direction === ObjectsGame[0].RIGHT)
                             {
+                                break;
                                 //console.log("4");
                                 //ObjectsGame[0].centreX -= stepSize*3;
                             }
                             else if (ObjectsGame[0].direction === 0)
                             {
+                                
                             //     if(lastPushButton === ObjectsGame[0].LEFT)
                             //     {
                             //         ObjectsGame[0].centreX += stepSize*3;
@@ -364,6 +424,7 @@ function checkGravitiColison()
                             //     }
                                 //console.log("5");
                                 ObjectsGame[0].centreY = colisionFigure[i].point1.y -15;
+                                break;
                             }
                     }
                     else if((ObjectsGame[0].centreX >= colisionFigure[i].point1.x)
@@ -374,7 +435,7 @@ function checkGravitiColison()
                         if((ObjectsGame[0].centreY+15 < colisionFigure[i].point1.y) && offgravity == false)
                         {
                             gravity = true;
-                            falseDelta += 0.04;
+                            falseDelta += 0.4;
                             ObjectsGame[0].centreY+=falseDelta;
                         }
                         else
@@ -382,13 +443,10 @@ function checkGravitiColison()
                             falseDelta =0;
                             gravity = false;
                         }
+                        break;
                     }
                 }
-                if(flagBreak == true)
-                {
-                    break;
-                }
-           }
+           
            if(true == offgravity)
                     {
                         this.falseDeltaUP -= 0.4;
@@ -399,6 +457,23 @@ function checkGravitiColison()
                                 offgravity = false;
                             }
                         }
+}
+
+function checkCollisionForFireBall()
+{
+    for (let j = 0; j < ObjectsGame.length; j++)
+                {
+                for (let i = 0; i < colisionFigure.length; i++)
+                {
+                    if((ObjectsGame[j].centreX >= colisionFigure[i].point1.x) && (ObjectsGame[j].centreX <= colisionFigure[i].point2.x)
+                    && (ObjectsGame[j].centreY >= colisionFigure[i].point1.y) && (ObjectsGame[j].centreY <= colisionFigure[i].downY) 
+                    && ( colisionFigure[i].name == "DownCube") && (
+                        ( ObjectsGame[j].Gameobject.name == "FireBall")))
+                    {
+                        ObjectsGame[j].stopAndHide();
+                    } 
+                }
+            }
 }
 
 function drawLine()
@@ -428,7 +503,8 @@ function drawLine()
                 ctx.lineTo(520, 280);
                 ctx.lineTo(520, 400);
                 ctx.lineTo(640, 400);
-
+                ctx.lineTo(640, 425);
+                ctx.lineTo(691, 425);
                 ctx.stroke();
 
                 ctx.moveTo(650, 290);
@@ -440,7 +516,9 @@ function drawLine()
                 ctx.moveTo(690, 290);
                 ctx.lineTo(705, 246);
                 ctx.lineTo(735, 246);
-                ctx.lineTo(735, 0);
+                ctx.lineTo(735,0);
+                ctx.lineTo(795, 0);
+
                 ctx.stroke();
 
                 for(let j = 0; j < ObjectsGame.length; j++)
@@ -490,6 +568,21 @@ console.log(keydownHandler);
                 {
                   //  ObjectsGame[0].centreY += stepSize;
                     ObjectsGame[0].setDirection(2);
+                }
+                else if(e.keyCode === 102 || e.keyCode === 70)
+                {
+                    ObjectsGame.push(new FireBallAnimation(ctx,  new FireBall(ObjectsGame[0].centreX, ObjectsGame[0].centreY,FireBallSprite)));
+                    if(ObjectsGame[0].left == true)
+                    {
+                        ObjectsGame[ObjectsGame.length-1].setDirection(0);
+                        ObjectsGame[0].setDirection(2);
+                    }
+                    else
+                    {
+                        ObjectsGame[ObjectsGame.length-1].setDirection(4);
+                        ObjectsGame[0].setDirection(2);
+                    }
+
                 }
                 else if(e.keyCode === 67 || e.keyCode === 99)
                 {
@@ -623,6 +716,9 @@ Your browser does not support the HTML5 'Canvas' tag.
 <audio id="myAudio">
         <source src="mp3/Hyrule.mp3" />  
 </audio>         
+<audio autoplay loop>
+    <source src="mp3/Hyrule.mp3">
+</audio>
 <!-- <audio autoplay="autoplay" onload="play()">
         <source src="mp3/Hyrule.mp3" />     
     </audio> -->

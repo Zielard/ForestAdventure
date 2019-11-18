@@ -8,27 +8,12 @@ class Point
         }
     }
 
-    class Coin
-    {
-        //punkt
-        constructor(x,y,pathImage)
-        {
-            this.x =x;
-            this.y =y;
-            this.Image = new Image();
-            this.Image.src = pathImage;
-            this.spriteCol =10;
-            this.spriteRow =0;
-            this.numberSprite=10;
-            this.name = "coin";
-        }
-    }
-
 class Collsion_CubeDown
     {       
         //kwadrat
-        constructor(point1,point2)
+        constructor(point1,point2,flag)
         {
+            this.deadColision = flag;
             this.point1 = point1;
             this.point2 = point2;
             this.downY = CANVAS_HEIGHT;
@@ -40,6 +25,7 @@ class Collsion_CubeDown
         //kwadrat
         constructor(point1,point2,point3,point4)
         {
+            this.deadColision = false;
             this.point1 = point1;
             this.point2 = point2;
             this.point3 = point3;
@@ -50,8 +36,9 @@ class Collsion_CubeDown
     class Collsion_line
     {       
         //kwadrat
-        constructor(point1,point2)
+        constructor(point1,point2,flag)
         {
+            this.deadColision = flag;
             this.point1 = point1;
             this.point2 = point2;
             this.name = "Line";
