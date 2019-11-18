@@ -16,7 +16,7 @@ class Collsion_CubeDown
             this.deadColision = flag;
             this.point1 = point1;
             this.point2 = point2;
-            this.downY = CANVAS_HEIGHT;
+            this.downY = window.innerHeight;
             this.name = "DownCube";
         }
     }

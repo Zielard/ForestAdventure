@@ -138,7 +138,7 @@ function onAllAssetsLoaded()
     canvas.height = window.innerHeight;
     
     //Player
-    Player = new Player( 100, 370,"images/defaultperson.png","images/defaultpersonleft.png");
+    Player = new Player( window.innerWidth*0.1, window.innerHeight*0.5,"images/defaultperson.png","images/defaultpersonleft.png");
     ObjectsGame[0] = new PlayerAnimation(ctx, Player);  
 
     //Coins
@@ -148,7 +148,7 @@ function onAllAssetsLoaded()
     ObjectsGame[4] = new CoinsAnimation(ctx, new Coin( 480, 270,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
 
     //Enemy
-        ObjectsGame[5] = new EnemyAnimation(ctx,  new Enemy(340, 380,EnemySprite));  
+        ObjectsGame[5] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.3,window.innerHeight*0.5,EnemySprite));  
         //ObjectsGame[6] = new FireBallAnimation(ctx,  new FireBall(340, 380,FireBallSprite)); 
         
 
@@ -359,12 +359,12 @@ function checkGravitiColison()
                 let stepSize = 5;
                 for (let i = 0; i < colisionFigure.length; i++)
                 {
-                    if((ObjectsGame[0].centreX >= colisionFigure[i].point1.x) && (ObjectsGame[0].centreX <= colisionFigure[i].point2.x)
+                    if((ObjectsGame[0].centreX >= colisionFigure[i].point1.x)&& ( colisionFigure[i].name == "DownCube") && (ObjectsGame[0].centreX <= colisionFigure[i].point2.x)
                     && (ObjectsGame[0].centreY >= colisionFigure[i].point1.y) && (ObjectsGame[0].centreY <= colisionFigure[i].downY) 
-                    && ( colisionFigure[i].name == "DownCube") && (
+                     && (
                         ( ObjectsGame[0].Gameobject.name == "player")))
                     {
-                        console.log("colison!");
+                        console.log("colison! downcube");
                         //console.log(ObjectsGame[0].direction);
 
                             if (ObjectsGame[0].direction === ObjectsGame[0].UP)
@@ -412,9 +412,9 @@ function checkGravitiColison()
                                 //ObjectsGame[0].centreY = colisionFigure[i].point1.y -10;
                             }
                     }
-                    else  if((ObjectsGame[0].centreX >= colisionFigure[i].point1.x) && (ObjectsGame[0].centreX <= colisionFigure[i].point2.x)
+                    else  if((ObjectsGame[0].centreX >= colisionFigure[i].point1.x)&& ( colisionFigure[i].name == "RelativeCube") && (ObjectsGame[0].centreX <= colisionFigure[i].point2.x)
                     && (ObjectsGame[0].centreY >= colisionFigure[i].point1.y) && (ObjectsGame[0].centreY <= colisionFigure[i].point4.y) 
-                    && ( colisionFigure[i].name == "RelativeCube")&& (
+                    && (
                         ( ObjectsGame[j].Gameobject.name == "player")))
                     {
                         let stepSize = 5;
@@ -767,8 +767,9 @@ Your browser does not support the HTML5 'Canvas' tag.
 <!-- <audio autoplay="autoplay" onload="play()">
         <source src="mp3/Hyrule.mp3" />     
     </audio> -->
-
-<!-- <p id = "positionX"></p>
+   <!--<p id = "positionMX"></p>
+    <p id = "positionMY"></p>
+ <p id = "positionX"></p>
 <p id = "positionY"></p>
 <p id = "positionMX"></p>
 <p id = "positionMY"></p>
