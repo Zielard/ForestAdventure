@@ -11,8 +11,9 @@
 #keyboardCanvas
 {
     border:1px solid black;
-    width:1000px;
-    height:500px;
+    width:  100%;
+  height: 100%;
+  margin: 0;
 }
 
 #loadingMessage
@@ -85,13 +86,13 @@ var backgroundSong = new Audio();
 backgroundSong.src = 'mp3/Hyrule.mp3';
 
 function playAudio() { 
-    var x = document.getElementById("myAudio");
-  x.play(); 
+    //var x = document.getElementById("myAudio");
+  //x.play(); 
 } 
 
 function pauseAudio() { 
-    var x = document.getElementById("myAudio");
-  x.pause(); 
+    //var x = document.getElementById("myAudio");
+  //x.pause(); 
 }
 //Dla cordovy
 //document.addEventListener("load", onAllAssetsLoaded); 
@@ -127,13 +128,14 @@ function onAllAssetsLoaded()
 
     colisionFigure.push(new Collsion_CubeRelative(new Point(650, 300),new Point(690, 300),new Point(690, 320),new Point(690, 320)));
     colisionFigure.push(new Collsion_CubeDown(new Point(641, 425),new Point(691, 425),true)); 
+
     // hide the webpage loading message
     document.getElementById('loadingMessage').style.visibility = "hidden";
 
     canvas = document.getElementById("keyboardCanvas");
     ctx = canvas.getContext("2d");
-    canvas.width = CANVAS_WIDTH;
-    canvas.height = CANVAS_HEIGHT;
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
     
     //Player
     Player = new Player( 100, 370,"images/defaultperson.png","images/defaultpersonleft.png");
@@ -150,6 +152,38 @@ function onAllAssetsLoaded()
         //ObjectsGame[6] = new FireBallAnimation(ctx,  new FireBall(340, 380,FireBallSprite)); 
         
 
+    //change size for window
+    const CANVAS_WIDTH = 1000;
+    const CANVAS_HEIGHT = 500;
+    var propx = (window.innerWidth*100)/CANVAS_WIDTH;
+    var propy = (window.innerHeight*100)/CANVAS_HEIGHT;
+    for(let i=0;i<colisionFigure.length;i++)
+    {
+        if(colisionFigure[i].name == "DownCube")
+        {
+        colisionFigure[i].point1.x*=propx/100.0;
+        colisionFigure[i].point1.y*=propy/100.0;
+        colisionFigure[i].point2.x*=propx/100.0;
+        colisionFigure[i].point2.y*=propy/100.0;   
+        }
+        if(colisionFigure[i].name == "RelativeCube")
+        {
+        colisionFigure[i].point1.x*=propx/100.0;
+        colisionFigure[i].point1.y*=propy/100.0;
+        colisionFigure[i].point2.x*=propx/100.0;
+        colisionFigure[i].point2.y*=propy/100.0;   
+        colisionFigure[i].point3.x*=propx/100.0;
+        colisionFigure[i].point3.y*=propy/100.0;
+        colisionFigure[i].point4.x*=propx/100.0;
+        colisionFigure[i].point4.y*=propy/100.0;   
+        }
+    }
+    for(let i = 0; i < ObjectsGame.length; i++)
+    {
+        ObjectsGame[i].x*=propx/100.0;
+        ObjectsGame[i].y*=propy/100.0;
+    }
+
     document.addEventListener('keydown', keydownHandler);
 
     canvas.addEventListener('mousemove', function(evt) {
@@ -157,8 +191,8 @@ function onAllAssetsLoaded()
     var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
     activeMouseClickx = mousePos.x;
     activeMouseClicky = mousePos.y;
-    document.getElementById("positionMX").innerHTML= "Mouse X "+activeMouseClickx;
-    document.getElementById("positionMY").innerHTML= "Mouse Y "+activeMouseClicky;
+    //document.getElementById("positionMX").innerHTML= "Mouse X "+activeMouseClickx;
+    //document.getElementById("positionMY").innerHTML= "Mouse Y "+activeMouseClicky;
     
     }, false);
 
@@ -176,7 +210,7 @@ function onAllAssetsLoaded()
 
 function renderCanvas()
 {
-    document.getElementById("Score").innerHTML= "Score : "+score;
+    //document.getElementById("Score").innerHTML= "Score : "+score;
     ObjectsGame[0].flagColision = false;
     requestAnimationFrame(renderCanvas);
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -483,42 +517,53 @@ function drawLine()
                 ctx.beginPath();
                 ctx.strokeStyle = "#FF0000";
 
-                ctx.moveTo(0, 390);
-                ctx.lineTo(15, 390);
+                for(let i=0;i<colisionFigure.length;i++)
+                {
+                    if(colisionFigure[i].name == "DownCube")
+                    {
+                        if(i==0)
+                        {
+                            ctx.moveTo( colisionFigure[i].point1.x, colisionFigure[i].point1.y);
+                            ctx.lineTo(colisionFigure[i].point2.x, colisionFigure[i].point2.y);
+                        }
+                        else
+                        {
+                            ctx.lineTo(colisionFigure[i].point1.x, colisionFigure[i].point1.y);
+                            ctx.lineTo(colisionFigure[i].point2.x, colisionFigure[i].point2.y);
+                        }
+                    }
+                    //colisionFigure.point1.x *=2;
+                    //colisionFigure.point1.y *=2;
+                }
 
-                ctx.lineTo(15, 440);
-                ctx.lineTo(50, 440);
+                //ctx.moveTo(0, 390);
+                // ctx.lineTo(15, 390);
+
+                // ctx.lineTo(15, 440);
+                // ctx.lineTo(50, 440);
 
 
-                ctx.lineTo(50, 400);
-                ctx.lineTo(130, 400);
+                // ctx.lineTo(50, 400);
+                // ctx.lineTo(130, 400);
 
-                ctx.lineTo(130, 440);
-                ctx.lineTo(250, 440);
+                // ctx.lineTo(130, 440);
+                // ctx.lineTo(250, 440);
 
-                ctx.lineTo(250, 400);
-                ctx.lineTo(460, 400);
+                // ctx.lineTo(250, 400);
+                // ctx.lineTo(460, 400);
 
-                ctx.lineTo(460, 280);
-                ctx.lineTo(520, 280);
-                ctx.lineTo(520, 400);
-                ctx.lineTo(640, 400);
-                ctx.lineTo(640, 425);
-                ctx.lineTo(691, 425);
-                ctx.stroke();
+                // ctx.lineTo(460, 280);
+                // ctx.lineTo(520, 280);
+                // ctx.lineTo(520, 400);
+                // ctx.lineTo(640, 400);
+                // ctx.lineTo(640, 425);
+                // ctx.lineTo(691, 425);
+                // ctx.stroke();
 
-                ctx.moveTo(650, 290);
-                ctx.lineTo(690, 290);
-                ctx.lineTo(650, 320);
-                ctx.lineTo(690, 320);
-                ctx.stroke();
-
-                ctx.moveTo(690, 290);
-                ctx.lineTo(705, 246);
-                ctx.lineTo(735, 246);
-                ctx.lineTo(735,0);
-                ctx.lineTo(795, 0);
-
+                // ctx.moveTo(650, 290);
+                // ctx.lineTo(690, 290);
+                // ctx.lineTo(650, 320);
+                // ctx.lineTo(690, 320);
                 ctx.stroke();
 
                 for(let j = 0; j < ObjectsGame.length; j++)
@@ -648,14 +693,14 @@ function line()
                             //newPositionx = 0;
                             //activeX += 1;//(deltY+deltX)/2;
                             ObjectsGame[0].setDirection(4);
-                            document.getElementById("positionMX").innerHTML= "Right "+activeMouseClickx;
+                            //document.getElementById("positionMX").innerHTML= "Right "+activeMouseClickx;
                         }
                         else if(FramevjoyX > activeMouseClickx)
                         {
                             //newPositionx = 500;
                             //activeX -= 1;//(deltY+deltX)/2;
                             ObjectsGame[0].setDirection(1);
-                            document.getElementById("positionMX").innerHTML= "Left "+activeMouseClickx;         
+                            //document.getElementById("positionMX").innerHTML= "Left "+activeMouseClickx;         
                         }
 
                                 console.log("a : " + a);
@@ -723,12 +768,12 @@ Your browser does not support the HTML5 'Canvas' tag.
         <source src="mp3/Hyrule.mp3" />     
     </audio> -->
 
-<p id = "positionX"></p>
+<!-- <p id = "positionX"></p>
 <p id = "positionY"></p>
 <p id = "positionMX"></p>
 <p id = "positionMY"></p>
 <p id = "Score"></p>
 <button onclick="playAudio()" type="button">Play Audio</button>
-<button onclick="pauseAudio()" type="button">Pause Audio</button> 
+<button onclick="pauseAudio()" type="button">Pause Audio</button>  -->
 </body>
 </html>

@@ -247,8 +247,8 @@
     
                         }
     
-                        document.getElementById("positionX").innerHTML= "X "+this.centreX;
-                        document.getElementById("positionY").innerHTML= "Y "+this.centreY;
+                        //document.getElementById("positionX").innerHTML= "X "+this.centreX;
+                        //document.getElementById("positionY").innerHTML= "Y "+this.centreY;
                         this.push = false;
                     }
                 }
