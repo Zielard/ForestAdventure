@@ -10,10 +10,8 @@
 <style>
 #keyboardCanvas
 {
-    border:1px solid black;
     width:  100%;
   height: 100%;
-  margin: 0;
 }
 
 #loadingMessage
@@ -138,13 +136,13 @@ function onAllAssetsLoaded()
     colisionFigure.push(new Collsion_CubeDown(new Point(250, 400),new Point(460, 400),false));
     colisionFigure.push(new Collsion_CubeDown(new Point(460, 290),new Point(520, 290),false));
     colisionFigure.push(new Collsion_CubeDown(new Point(520, 380),new Point(640, 380),false));
-
+    colisionFigure.push(new Collsion_CubeDown(new Point(641, 425),new Point(691, 425),true)); 
     colisionFigure.push(new Collsion_CubeDown(new Point(690, 290),new Point(705, 246),false));
     colisionFigure.push(new Collsion_CubeDown(new Point(705, 246),new Point(735, 246),false)); 
     colisionFigure.push(new Collsion_CubeDown(new Point(735, 0),new Point(795, 0),false)); 
 
-    colisionFigure.push(new Collsion_CubeRelative(new Point(650, 300),new Point(690, 300),new Point(690, 320),new Point(690, 320)));
-    colisionFigure.push(new Collsion_CubeDown(new Point(641, 425),new Point(691, 425),true)); 
+    //colisionFigure.push(new Collsion_CubeRelative(new Point(650, 300),new Point(690, 300),new Point(690, 320),new Point(690, 320)));
+
 
     // hide the webpage loading message
     document.getElementById('loadingMessage').style.visibility = "hidden";
@@ -159,15 +157,14 @@ function onAllAssetsLoaded()
     ObjectsGame[0] = new PlayerAnimation(ctx, Player);  
 
     //Coins
-    ObjectsGame[1] = new CoinsAnimation(ctx, new Coin(190, 410,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
-    ObjectsGame[2] = new CoinsAnimation(ctx, new Coin( 340, 380,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
-    ObjectsGame[3] = new CoinsAnimation(ctx, new Coin( 85, 270,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
-    ObjectsGame[4] = new CoinsAnimation(ctx, new Coin( 480, 270,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[1] = new CoinsAnimation(ctx, new Coin(250, 270,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[2] = new CoinsAnimation(ctx, new Coin( 450, 270,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[3] = new CoinsAnimation(ctx, new Coin( 40, 270,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[4] = new CoinsAnimation(ctx, new Coin( 100, 270,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    //ObjectsGame[5] = new CoinsAnimation(ctx, new Coin( 480, 270,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
 
     //Enemy
         ObjectsGame[5] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.3,window.innerHeight*0.5,EnemySprite));  
-        //ObjectsGame[6] = new FireBallAnimation(ctx,  new FireBall(340, 380,FireBallSprite)); 
-        
 
     //change size for window
     const CANVAS_WIDTH = 1000;
