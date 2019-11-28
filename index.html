@@ -7,6 +7,7 @@
 <script src="scripts/Animation.js"></script> 
 <script src="scripts/Collison.js"></script> 
 <script src="scripts/Character.js"></script> 
+<script src="scripts/boards.js"></script> 
 <style>
 #keyboardCanvas
 {
@@ -27,7 +28,7 @@
 <script>
 
 let backgroundImage = new Image();
-backgroundImage.src = "images/board/forest_cut.png";
+backgroundImage.src = "images/boardElemets/BG/BG.png";
 
 
 
@@ -89,7 +90,7 @@ var falseDeltaUP =10;
 var falseDeltaEnemy = 0;
 
 var colisionFigure = [];
-
+var boardsLevel = [];
 var backgroundSong = new Audio();
 backgroundSong.src = 'mp3/Hyrule.mp3';
 
@@ -129,18 +130,19 @@ function getMousePos(canvas, evt) {
 
 function onAllAssetsLoaded()
 {
-    colisionFigure.push(new Collsion_CubeDown(new Point(0, 390),new Point(15, 390),false));
-    colisionFigure.push(new Collsion_CubeDown(new Point(15, 440),new Point(50, 440),false));
-    colisionFigure.push(new Collsion_CubeDown(new Point(50, 400),new Point(130, 400),false));
-    colisionFigure.push(new Collsion_CubeDown(new Point(130, 440),new Point(250, 440),false));
-    colisionFigure.push(new Collsion_CubeDown(new Point(250, 400),new Point(460, 400),false));
-    colisionFigure.push(new Collsion_CubeDown(new Point(460, 290),new Point(520, 290),false));
-    colisionFigure.push(new Collsion_CubeDown(new Point(520, 380),new Point(640, 380),false));
-    colisionFigure.push(new Collsion_CubeDown(new Point(641, 425),new Point(691, 425),true)); 
-    colisionFigure.push(new Collsion_CubeDown(new Point(690, 290),new Point(705, 246),false));
-    colisionFigure.push(new Collsion_CubeDown(new Point(705, 246),new Point(735, 246),false)); 
-    colisionFigure.push(new Collsion_CubeDown(new Point(735, 0),new Point(795, 0),false)); 
+    // colisionFigure.push(new Collsion_CubeDown(new Point(0, 390),new Point(15, 390),false));
+    // colisionFigure.push(new Collsion_CubeDown(new Point(15, 440),new Point(50, 440),false));
+    // colisionFigure.push(new Collsion_CubeDown(new Point(50, 400),new Point(130, 400),false));
+    // colisionFigure.push(new Collsion_CubeDown(new Point(130, 440),new Point(250, 440),false));
+    // colisionFigure.push(new Collsion_CubeDown(new Point(250, 400),new Point(460, 400),false));
+    // colisionFigure.push(new Collsion_CubeDown(new Point(460, 290),new Point(520, 290),false));
+    // colisionFigure.push(new Collsion_CubeDown(new Point(520, 380),new Point(640, 380),false));
+    // colisionFigure.push(new Collsion_CubeDown(new Point(641, 425),new Point(691, 425),true)); 
+    // colisionFigure.push(new Collsion_CubeDown(new Point(690, 290),new Point(705, 246),false));
+    // colisionFigure.push(new Collsion_CubeDown(new Point(705, 246),new Point(735, 246),false)); 
+    // colisionFigure.push(new Collsion_CubeDown(new Point(735, 0),new Point(795, 0),false)); 
 
+    boardsLevel.push(new board(Level_1,Level_col_1,Level_row_1,1));
     //colisionFigure.push(new Collsion_CubeRelative(new Point(650, 300),new Point(690, 300),new Point(690, 320),new Point(690, 320)));
 
 
@@ -241,7 +243,7 @@ canvas.addEventListener('touchend', function(e) {
                 // activeMouseClicky = mousePos.y;
                 //activeX + ',' + activeY );
     }, false);
-
+    createColison(boardsLevel[0]);
     renderCanvas();
     
 }
@@ -253,6 +255,7 @@ function renderCanvas()
     requestAnimationFrame(renderCanvas);
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+                drawBoard(boardsLevel[0]);
                 /* Step 3 of 3 */
                 /* Draw the animations */
                 for (let i = 0; i < ObjectsGame.length; i++)
@@ -268,7 +271,50 @@ function renderCanvas()
                 checkCollisionForFireBall();
                 psButton();
 }
+function createColison(level)
+{
+    
+    let board = level.Level;
+    let col = level.Level_col;
+    let row = level.Level_row;
+    let lastF = 0;
+    for (let i = 0; i < row; i++)
+    {
+        let j = 0;
+        for (; lastF < (col)*i; lastF++)
+        {
+            if(board[lastF] !=0 && board[lastF]!=-1)
+            {
+                let x = j*0.05*canvas.width;
+                let y =i*0.1 *canvas.height;
+                colisionFigure.push(new Collsion_CubeDown(new Point(x,y),new Point(x+(0.05 *canvas.width), y),false));
+            }
+            j++;
+        }
+    }
+}
+function drawBoard(level)
+{
+    let board = level.Level;
+    let col = level.Level_col;
+    let row = level.Level_row;
+    let lastF = 0;
+    for (let i = 0; i < row; i++)
+    {
+        let j = 0;
+        for (; lastF < col*i; lastF++)
+        {
+            if(board[lastF] !=0 && board[lastF]!=-1)
+            {
+            let elements = new Image();
+            elements.src = "images/boardElemets/Tiles/"+board[lastF]+".png";
+            ctx.drawImage(elements,j*0.05*canvas.width, i*0.1 *canvas.height, 0.05*canvas.width, 0.1 *canvas.height);
+            }
+            j++;
+        }
+    }
 
+}
 function checkCoinColision()
 {
                 //Get coin
@@ -562,16 +608,10 @@ function drawLine()
                 {
                     if(colisionFigure[i].name == "DownCube")
                     {
-                        if(i==0)
-                        {
-                            ctx.moveTo( colisionFigure[i].point1.x, colisionFigure[i].point1.y);
+                            ctx.beginPath();
+                            ctx.moveTo(colisionFigure[i].point1.x, colisionFigure[i].point1.y);
                             ctx.lineTo(colisionFigure[i].point2.x, colisionFigure[i].point2.y);
-                        }
-                        else
-                        {
-                            ctx.lineTo(colisionFigure[i].point1.x, colisionFigure[i].point1.y);
-                            ctx.lineTo(colisionFigure[i].point2.x, colisionFigure[i].point2.y);
-                        }
+                            ctx.stroke();
                     }
                     //colisionFigure.point1.x *=2;
                     //colisionFigure.point1.y *=2;
