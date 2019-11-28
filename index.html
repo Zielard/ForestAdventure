@@ -67,6 +67,8 @@ reloadButton.src = "images/button/reload.png";
 let CoinSprite = new Sprite("images/coin.png",20,10,1,10,0,10); 
 let EnemySprite = new Sprite("images/enemy/2enemy.png",40,9,4,36,4,8);  
 let FireBallSprite = new Sprite("images/fireball/fireball_1.png",40,8,8,64,0,8) 
+let PortalSprite = new Sprite("images/boardElemets/portal/portalSprite.png",100,4,4,16,0,4) 
+
 
 let lastPushButton = 0;
 const CANVAS_WIDTH = 1000;
@@ -84,6 +86,13 @@ let flagRight = true;
 
 var gravity = true;
 var offgravity = false;
+
+var Coingravity = true;
+var Coinoffgravity = false;
+
+var Enemygravity = true;
+var Enemyoffgravity = false;
+
 var falseDelta = 0;
 var falseDeltaUP =10;
 
@@ -159,14 +168,16 @@ function onAllAssetsLoaded()
     ObjectsGame[0] = new PlayerAnimation(ctx, Player);  
 
     //Coins
-    ObjectsGame[1] = new CoinsAnimation(ctx, new Coin(250, 270,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
-    ObjectsGame[2] = new CoinsAnimation(ctx, new Coin( 450, 270,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
-    ObjectsGame[3] = new CoinsAnimation(ctx, new Coin( 40, 270,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
-    ObjectsGame[4] = new CoinsAnimation(ctx, new Coin( 100, 270,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[1] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.05, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[2] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.15, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[3] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.3, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[4] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.4, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
     //ObjectsGame[5] = new CoinsAnimation(ctx, new Coin( 480, 270,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
 
     //Enemy
         ObjectsGame[5] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.3,window.innerHeight*0.5,EnemySprite));  
+    //Portal
+    ObjectsGame[6] = new PortalAnimation(ctx, new Coin(window.innerWidth*0.85,0,PortalSprite));
 
     //change size for window
     const CANVAS_WIDTH = 1000;
@@ -287,12 +298,19 @@ function createColison(level)
             {
                 let x = j*0.05*canvas.width;
                 let y =i*0.1 *canvas.height;
-                colisionFigure.push(new Collsion_CubeDown(new Point(x,y),new Point(x+(0.05 *canvas.width), y),false));
+                if((lastF-col) >0)
+                {
+                    if(board[lastF-20] ==0 || board[lastF-20] ==-1)
+                    {
+                        colisionFigure.push(new Collsion_CubeDown(new Point(x,y),new Point(x+(0.05 *canvas.width), y),false)); 
+                    }
+                }
             }
             j++;
         }
     }
 }
+
 function drawBoard(level)
 {
     let board = level.Level;
@@ -304,6 +322,16 @@ function drawBoard(level)
         let j = 0;
         for (; lastF < col*i; lastF++)
         {
+            // if(i == 9 &&  board[lastF] == 8)
+            // {
+            // // console.log("X : "+j*0.05*canvas.width);
+            // // console.log("Y : "+i*0.1 *canvas.height);
+            // // console.log("Last Frame "+ board[lastF]);
+            // console.log(board[lastF]);
+            // console.log(board[lastF+1]);
+            // console.log(board[lastF-20]);
+            // console.log(board[lastF+1-20]);
+            // }
             if(board[lastF] !=0 && board[lastF]!=-1)
             {
             let elements = new Image();
@@ -315,6 +343,7 @@ function drawBoard(level)
     }
 
 }
+
 function checkCoinColision()
 {
                 //Get coin
@@ -331,21 +360,32 @@ function checkCoinColision()
                             ObjectsGame[i].stopAndHide();
                         }
                 }
-                
-                //ENEMY COLLISION
-                for (let i = 1; i < ObjectsGame.length; i++)
+
+                //Graviti for Coin
+            for(let j = 0; j < ObjectsGame.length; j++)
+            {
+                for (let i = 0; i < colisionFigure.length; i++)
                 {
-                        if((ObjectsGame[0].centreX < ObjectsGame[i].centreX + 20) &&
-                        (ObjectsGame[0].centreX > ObjectsGame[i].centreX - 20) && 
-                        (ObjectsGame[0].centreY < ObjectsGame[i].centreY + 20) &&
-                        (ObjectsGame[0].centreY > ObjectsGame[i].centreY - 20) &&
-                         (ObjectsGame[i].animationIsDisplayed == true) 
-                         && (ObjectsGame[i].Gameobject.name == "enemy"))
+                    if((ObjectsGame[j].centreX >= colisionFigure[i].point1.x)
+                     && (ObjectsGame[j].centreX <= colisionFigure[i].point2.x)&& 
+                        ( ObjectsGame[j].Gameobject.name == "coin"))
+                    {
+                        //Gravitation
+                        if((ObjectsGame[j].centreY+15 < colisionFigure[i].point1.y) && Coinoffgravity == false)
                         {
-                            ObjectsGame[0].isdead = true;
-                            ObjectsGame[0].stopAndHide();
+                            //console.log("colison! Gravity Coin");
+                            Coingravity = true;
+                            falseDeltaEnemy += 3;
+                            ObjectsGame[j].centreY+=falseDeltaEnemy;
                         }
+                        else
+                        {
+                            falseDeltaEnemy =0;
+                            Coingravity = false;
+                        }
+                    }
                 }
+            }
 
                 //DEAD CUBE COLLISION
                 for (let i = 1; i < colisionFigure.length; i++)
@@ -359,30 +399,14 @@ function checkCoinColision()
                         }
                 }
 
-            for(let j = 0; j < ObjectsGame.length; j++)
-            {
-                for (let i = 0; i <  ObjectsGame.length; i++)
-                {
-                        if((ObjectsGame[j].centreX < ObjectsGame[i].centreX + 20) &&
-                        (ObjectsGame[j].centreX > ObjectsGame[i].centreX - 20) && 
-                        (ObjectsGame[j].centreY < ObjectsGame[i].centreY + 20) &&
-                        (ObjectsGame[j].centreY > ObjectsGame[i].centreY - 20) &&
-                         (ObjectsGame[j].animationIsDisplayed == true) 
-                         && (ObjectsGame[i].Gameobject.name == "enemy") && (ObjectsGame[i].animationIsDisplayed == true)
-                         && (ObjectsGame[j].Gameobject.name == "FireBall"))
-                        {
-                            //animationIsDisplayed
-                            ObjectsGame[i].stopAndHide();
-                            ObjectsGame[j].stopAndHide();
-                        }
-                }
-            }
+                
+
 }
 
 function checkColisionForEnemy()
 {
 
-                    //GENERAL COLLISION "DownCube" ENEMY
+            //GENERAL COLLISION "DownCube" ENEMY
             let flagBreak = false;
             for(let j = 0; j < ObjectsGame.length; j++)
             {
@@ -415,17 +439,17 @@ function checkColisionForEnemy()
                         ( ObjectsGame[j].Gameobject.name == "enemy"))
                     {
                         //Gravitation
-                        if((ObjectsGame[j].centreY+15 < colisionFigure[i].point1.y) && offgravity == false)
+                        if((ObjectsGame[j].centreY+15 < colisionFigure[i].point1.y) && Enemyoffgravity == false)
                         {
                             console.log("colison! Gravity Enemy");
-                            gravity = true;
-                            falseDeltaEnemy += 0.4;
+                            Enemygravity = true;
+                            falseDeltaEnemy += 3;
                             ObjectsGame[j].centreY+=falseDeltaEnemy;
                         }
                         else
                         {
                             falseDeltaEnemy =0;
-                            gravity = false;
+                            Enemygravity = false;
                         }
                     }
                 }
@@ -434,6 +458,40 @@ function checkColisionForEnemy()
                     break;
                 }
             }
+
+                            //ENEMY COLLISION
+                            for (let i = 1; i < ObjectsGame.length; i++)
+                {
+                        if((ObjectsGame[0].centreX < ObjectsGame[i].centreX + 20) &&
+                        (ObjectsGame[0].centreX > ObjectsGame[i].centreX - 20) && 
+                        (ObjectsGame[0].centreY < ObjectsGame[i].centreY + 20) &&
+                        (ObjectsGame[0].centreY > ObjectsGame[i].centreY - 20) &&
+                         (ObjectsGame[i].animationIsDisplayed == true) 
+                         && (ObjectsGame[i].Gameobject.name == "enemy"))
+                        {
+                            ObjectsGame[0].isdead = true;
+                            ObjectsGame[0].stopAndHide();
+                        }
+                }
+
+                for(let j = 0; j < ObjectsGame.length; j++)
+                {
+                    for (let i = 0; i <  ObjectsGame.length; i++)
+                    {
+                            if((ObjectsGame[j].centreX < ObjectsGame[i].centreX + 20) &&
+                            (ObjectsGame[j].centreX > ObjectsGame[i].centreX - 20) && 
+                            (ObjectsGame[j].centreY < ObjectsGame[i].centreY + 20) &&
+                            (ObjectsGame[j].centreY > ObjectsGame[i].centreY - 20) &&
+                            (ObjectsGame[j].animationIsDisplayed == true) 
+                            && (ObjectsGame[i].Gameobject.name == "enemy") && (ObjectsGame[i].animationIsDisplayed == true)
+                            && (ObjectsGame[j].Gameobject.name == "FireBall"))
+                            {
+                                //animationIsDisplayed
+                                ObjectsGame[i].stopAndHide();
+                                ObjectsGame[j].stopAndHide();
+                            }
+                    }
+                }
                 
 }
 

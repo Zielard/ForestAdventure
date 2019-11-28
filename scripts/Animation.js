@@ -552,4 +552,71 @@
                                          this.size);
                            }
                         }
-                        
+                        class PortalAnimation extends Animation
+                        {
+                            constructor(ctx, Gameobject)
+                            {                  
+                                super(false, 50,0);
+                                this.Gameobject = Gameobject;
+                                this.centreX = Gameobject.x;
+                                this.centreY = Gameobject.y;
+                                this.size =this.Gameobject.sprite.size;
+                                this.ctx = ctx;
+                                this.direction = 0;
+                                this.NUMBER_OF_SPRITES = this.Gameobject.sprite.numberSprite; // the number of sprites in the sprite image
+                                this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE = this.Gameobject.sprite.spriteCol; // the number of columns in the sprite image
+                                this.NUMBER_OF_ROWS_IN_SPRITE_IMAGE = this.Gameobject.sprite.spriteRow; // the number of rows in the sprite image	
+                                this.START_ROW = 0;
+                                this.START_COLUMN = 0;
+                                this.currentSprite = 0; // the current sprite to be displayed from the sprite image  
+                                this.row = this.START_ROW; // current row in sprite image
+                                this.column = this.START_COLUMN; // current column in sprite image
+                                this.flagColision = false;
+                                //stay for first run
+                                this.direction = 0;
+                                this.startSprite = this.Gameobject.sprite.startSprite;
+                                this.endSprite = this.Gameobject.sprite.endSprite;
+                                this.currentSprite = this.startSprite;
+                                this.row = 0;
+                                this.column = 0;
+            
+                                this.SPRITE_WIDTH = 4;
+                                this.SPRITE_HEIGHT = 4;
+                                
+                            }
+                            update()
+                            {
+            
+                                this.column++;
+                                this.currentSprite++;
+                
+                                if (this.currentSprite >= this.endSprite)
+                                {
+                                    this.row = 0;
+                                    this.column = 0;
+                                    this.currentSprite = this.startSprite;
+                                    //this.endSprite = 0;
+                                    
+                                } else if (this.column >= this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE)
+                                {
+                                    this.column = 0;
+                                    //this.row++;
+                                }
+                                
+                            }
+                            render()
+                            {
+                                
+                                this.SPRITE_WIDTH = (this.Gameobject.Image.width / this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE);
+                                this.SPRITE_HEIGHT = (this.Gameobject.Image.height / this.NUMBER_OF_ROWS_IN_SPRITE_IMAGE);
+                                ctx.drawImage(this.Gameobject.Image,
+                                    this.column * this.SPRITE_WIDTH, 
+                                    this.row * this.SPRITE_WIDTH, 
+                                     this.SPRITE_WIDTH,
+                                      this.SPRITE_HEIGHT, 
+                                      this.centreX - parseInt(this.size / 2),
+                                      this.centreY - parseInt(this.size / 2),
+                                        this.size,
+                                         this.size);
+                           }
+                        }
