@@ -58,6 +58,9 @@ class Coin
         this.Image.src = Sprite.pathImage;
         this.sprite = Sprite;
         this.name = "coin";
+        this.deltaTime = 0;
+        this.Coingravity = true;
+        this.Coinoffgravity = false;
     }
 }
 

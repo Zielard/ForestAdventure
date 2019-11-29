@@ -97,7 +97,7 @@ var falseDelta = 0;
 var falseDeltaUP =10;
 
 var falseDeltaEnemy = 0;
-
+var falseDeltaCoin = 0;
 var colisionFigure = [];
 var boardsLevel = [];
 var backgroundSong = new Audio();
@@ -169,9 +169,9 @@ function onAllAssetsLoaded()
 
     //Coins
     ObjectsGame[1] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.05, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
-    ObjectsGame[2] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.15, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
-    ObjectsGame[3] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.3, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
-    ObjectsGame[4] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.4, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[2] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.17, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[3] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.25, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[4] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.35, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
     //ObjectsGame[5] = new CoinsAnimation(ctx, new Coin( 480, 270,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
 
     //Enemy
@@ -322,16 +322,6 @@ function drawBoard(level)
         let j = 0;
         for (; lastF < col*i; lastF++)
         {
-            // if(i == 9 &&  board[lastF] == 8)
-            // {
-            // // console.log("X : "+j*0.05*canvas.width);
-            // // console.log("Y : "+i*0.1 *canvas.height);
-            // // console.log("Last Frame "+ board[lastF]);
-            // console.log(board[lastF]);
-            // console.log(board[lastF+1]);
-            // console.log(board[lastF-20]);
-            // console.log(board[lastF+1-20]);
-            // }
             if(board[lastF] !=0 && board[lastF]!=-1)
             {
             let elements = new Image();
@@ -367,21 +357,19 @@ function checkCoinColision()
                 for (let i = 0; i < colisionFigure.length; i++)
                 {
                     if((ObjectsGame[j].centreX >= colisionFigure[i].point1.x)
-                     && (ObjectsGame[j].centreX <= colisionFigure[i].point2.x)&& 
+                     && (ObjectsGame[j].centreX <= colisionFigure[i].point2.x) && 
                         ( ObjectsGame[j].Gameobject.name == "coin"))
                     {
                         //Gravitation
-                        if((ObjectsGame[j].centreY+15 < colisionFigure[i].point1.y) && Coinoffgravity == false)
+                        if((ObjectsGame[j].centreY+15 < colisionFigure[i].point1.y))
                         {
                             //console.log("colison! Gravity Coin");
-                            Coingravity = true;
-                            falseDeltaEnemy += 3;
-                            ObjectsGame[j].centreY+=falseDeltaEnemy;
+                            ObjectsGame[j].Gameobject.Coingravity = true;
+                            ObjectsGame[j].centreY+=2;
                         }
                         else
                         {
-                            falseDeltaEnemy =0;
-                            Coingravity = false;
+                            ObjectsGame[j].Gameobject.deltaTime = 0;
                         }
                     }
                 }
@@ -443,7 +431,7 @@ function checkColisionForEnemy()
                         {
                             console.log("colison! Gravity Enemy");
                             Enemygravity = true;
-                            falseDeltaEnemy += 3;
+                            falseDeltaEnemy += 0.4;
                             ObjectsGame[j].centreY+=falseDeltaEnemy;
                         }
                         else
