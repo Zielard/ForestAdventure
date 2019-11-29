@@ -57,7 +57,7 @@
             class PlayerAnimation extends Animation
             {
                //constructor(ctx, centreX, centreY, width, height, skeletonframeRate, canvasWidth, canvasHeight, person)
-               constructor(ctx, Gameobject)
+               constructor(ctx, Gameobject,size)
                 {                  
                     
                     //this.animationStartDelay= false;
@@ -72,7 +72,7 @@
                     this.centreX = Gameobject.x;
                     this.centreY = Gameobject.y;
                     this.Gameobject = Gameobject;
-                    this.size = 50;
+                    this.size = size;
                     this.ctx = ctx;
                     this.direction = 0;
                     this.NUMBER_OF_SPRITES = Gameobject.numberSprite; // the number of sprites in the sprite image
@@ -159,7 +159,7 @@
                     {
                         if(false == this.flagColision)
                         {
-                                let stepSize = 5;
+                                let stepSize = 0.005 * window.innerWidth;
                                 if ((this.direction === 1) && (this.leftMove == true))  // left
                                 {
                                     this.centreX -= stepSize;

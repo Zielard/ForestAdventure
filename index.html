@@ -64,10 +64,6 @@ crossButton.src = "images/button/ps0-512.png";
 let reloadButton = new Image();
 reloadButton.src = "images/button/reload.png";
 
-let CoinSprite = new Sprite("images/coin.png",20,10,1,10,0,10); 
-let EnemySprite = new Sprite("images/enemy/2enemy.png",40,9,4,36,4,8);  
-let FireBallSprite = new Sprite("images/fireball/fireball_1.png",40,8,8,64,0,8) 
-let PortalSprite = new Sprite("images/boardElemets/portal/portalSprite.png",100,4,4,16,0,4) 
 
 
 let lastPushButton = 0;
@@ -102,6 +98,12 @@ var colisionFigure = [];
 var boardsLevel = [];
 var backgroundSong = new Audio();
 backgroundSong.src = 'mp3/Hyrule.mp3';
+
+    //Template
+    var CoinSprite = new Sprite("images/coin.png",window.innerWidth*0.02,10,1,10,0,10); 
+    var EnemySprite = new Sprite("images/enemy/2enemy.png",window.innerWidth*0.03,9,4,36,4,8);  
+    var FireBallSprite = new Sprite("images/fireball/fireball_1.png",window.innerWidth*0.05,8,8,64,0,8);
+    var PortalSprite = new Sprite("images/boardElemets/portal/portalSprite.png",100,4,4,16,0,4);
 
 function playAudio() { 
     //var x = document.getElementById("myAudio");
@@ -163,9 +165,11 @@ function onAllAssetsLoaded()
     canvas.width  = window.innerWidth;
     canvas.height = window.innerHeight;
     
+
+
     //Player
     Player = new Player( window.innerWidth*0.1, window.innerHeight*0.5,"images/defaultperson.png","images/defaultpersonleft.png");
-    ObjectsGame[0] = new PlayerAnimation(ctx, Player);  
+    ObjectsGame[0] = new PlayerAnimation(ctx, Player ,window.innerWidth*0.05 );  
 
     //Coins
     ObjectsGame[1] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.05, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
@@ -618,7 +622,7 @@ function checkGravitiColison()
                         ObjectsGame[0].centreY -= falseDeltaUP;
                         if( this.falseDeltaUP < 0)
                             {
-                                this.falseDeltaUP = 10;
+                                this.falseDeltaUP = (0.015 * window.innerHeight);
                                 offgravity = false;
                             }
                         }
@@ -784,10 +788,11 @@ function vJoyFun()
 
 function psButton()
 {
+    ctx.globalAlpha = 0.5;
     ctx.drawImage(reloadButton, window.innerWidth*0.9, window.innerHeight*0.1,window.innerHeight*0.1, window.innerHeight*0.1);
     ctx.drawImage(crossButton, window.innerWidth*0.8, window.innerHeight*0.9,window.innerHeight*0.1, window.innerHeight*0.1);
     ctx.drawImage(circleButton, window.innerWidth*0.9, window.innerHeight*0.9,window.innerHeight*0.1, window.innerHeight*0.1);
-
+    ctx.globalAlpha = 1.0;
     let xjump =window.innerWidth*0.8 + window.innerHeight*0.05;
     let yjump = window.innerHeight*0.9 + window.innerHeight*0.05;
 
