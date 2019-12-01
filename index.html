@@ -30,8 +30,11 @@
 let backgroundImage = new Image();
 backgroundImage.src = "images/boardElemets/BG/BG.png";
 
+let startImageHead = new Image();
+startImageHead.src = "images/start_Page/head_zelda.png";
 
-
+let arowButton = new Image();
+arowButton.src = "images/button/arrow.png";
 /* ObjectsGame array */
 let ObjectsGame = [];
 
@@ -92,6 +95,9 @@ var Enemyoffgravity = false;
 var falseDelta = 0;
 var falseDeltaUP =10;
 
+var pushJump = false;
+var pushFire = false;
+
 var falseDeltaEnemy = 0;
 var falseDeltaCoin = 0;
 var colisionFigure = [];
@@ -99,10 +105,12 @@ var boardsLevel = [];
 var backgroundSong = new Audio();
 backgroundSong.src = 'mp3/Hyrule.mp3';
 
+var activeLevel = 0;
     //Template
     var CoinSprite = new Sprite("images/coin.png",window.innerWidth*0.02,10,1,10,0,10); 
     var EnemySprite = new Sprite("images/enemy/2enemy.png",window.innerWidth*0.03,9,4,36,4,8);  
     var FireBallSprite = new Sprite("images/fireball/fireball_1.png",window.innerWidth*0.05,8,8,64,0,8);
+    var PlayerSprite = new Sprite("images/Link.png",window.innerWidth*0.03,10,8,80,0,10);
     var PortalSprite = new Sprite("images/boardElemets/portal/portalSprite.png",100,4,4,16,0,4);
 
 function playAudio() { 
@@ -141,22 +149,11 @@ function getMousePos(canvas, evt) {
 
 function onAllAssetsLoaded()
 {
-    // colisionFigure.push(new Collsion_CubeDown(new Point(0, 390),new Point(15, 390),false));
-    // colisionFigure.push(new Collsion_CubeDown(new Point(15, 440),new Point(50, 440),false));
-    // colisionFigure.push(new Collsion_CubeDown(new Point(50, 400),new Point(130, 400),false));
-    // colisionFigure.push(new Collsion_CubeDown(new Point(130, 440),new Point(250, 440),false));
-    // colisionFigure.push(new Collsion_CubeDown(new Point(250, 400),new Point(460, 400),false));
-    // colisionFigure.push(new Collsion_CubeDown(new Point(460, 290),new Point(520, 290),false));
-    // colisionFigure.push(new Collsion_CubeDown(new Point(520, 380),new Point(640, 380),false));
-    // colisionFigure.push(new Collsion_CubeDown(new Point(641, 425),new Point(691, 425),true)); 
-    // colisionFigure.push(new Collsion_CubeDown(new Point(690, 290),new Point(705, 246),false));
-    // colisionFigure.push(new Collsion_CubeDown(new Point(705, 246),new Point(735, 246),false)); 
-    // colisionFigure.push(new Collsion_CubeDown(new Point(735, 0),new Point(795, 0),false)); 
+
 
     boardsLevel.push(new board(Level_1,Level_col_1,Level_row_1,1));
-    //colisionFigure.push(new Collsion_CubeRelative(new Point(650, 300),new Point(690, 300),new Point(690, 320),new Point(690, 320)));
-
-
+    boardsLevel.push(new board(Level_2,Level_col_2,Level_row_2,2));
+    boardsLevel.push(new board(Level_3,Level_col_3,Level_row_3,3));
     // hide the webpage loading message
     document.getElementById('loadingMessage').style.visibility = "hidden";
 
@@ -168,8 +165,7 @@ function onAllAssetsLoaded()
 
 
     //Player
-    Player = new Player( window.innerWidth*0.1, window.innerHeight*0.5,"images/defaultperson.png","images/defaultpersonleft.png");
-    ObjectsGame[0] = new PlayerAnimation(ctx, Player ,window.innerWidth*0.05 );  
+    ObjectsGame[0] = new PlayerAnimation(ctx, new Player( window.innerWidth*0.1, window.innerHeight*0.5, PlayerSprite) );  
 
     //Coins
     ObjectsGame[1] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.05, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
@@ -179,9 +175,9 @@ function onAllAssetsLoaded()
     //ObjectsGame[5] = new CoinsAnimation(ctx, new Coin( 480, 270,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
 
     //Enemy
-        ObjectsGame[5] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.3,window.innerHeight*0.5,EnemySprite));  
+    ObjectsGame[5] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.3,window.innerHeight*0.5,EnemySprite));  
     //Portal
-    ObjectsGame[6] = new PortalAnimation(ctx, new Coin(window.innerWidth*0.85,0,PortalSprite));
+    ObjectsGame[6] = new PortalAnimation(ctx, new Portal(window.innerWidth*0.85,0,PortalSprite));
 
     //change size for window
     const CANVAS_WIDTH = 1000;
@@ -258,34 +254,34 @@ canvas.addEventListener('touchend', function(e) {
                 // activeMouseClicky = mousePos.y;
                 //activeX + ',' + activeY );
     }, false);
-    createColison(boardsLevel[0]);
+    createColison(boardsLevel[activeLevel]);
     renderCanvas();
     
 }
 
 function renderCanvas()
 {
-    //document.getElementById("Score").innerHTML= "Score : "+score;
-    ObjectsGame[0].flagColision = false;
-    requestAnimationFrame(renderCanvas);
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-                drawBoard(boardsLevel[0]);
-                /* Step 3 of 3 */
-                /* Draw the animations */
-                for (let i = 0; i < ObjectsGame.length; i++)
-                {
-                    ObjectsGame[i].renderObject();
-                }
+                    ObjectsGame[0].flagColision = false;
+                    requestAnimationFrame(renderCanvas);
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+                    drawBoard(boardsLevel[activeLevel]);
+                    /* Step 3 of 3 */
+                    /* Draw the animations */
+                    for (let i = 0; i < ObjectsGame.length; i++)
+                    {
+                        ObjectsGame[i].renderObject();
+                    }
 
-                checkCoinColision();
-                drawLine();
-                vJoyFun();
-                checkGravitiColison();
-                checkColisionForEnemy();
-                checkCollisionForFireBall();
-                psButton();
+                    checkCoinColision();
+                    drawLine();
+                    vJoyFun();
+                    checkGravitiColison();
+                    checkColisionForEnemy();
+                    checkCollisionForFireBall();
+                    psButton();
 }
+
 function createColison(level)
 {
     
@@ -313,6 +309,11 @@ function createColison(level)
             j++;
         }
     }
+}
+
+function dropcolison()
+{
+    colisionFigure=[];
 }
 
 function drawBoard(level)
@@ -362,13 +363,21 @@ function checkCoinColision()
                 {
                     if((ObjectsGame[j].centreX >= colisionFigure[i].point1.x)
                      && (ObjectsGame[j].centreX <= colisionFigure[i].point2.x) && 
-                        ( ObjectsGame[j].Gameobject.name == "coin"))
+                       ( ( ObjectsGame[j].Gameobject.name == "coin") || ( ObjectsGame[j].Gameobject.name == "portal")))
                     {
                         //Gravitation
                         if((ObjectsGame[j].centreY+15 < colisionFigure[i].point1.y))
                         {
                             //console.log("colison! Gravity Coin");
-                            ObjectsGame[j].Gameobject.Coingravity = true;
+                            if(( ObjectsGame[j].Gameobject.name == "coin"))
+                            {
+                                ObjectsGame[j].Gameobject.Coingravity = true;
+                            }
+                            else if(( ObjectsGame[j].Gameobject.name == "portal"))
+                            {
+                                ObjectsGame[j].Gameobject.Portalgravity = true;
+                            }
+
                             ObjectsGame[j].centreY+=2;
                         }
                         else
@@ -378,6 +387,24 @@ function checkCoinColision()
                     }
                 }
             }
+                //Get coin
+                for (let i = 1; i < ObjectsGame.length; i++)
+                {
+                        if((ObjectsGame[0].centreX < ObjectsGame[i].centreX + 20) &&
+                        (ObjectsGame[0].centreX > ObjectsGame[i].centreX - 20) && 
+                        (ObjectsGame[0].centreY < ObjectsGame[i].centreY + 20) &&
+                        (ObjectsGame[0].centreY > ObjectsGame[i].centreY - 20) &&
+                         (ObjectsGame[i].animationIsDisplayed == true) 
+                         && (ObjectsGame[i].Gameobject.name == "portal"))
+                        {
+                            score++;
+                            activeLevel++;
+                            ObjectsGame[i].stopAndHide();
+                            dropcolison();
+                            reset();
+                            createColison(boardsLevel[activeLevel]);
+                        }
+                }
 
                 //DEAD CUBE COLLISION
                 for (let i = 1; i < colisionFigure.length; i++)
@@ -431,7 +458,7 @@ function checkColisionForEnemy()
                         ( ObjectsGame[j].Gameobject.name == "enemy"))
                     {
                         //Gravitation
-                        if((ObjectsGame[j].centreY+15 < colisionFigure[i].point1.y) && Enemyoffgravity == false)
+                        if((ObjectsGame[j].centreY+(ObjectsGame[j].size/2) < colisionFigure[i].point1.y) && Enemyoffgravity == false)
                         {
                             console.log("colison! Gravity Enemy");
                             Enemygravity = true;
@@ -551,44 +578,25 @@ function checkGravitiColison()
                     {
                         let stepSize = 5;
                         console.log("colison! Relative");
-                        //console.log(ObjectsGame[0].direction);
                             if (ObjectsGame[0].direction === ObjectsGame[0].UP)
                             {
-                                //console.log("1");
                                 ObjectsGame[0].centreY += stepSize*3;
                                 break;
-                                //ObjectsGame[0].stayPosition();
                             } 
                             else if (ObjectsGame[0].direction === ObjectsGame[0].LEFT)
                             {
                                 break;
-                                //console.log("2");
-                               // ObjectsGame[0].centreX += stepSize*3;
                             }
                             else if (ObjectsGame[0].direction === ObjectsGame[0].DOWN)
                             {
                                 break;
-                                //console.log("3");
-                                //ObjectsGame[0].centreY -= stepSize;
                             } 
                             else if (ObjectsGame[0].direction === ObjectsGame[0].RIGHT)
                             {
                                 break;
-                                //console.log("4");
-                                //ObjectsGame[0].centreX -= stepSize*3;
                             }
                             else if (ObjectsGame[0].direction === 0)
                             {
-                                
-                            //     if(lastPushButton === ObjectsGame[0].LEFT)
-                            //     {
-                            //         ObjectsGame[0].centreX += stepSize*3;
-                            //     }
-                            //     else if(lastPushButton === ObjectsGame[0].RIGHT)
-                            //     {
-                            //         ObjectsGame[0].centreX -= stepSize*3;
-                            //     }
-                                //console.log("5");
                                 ObjectsGame[0].centreY = colisionFigure[i].point1.y -15;
                                 break;
                             }
@@ -598,14 +606,16 @@ function checkGravitiColison()
                     {
                         console.log("colison! Gravity");
                         //Gravitation
-                        if((ObjectsGame[0].centreY+15 < colisionFigure[i].point1.y) && offgravity == false)
+                        if((ObjectsGame[0].centreY+(ObjectsGame[0].size/2) < colisionFigure[i].point1.y) && offgravity == false)
                         {
+                            
                             gravity = true;
-                            falseDelta += 0.4;
+                            falseDelta += 0.3;
                             ObjectsGame[0].centreY+=falseDelta;
                         }
                         else
                         {
+                            pushJump = false;
                             falseDelta =0;
                             gravity = false;
                         }
@@ -613,13 +623,13 @@ function checkGravitiColison()
                     }
                 }
            
-           if(true == offgravity)
-                    {
-                        this.falseDeltaUP -= 0.4;
+                    if(true == offgravity)
+                    {pushJump = true;
+                        this.falseDeltaUP -= 0.3;
                         ObjectsGame[0].centreY -= falseDeltaUP;
                         if( this.falseDeltaUP < 0)
                             {
-                                this.falseDeltaUP = (0.015 * window.innerHeight);
+                                this.falseDeltaUP = (0.025 * window.innerHeight);
                                 offgravity = false;
                             }
                         }
@@ -722,7 +732,7 @@ console.log(keydownHandler);
                 if (e.keyCode === 37)  // left
                 {
                    // ObjectsGame[0].centreX -= stepSize;
-                    ObjectsGame[0].setDirection(1);
+                    ObjectsGame[0].setDirection(5);
                 } else if (e.keyCode === 32) // attack
                 {
                  //   ObjectsGame[0].centreX += stepSize;
@@ -731,16 +741,20 @@ console.log(keydownHandler);
                 }
                  else if (e.keyCode === 38) // up
                 {
-                    offgravity = true;
-                    ObjectsGame[0].setDirection(5);
+                    if(offgravity == false)
+                    {
+                        offgravity = true;
+                    ObjectsGame[0].setDirection(2);
+                    }
+
                 } else if (e.keyCode === 39 && flagRight == true) // right
                 {
                   //  ObjectsGame[0].centreX += stepSize;
-                    ObjectsGame[0].setDirection(4);
+                    ObjectsGame[0].setDirection(7);
                 } else if (e.keyCode === 40) // down
                 {
                   //  ObjectsGame[0].centreY += stepSize;
-                    ObjectsGame[0].setDirection(2);
+                    ObjectsGame[0].setDirection(3);
                 }
                 else if(e.keyCode === 102 || e.keyCode === 70)
                 {
@@ -767,10 +781,12 @@ console.log(keydownHandler);
 function vJoyFun()
 {
     ctx.strokeStyle = "yellow";
-                ctx.beginPath();
-                ctx.arc(FramevjoyX, FramevjoyY, (window.innerHeight* 0.1), 0, 2 * Math.PI);
-                ctx.stroke(); 
-
+                // ctx.beginPath();
+                // ctx.arc(FramevjoyX, FramevjoyY, (window.innerHeight* 0.1), 0, 2 * Math.PI);
+                // ctx.stroke(); 
+                ctx.globalAlpha = 0.5;
+                ctx.drawImage(arowButton,FramevjoyX - ((window.innerHeight* 0.2)/2), FramevjoyY- ((window.innerHeight* 0.1)/2), (window.innerHeight* 0.2), (window.innerHeight* 0.1));
+                ctx.globalAlpha = 1.0;
                 ctx.beginPath();
                 ctx.arc(vjoyX, vjoyY, (window.innerHeight* 0.05), 0, 2 * Math.PI);
                 ctx.stroke();
@@ -813,24 +829,40 @@ function psButton()
                 ctx.stroke();
 
                 //fire button
-                if((activeMouseClickx >= xjump - (window.innerHeight* 0.05) && activeMouseClickx <= xjump +  (window.innerHeight* 0.05)) && (activeMouseClicky >= yfire - (window.innerWidth* 0.05) && activeMouseClicky <= yfire + (window.innerWidth* 0.05)))
+                if((activeMouseClickx >= xjump - (window.innerHeight* 0.05) && 
+                activeMouseClickx <= xjump +  (window.innerHeight* 0.05)) && 
+                (activeMouseClicky >= yfire - (window.innerWidth* 0.05) && activeMouseClicky <= yfire + (window.innerWidth* 0.05)))
                 {
-                    offgravity = true;
-                    ObjectsGame[0].setDirection(5);
+                    if(pushJump == false)
+                    {
+                        if(offgravity == false)
+                        {
+                        offgravity = true;
+                        ObjectsGame[0].setDirection(2);
+                        }
+                        pushJump = true;
+                    }
                 }
                 if((activeMouseClickx >= xfire - (window.innerHeight* 0.05) && activeMouseClickx <= xfire +  (window.innerHeight* 0.05)) && (activeMouseClicky >= yjump - (window.innerWidth* 0.05) && activeMouseClicky <= yjump + (window.innerWidth* 0.05)))
                 {
-                    ObjectsGame.push(new FireBallAnimation(ctx,  new FireBall(ObjectsGame[0].centreX, ObjectsGame[0].centreY,FireBallSprite)));
-                    if(ObjectsGame[0].left == true)
+                    if(pushFire == false)
                     {
-                        ObjectsGame[ObjectsGame.length-1].setDirection(0);
-                        ObjectsGame[0].setDirection(2);
+                        ObjectsGame.push(new FireBallAnimation(ctx,  new FireBall(ObjectsGame[0].centreX, ObjectsGame[0].centreY,FireBallSprite)));
+                        if(ObjectsGame[0].left == true)
+                        {
+                            ObjectsGame[ObjectsGame.length-1].setDirection(0);
+                        }
+                        else
+                        {
+                            ObjectsGame[ObjectsGame.length-1].setDirection(4);
+                        }
+                        pushFire = true;
                     }
-                    else
-                    {
-                        ObjectsGame[ObjectsGame.length-1].setDirection(4);
-                        ObjectsGame[0].setDirection(2);
-                    }
+                    
+                }
+                else
+                {
+                    pushFire = false;
                 }
                 if((activeMouseClickx >= xreset - (window.innerHeight* 0.05) && activeMouseClickx <= xreset +  (window.innerHeight* 0.05)) && (activeMouseClicky >= yreset - (window.innerWidth* 0.05) && activeMouseClicky <= yreset + (window.innerWidth* 0.05)))
                 {
@@ -875,14 +907,14 @@ function line()
                         {
                             //newPositionx = 0;
                             //activeX += 1;//(deltY+deltX)/2;
-                            ObjectsGame[0].setDirection(4);
+                            ObjectsGame[0].setDirection(7);
                             //document.getElementById("positionMX").innerHTML= "Right "+activeMouseClickx;
                         }
                         else if(FramevjoyX > activeMouseClickx)
                         {
                             //newPositionx = 500;
                             //activeX -= 1;//(deltY+deltX)/2;
-                            ObjectsGame[0].setDirection(1);
+                            ObjectsGame[0].setDirection(5);
                             //document.getElementById("positionMX").innerHTML= "Left "+activeMouseClickx;         
                         }
 
@@ -941,7 +973,7 @@ function reset()
         activeY =100;
 
         //Player = new Player( window.innerWidth*0.1, window.innerHeight*0.5,"images/defaultperson.png","images/defaultpersonleft.png");
-        ObjectsGame[0] = new PlayerAnimation(ctx, Player);  
+        ObjectsGame[0] = new PlayerAnimation(ctx, new Player( window.innerWidth*0.1, window.innerHeight*0.5, PlayerSprite) );   
     ObjectsGame[0].isdead = false;
     //Coins
     ObjectsGame[1] = new CoinsAnimation(ctx, new Coin(190, 410,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
@@ -951,6 +983,7 @@ function reset()
 
     //Enemy
         ObjectsGame[5] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.3,window.innerHeight*0.5,EnemySprite));  
+        ObjectsGame[6] = new PortalAnimation(ctx, new Portal(window.innerWidth*0.85,0,PortalSprite));
 }
 </script>
 </head>

@@ -64,16 +64,29 @@ class Coin
     }
 }
 
+class Portal
+{
+    //punkt
+    constructor(x,y,Sprite)
+    {
+        this.x =x;
+        this.y =y;
+        this.Image = new Image();
+        this.Image.src = Sprite.pathImage;
+        this.sprite = Sprite;
+        this.name = "portal";
+        this.deltaTime = 0;
+        this.Portalgravity = true;
+        this.Portaloffgravity = false;
+    }
+}
+
 class Player extends GameObject
 {
-    constructor(x,y,pathImage,pathImageLeft)
+    constructor(x,y,Sprite)
     {
-        super(x, y,pathImage);
-        this.spriteCol = 8;
-        this.spriteRow = 8;
-        this.numberSprite = 65;
-        this.ImageLeft = new Image();
-        this.ImageLeft.src = pathImageLeft;
+        super(x,y,Sprite.pathImage);
+        this.sprite = Sprite;
         this.name = "player";
         //this.sprite = Sprite;
     }

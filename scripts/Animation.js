@@ -59,48 +59,32 @@
                //constructor(ctx, centreX, centreY, width, height, skeletonframeRate, canvasWidth, canvasHeight, person)
                constructor(ctx, Gameobject,size)
                 {                  
-                    
-                    //this.animationStartDelay= false;
-                    super(false, 50,0);
-                    this.leftMove = true;
-                    this.rightMove = true;
-                    this.jumpTimer = 0;
-                    this.push = false;
-                    /* These variables depend on the animation */
-                    //this.person = person;
-                    this.flagFirstCall = true;
+                    super(false, 50,2);
+                    this.Gameobject = Gameobject;
                     this.centreX = Gameobject.x;
                     this.centreY = Gameobject.y;
-                    this.Gameobject = Gameobject;
-                    this.size = size;
+                    this.size = Gameobject.sprite.size;
                     this.ctx = ctx;
-                    this.direction = 0;
-                    this.NUMBER_OF_SPRITES = Gameobject.numberSprite; // the number of sprites in the sprite image
-                    this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE = Gameobject.spriteCol; // the number of columns in the sprite image
-                    this.NUMBER_OF_ROWS_IN_SPRITE_IMAGE = Gameobject.spriteRow; // the number of rows in the sprite image	
-                    this.START_ROW = 0;
-                    this.START_COLUMN = 0;
-                    this.currentSprite = 0; // the current sprite to be displayed from the sprite image  
+                    this.NUMBER_OF_SPRITES = Gameobject.sprite.numberSprite; // the number of sprites in the sprite image
+                    this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE = Gameobject.sprite.spriteCol; // the number of columns in the sprite image
+                    this.NUMBER_OF_ROWS_IN_SPRITE_IMAGE = Gameobject.sprite.spriteRow; // the number of rows in the sprite image	
+                    this.currentSprite = 2; // the current sprite to be displayed from the sprite image  
                     this.row = this.START_ROW; // current row in sprite image
                     this.column = this.START_COLUMN; // current column in sprite image
-                    this.UP = 5;
-                    this.LEFT = 1;
-                    this.DOWN = 2;
-                    this.RIGHT = 4;
                     this.flagColision = false;
+                    this.UP = 2;
+                    this.LEFT = 5;
+                    this.DOWN = 3;
+                    this.RIGHT = 7;
                     //stay for first run
-                    this.direction = 0;
-                    this.startSprite = this.direction * this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE;
-                    this.endSprite = 10;
+                    this.direction = 1;
+                    this.startSprite = Gameobject.sprite.spriteStart;
+                    this.endSprite =Gameobject.sprite.endSprite;
                     this.currentSprite = this.startSprite;
-                    this.row = 8;
-                    this.column = 0;
-                    this.isdead= false;
-                    this.SPRITE_WIDTH = 45;
-                    this.SPRITE_HEIGHT = 30;
-
-                    this.doFilp = false;
-                    this.falseDelta = 10;
+                    this.row = 3;
+                    this.column = 3;
+                    this.doFlip = false;
+                    this.isdead = false;
                     this.left = false;
                 }
                 setDirection(newDirection)
@@ -114,17 +98,17 @@
                             this.currentSprite = this.startSprite;
                             if(this.direction == this.LEFT)
                             {
-                                this.row = 4;
+                                this.row = 5;
                             }
                             else
                             {
-                                this.row = this.direction;
+                                this.row = 7;
                             }
                             this.column = 0;
                         }
                       //renderCanvas();
                     };
-                    stayPosition(directionInStr)
+                stayPosition(directionInStr)
                     {
                         if(directionInStr=="left")
                         {
@@ -142,16 +126,17 @@
                          this.startSprite = this.direction * this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE;
                          this.endSprite = 0;
                          this.currentSprite = this.startSprite;
-                         this.row = 8;
+                         
                          if(true == this.left)
                          {
-                             this.column = 7;
+                             this.column = 1;
+                             this.row = 1;
                          }
                          else
                          {
-                             this.column = 0;
+                             this.column = 1;
+                             this.row = 3;
                          }
-                      //renderCanvas();
                     };
                 update()
                 {
@@ -160,25 +145,22 @@
                         if(false == this.flagColision)
                         {
                                 let stepSize = 0.005 * window.innerWidth;
-                                if ((this.direction === 1) && (this.leftMove == true))  // left
+                                if ((this.direction === 5) && (this.leftMove == true))  // left
                                 {
                                     this.centreX -= stepSize;
-                                    lastPushButton = 1;
+                                    lastPushButton = 5;
                                     this.left = true;
                                     this.rightMove = true;
                                 } 
                                 else if (this.direction === this.UP && gravity == false) // up
                                 {
-                                    lastPushButton = 5;
+                                    lastPushButton = 2;
             
                                 }
                                 else if ((this.direction === this.RIGHT) && (this.rightMove == true)) // right
                                 {
-                                    //console.log("person update " + this.direction);
                                     this.centreX += stepSize;
-                                    //ctx.translate(width, 0);
-                                    lastPushButton = 4;
-                                    //ctx.scale(-1, 1);
+                                    lastPushButton = 7;
                                     this.left = false;
                                     this.leftMove = true;
                                 } 
@@ -186,14 +168,12 @@
                                 {
                                     this.column = 0;
                                     lastPushButton = 2;
-                                    //this.centreY += stepSize;
                                 }
                                 else if (this.direction === this.DOWN && (this.left == true)) // down
                                 {
                                     this.row = 2;
                                     this.column = 8;
                                     lastPushButton = 2;
-                                    //this.centreY += stepSize;
                                 }
                         }
     
@@ -206,7 +186,7 @@
                             {
                                 if(this.direction == this.LEFT)
                                 {
-                                    this.row = 4;
+                                    this.row = 5;
                                 }
                                 else
                                 {
@@ -235,14 +215,16 @@
                             this.startSprite = this.direction * this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE;
                             this.endSprite = 0;
                             this.currentSprite = this.startSprite;
-                            this.row = 8;
+
                             if(true == this.left)
                             {
-                                this.column = 7;
+                                this.column = 0;
+                                this.row = 1;
                             }
                             else
                             {
                                 this.column = 0;
+                                this.row = 3;
                             }
     
                         }
@@ -254,10 +236,8 @@
                 }
                 render()
                 {
-                    
                     this.SPRITE_WIDTH = (this.Gameobject.Image.width / this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE);
                     this.SPRITE_HEIGHT = (this.Gameobject.Image.height / this.NUMBER_OF_ROWS_IN_SPRITE_IMAGE);
-
                    if((this.direction == this.LEFT) && (this.doFilp == true))
                    {
                     this.doFilp = false;
@@ -266,29 +246,15 @@
                    {
                     this.doFilp = false;
                    }
-                   
-                   if(this.left == false)
-                   {
-                    ctx.drawImage(this.Gameobject.Image,
-                        this.column * this.SPRITE_WIDTH,
-                         this.row * this.SPRITE_WIDTH,
-                          this.SPRITE_WIDTH, 
-                          this.SPRITE_HEIGHT-5,
-                           this.centreX - parseInt(this.size / 2),
-                            this.centreY - parseInt(this.size / 2),
-                             this.size, this.size);
-                   }
-                   else
-                   {
-                    ctx.drawImage(this.Gameobject.ImageLeft,
-                        this.column * this.SPRITE_WIDTH,
-                         this.row * this.SPRITE_WIDTH,
-                          this.SPRITE_WIDTH, 
-                          this.SPRITE_HEIGHT-5,
-                           this.centreX - parseInt(this.size / 2),
-                            this.centreY - parseInt(this.size / 2),
-                             this.size, this.size);
-                   }
+                   ctx.drawImage(this.Gameobject.Image,
+                    this.column * this.SPRITE_WIDTH, 
+                    this.row* this.SPRITE_HEIGHT,
+                     this.SPRITE_WIDTH,
+                      this.SPRITE_HEIGHT, 
+                      this.centreX - parseInt(this.size / 2),
+                      this.centreY - parseInt(this.size / 2),
+                        this.size,
+                         this.size);
 
                 }
             }
