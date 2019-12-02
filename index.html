@@ -11,6 +11,7 @@
 <style>
 #keyboardCanvas
 {
+    margin: 0;
     width:  100%;
   height: 100%;
 }
@@ -22,6 +23,11 @@
     left:100px;
     z-index:100;
     font-size:50px;
+}
+
+#body
+{
+
 }
 </style>
 
@@ -54,6 +60,9 @@ let ObjectsGame = [];
 
             let activeMouseClickx = null;
             let activeMouseClicky = null;
+
+            let activeEventClickx = null;
+            let activeEventClicky = null;
 
 /*Szablony dla sprite*/
 //(pathImage,size,spriteCol,spriteRow,numberSprite,spriteStart,spriteEnd)
@@ -98,6 +107,7 @@ var falseDeltaUP =10;
 var pushJump = false;
 var pushFire = false;
 
+var multitouch =false;
 var falseDeltaEnemy = 0;
 var falseDeltaCoin = 0;
 var colisionFigure = [];
@@ -122,12 +132,6 @@ function pauseAudio() {
     //var x = document.getElementById("myAudio");
   //x.pause(); 
 }
-var supportsOrientationChange = "onorientationchange" in window,
-    orientationEvent = supportsOrientationChange ? "orientationchange" : "resize";
-
-window.addEventListener(orientationEvent, function() {
-    alert('HOLY ROTATING SCREENS BATMAN:' + window.orientation + " " + screen.width);
-}, false);
 
 //Dla cordovy
 //document.addEventListener("load", onAllAssetsLoaded); 
@@ -161,8 +165,12 @@ function onAllAssetsLoaded()
     ctx = canvas.getContext("2d");
     canvas.width  = window.innerWidth;
     canvas.height = window.innerHeight;
-    
+    console.log(window.screen.orientation);
+    window.screen.orientation = "landscape";
+    console.log(window.screen.orientation);
 
+    var div = document.getElementById("keyboardCanvas");
+    div.style.margin = "0"
 
     //Player
     ObjectsGame[0] = new PlayerAnimation(ctx, new Player( window.innerWidth*0.1, window.innerHeight*0.5, PlayerSprite) );  
@@ -224,13 +232,27 @@ function onAllAssetsLoaded()
 
 
 var clientX, clientY;
-
+var multitouch =false;
 canvas.addEventListener('touchstart', function(e) {
   // Cache the client X/Y coordinates
-  activeMouseClickx = e.touches[0].clientX;
+
+
+  if (e.targetTouches.length >= 1)
+  {
+      console.log("multitouh false");
+    activeMouseClickx = e.touches[0].clientX;
   activeMouseClicky = e.touches[0].clientY;
-  //document.getElementById("positionMX").innerHTML= "Mouse X "+activeMouseClickx;
-    //document.getElementById("positionMY").innerHTML= "Mouse Y "+activeMouseClicky;
+  multitouch =false;
+  }
+  else
+  {
+    activeMouseClickx = e.touches[0].clientX;
+  activeMouseClicky = e.touches[0].clientY;
+
+  activeEventClickx = e.touches[1].clientX;
+  activeEventClicky = e.touches[1].clientY;
+  multitouch = true;
+  }
 }, false);
 
 canvas.addEventListener('touchend', function(e) {
@@ -239,8 +261,23 @@ canvas.addEventListener('touchend', function(e) {
   // Compute the change in X and Y coordinates. 
   // The first touch point in the changedTouches
   // list is the touch point that was just removed from the surface.
-  activeMouseClicky = e.changedTouches[0].clientX - activeMouseClicky;
+
+  if (e.targetTouches.length >= 1)
+  {
+    console.log("multitouh false");
+    activeMouseClickx = e.changedTouches[0].clientX - activeMouseClicky;
   activeMouseClicky = e.changedTouches[0].clientY - activeMouseClicky;
+  multitouch =false;
+  }
+  else
+  {
+    activeMouseClickx = e.changedTouches[0].clientX - activeMouseClicky;
+  activeMouseClicky = e.changedTouches[0].clientY - activeMouseClicky;
+
+  activeEventClickx = e.changedTouches[1].clientX - activeMouseClicky;
+  activeEventClicky = e.changedTouches[1].clientY - activeMouseClicky;
+  multitouch = true;
+  }
   //document.getElementById("positionMX").innerHTML= "Mouse X "+activeMouseClickx;
     //document.getElementById("positionMY").innerHTML= "Mouse Y "+activeMouseClicky;
 
@@ -249,10 +286,6 @@ canvas.addEventListener('touchend', function(e) {
 
     canvas.addEventListener("click", function (evt) {
     var mousePos = getMousePos(canvas, evt);
-                //alert(mousePos.x + ',' + mousePos.y);
-                // activeMouseClickx = mousePos.x;
-                // activeMouseClicky = mousePos.y;
-                //activeX + ',' + activeY );
     }, false);
     createColison(boardsLevel[activeLevel]);
     renderCanvas();
@@ -781,11 +814,11 @@ console.log(keydownHandler);
 function vJoyFun()
 {
     ctx.strokeStyle = "yellow";
-                // ctx.beginPath();
-                // ctx.arc(FramevjoyX, FramevjoyY, (window.innerHeight* 0.1), 0, 2 * Math.PI);
-                // ctx.stroke(); 
+                ctx.beginPath();
+                ctx.arc(FramevjoyX, FramevjoyY, (window.innerHeight* 0.15), 0, 2 * Math.PI);
+                ctx.stroke(); 
                 ctx.globalAlpha = 0.5;
-                ctx.drawImage(arowButton,FramevjoyX - ((window.innerHeight* 0.2)/2), FramevjoyY- ((window.innerHeight* 0.1)/2), (window.innerHeight* 0.2), (window.innerHeight* 0.1));
+                ctx.drawImage(arowButton,FramevjoyX - ((window.innerHeight* 0.3)/2), FramevjoyY- ((window.innerHeight* 0.2)/2), (window.innerHeight* 0.3), (window.innerHeight* 0.2));
                 ctx.globalAlpha = 1.0;
                 ctx.beginPath();
                 ctx.arc(vjoyX, vjoyY, (window.innerHeight* 0.05), 0, 2 * Math.PI);
@@ -828,11 +861,19 @@ function psButton()
                 ctx.arc(window.innerWidth*0.9 + window.innerHeight*0.05, window.innerHeight*0.1 + window.innerHeight*0.05,  window.innerHeight*0.05, 0, 2 * Math.PI);
                 ctx.stroke();
 
-                //fire button
-                if((activeMouseClickx >= xjump - (window.innerHeight* 0.05) && 
+                //jump button
+                if(((activeMouseClickx >= xjump - (window.innerHeight* 0.05) && 
                 activeMouseClickx <= xjump +  (window.innerHeight* 0.05)) && 
-                (activeMouseClicky >= yfire - (window.innerWidth* 0.05) && activeMouseClicky <= yfire + (window.innerWidth* 0.05)))
+                (activeMouseClicky >= yfire - (window.innerWidth* 0.05) && 
+                activeMouseClicky <= yfire + (window.innerWidth* 0.05)) && 
+                (multitouch == false)) ||
+                ((activeEventClickx >= xjump - (window.innerHeight* 0.05) && 
+                activeEventClickx <= xjump +  (window.innerHeight* 0.05)) && 
+                (activeEventClicky >= yfire - (window.innerWidth* 0.05) && 
+                activeEventClicky <= yfire + (window.innerWidth* 0.05)) && 
+                (multitouch == true)))
                 {
+                    console.log("jump");
                     if(pushJump == false)
                     {
                         if(offgravity == false)
@@ -842,9 +883,21 @@ function psButton()
                         }
                         pushJump = true;
                     }
+                    multitouch = false;
                 }
-                if((activeMouseClickx >= xfire - (window.innerHeight* 0.05) && activeMouseClickx <= xfire +  (window.innerHeight* 0.05)) && (activeMouseClicky >= yjump - (window.innerWidth* 0.05) && activeMouseClicky <= yjump + (window.innerWidth* 0.05)))
+                //fire button
+                if(((activeMouseClickx >= xfire - (window.innerHeight* 0.05) &&
+                 activeMouseClickx <= xfire +  (window.innerHeight* 0.05)) && 
+                 (activeMouseClicky >= yjump - (window.innerWidth* 0.05) && 
+                 activeMouseClicky <= yjump + (window.innerWidth* 0.05))&& 
+                 (multitouch == false)) || 
+                 ((activeEventClickx >= xfire - (window.innerHeight* 0.05) &&
+                 activeEventClickx <= xfire +  (window.innerHeight* 0.05)) && 
+                 (activeEventClicky >= yjump - (window.innerWidth* 0.05) && 
+                 activeEventClicky <= yjump + (window.innerWidth* 0.05))&& 
+                 (multitouch == true)))
                 {
+                    console.log("fire");
                     if(pushFire == false)
                     {
                         ObjectsGame.push(new FireBallAnimation(ctx,  new FireBall(ObjectsGame[0].centreX, ObjectsGame[0].centreY,FireBallSprite)));
@@ -858,6 +911,7 @@ function psButton()
                         }
                         pushFire = true;
                     }
+                    multitouch = false;
                     
                 }
                 else
@@ -872,7 +926,10 @@ function psButton()
 
 function line()
             {
-                if((activeMouseClickx >= vjoyX - (window.innerHeight* 0.1) && activeMouseClickx <= vjoyX +  (window.innerHeight* 0.1)) && (activeMouseClicky >= vjoyY - (window.innerWidth* 0.1) && activeMouseClicky <= vjoyY + (window.innerWidth* 0.1)))
+                if((activeMouseClickx >= vjoyX - (window.innerHeight* 0.15) && 
+                activeMouseClickx <= vjoyX +  (window.innerHeight* 0.15)) && 
+                (activeMouseClicky >= vjoyY - (window.innerWidth* 0.15) && 
+                activeMouseClicky <= vjoyY + (window.innerWidth* 0.15)))
                 {
                     vjoyX = activeMouseClickx;
                     vjoyY = activeMouseClicky;
@@ -988,7 +1045,7 @@ function reset()
 </script>
 </head>
 
-<body>
+<body style="margin-top: 0px; margin-left: 0px; margin-right: 0px; margin-bottom: 0px;">
 <canvas id = "keyboardCanvas" tabindex="1">
 Your browser does not support the HTML5 'Canvas' tag.
 </canvas>
