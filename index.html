@@ -164,7 +164,7 @@ function onAllAssetsLoaded()
 {
 
 
-    boardsLevel.push(new board(Level_1,Level_col_1,Level_row_1,0));
+    //boardsLevel.push(new board(Level_1,Level_col_1,Level_row_1,0));
     boardsLevel.push(new board(Level_2,Level_col_2,Level_row_2,0));
     boardsLevel.push(new board(Level_3,Level_col_3,Level_row_3,0));
     boardsLevel.push(new board(Level_1,Level_col_1,Level_row_1,1));
@@ -253,7 +253,7 @@ canvas.addEventListener('touchstart', function(e) {
   }
   else
   {
-    activeMouseClickx = e.touches[0].clientX;
+  activeMouseClickx = e.touches[0].clientX;
   activeMouseClicky = e.touches[0].clientY;
 
   activeEventClickx = e.touches[1].clientX;
@@ -278,12 +278,11 @@ canvas.addEventListener('touchend', function(e) {
   }
   else
   {
-      alert("two touch");
   activeMouseClickx = e.changedTouches[0].clientX - activeMouseClicky;
   activeMouseClicky = e.changedTouches[0].clientY - activeMouseClicky;
 
-  activeEventClickx = e.changedTouches[1].clientX - activeMouseClicky;
-  activeEventClicky = e.changedTouches[1].clientY - activeMouseClicky;
+  activeEventClickx = e.touches[1].clientX;
+  activeEventClicky = e.touches[1].clientY;
   multitouch = true;
   }
   //document.getElementById("positionMX").innerHTML= "Mouse X "+activeMouseClickx;
@@ -348,9 +347,12 @@ function createColison(level)
             {
                 if((lastF-col) >0)
                 {
-                    if(board[lastF-20] ==0 || board[lastF-20] ==-1)
+                    if(board[lastF-20] ==0 || board[lastF-20] == -1 || board[lastF-20] >= 18)
                     {
-                        colisionFigure.push(new Collsion_CubeDown(new Point(x,y),new Point(x+(0.05 *canvas.width), y),false)); 
+                        if(board[lastF] <= 18 || board[lastF] == 23)
+                        {
+                            colisionFigure.push(new Collsion_CubeDown(new Point(x,y),new Point(x+(0.05 *canvas.width), y),false)); 
+                        }
                     }
                 }
             }
@@ -378,9 +380,19 @@ function drawBoard(level)
         {
             if(board[lastF] !=0 && board[lastF]!=-1)
             {
-            let elements = new Image();
-            elements.src = DisplaySetList[boardsLevel[activeLevel].number].TilesPath+"/"+board[lastF]+".png";
-            ctx.drawImage(elements,j*0.05*canvas.width, i*0.1 *canvas.height, 0.05*canvas.width, 0.1 *canvas.height);
+                //
+                if(board[lastF] <= 18)
+                {
+                let elements = new Image();
+                elements.src = DisplaySetList[boardsLevel[activeLevel].number].TilesPath+"/"+board[lastF]+".png";
+                ctx.drawImage(elements,j*0.05*canvas.width, i*0.1 *canvas.height, 0.05*canvas.width, 0.1 *canvas.height);
+                }
+                else
+                {
+                let elements = new Image();
+                elements.src = DisplaySetList[boardsLevel[activeLevel].number].ObjectPath+"/"+board[lastF]+".png";
+                ctx.drawImage(elements,j*0.05*canvas.width, i*0.1 *canvas.height, 0.05*canvas.width, 0.1 *canvas.height);
+                }
             }
             j++;
         }
@@ -453,6 +465,7 @@ function checkCoinColision()
                         else
                         {
                             ObjectsGame[j].Gameobject.deltaTime = 0;
+                            break;
                         }
                     }
                 }
@@ -769,7 +782,10 @@ function drawLine()
                     {
                             ctx.beginPath();
                             ctx.moveTo(colisionFigure[i].point1.x, colisionFigure[i].point1.y);
+                            ctx.lineTo(colisionFigure[i].point1.x, window.innerHeight);
+                            ctx.lineTo(colisionFigure[i].point2.x, window.innerHeight);
                             ctx.lineTo(colisionFigure[i].point2.x, colisionFigure[i].point2.y);
+                            ctx.lineTo(colisionFigure[i].point1.x, colisionFigure[i].point1.y);
                             ctx.stroke();
                     }
                     else if(colisionFigure[i].name == "Line")
@@ -1126,6 +1142,7 @@ function reset()
         ObjectsGame[5] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.3,window.innerHeight*0.5,EnemySprite));  
         ObjectsGame[6] = new PortalAnimation(ctx, new Portal(window.innerWidth*0.85,0,PortalSprite));
 }
+
 </script>
 </head>
 
