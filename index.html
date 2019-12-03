@@ -34,7 +34,7 @@
 <script>
 
 let backgroundImage = new Image();
-backgroundImage.src = "images/boardElemets/BG/BG.png";
+backgroundImage.src = "images/boardElemets/TILESET/BG/BG.png";
 
 let startImageHead = new Image();
 startImageHead.src = "images/start_Page/head_zelda.png";
@@ -123,6 +123,15 @@ var activeLevel = 0;
     var PlayerSprite = new Sprite("images/Link.png",window.innerWidth*0.03,10,8,80,0,10);
     var PortalSprite = new Sprite("images/boardElemets/portal/portalSprite.png",100,4,4,16,0,4);
 
+    //Active sprite board
+    var DisplaySetList = [];
+    DisplaySetList.push(new DisplaySet("images/boardElemets/TILESET/BG/BG.png",
+                                        "images/boardElemets/TILESET/Tiles",
+                                        "images/boardElemets/TILESET/Object",));
+    DisplaySetList.push(new DisplaySet("images/boardElemets/DESERTSET/BG.png",
+                                        "images/boardElemets/DESERTSET/Tile",
+                                        "images/boardElemets/DESERTSET/Objects",));
+
 function playAudio() { 
     //var x = document.getElementById("myAudio");
   //x.play(); 
@@ -155,9 +164,12 @@ function onAllAssetsLoaded()
 {
 
 
+    boardsLevel.push(new board(Level_1,Level_col_1,Level_row_1,0));
+    boardsLevel.push(new board(Level_2,Level_col_2,Level_row_2,0));
+    boardsLevel.push(new board(Level_3,Level_col_3,Level_row_3,0));
     boardsLevel.push(new board(Level_1,Level_col_1,Level_row_1,1));
-    boardsLevel.push(new board(Level_2,Level_col_2,Level_row_2,2));
-    boardsLevel.push(new board(Level_3,Level_col_3,Level_row_3,3));
+    boardsLevel.push(new board(Level_2,Level_col_2,Level_row_2,1));
+    boardsLevel.push(new board(Level_3,Level_col_3,Level_row_3,1));
     // hide the webpage loading message
     document.getElementById('loadingMessage').style.visibility = "hidden";
 
@@ -173,7 +185,7 @@ function onAllAssetsLoaded()
     div.style.margin = "0"
 
     //Player
-    ObjectsGame[0] = new PlayerAnimation(ctx, new Player( window.innerWidth*0.1, window.innerHeight*0.5, PlayerSprite) );  
+    ObjectsGame[0] = new PlayerAnimation(ctx, new Player( window.innerWidth*0.01, window.innerHeight*0.8, PlayerSprite) );  
 
     //Coins
     ObjectsGame[1] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.05, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
@@ -223,11 +235,6 @@ function onAllAssetsLoaded()
 
     canvas.addEventListener('mousemove', function(evt) {
     var mousePos = getMousePos(canvas, evt);
-    //var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
-
-    //document.getElementById("positionMX").innerHTML= "Mouse X "+activeMouseClickx;
-    //document.getElementById("positionMY").innerHTML= "Mouse Y "+activeMouseClicky;
-    
     }, false);
 
 
@@ -237,7 +244,7 @@ canvas.addEventListener('touchstart', function(e) {
   // Cache the client X/Y coordinates
 
 
-  if (e.targetTouches.length >= 1)
+  if (e.targetTouches.length == 1 )
   {
       console.log("multitouh false");
     activeMouseClickx = e.touches[0].clientX;
@@ -262,7 +269,7 @@ canvas.addEventListener('touchend', function(e) {
   // The first touch point in the changedTouches
   // list is the touch point that was just removed from the surface.
 
-  if (e.targetTouches.length >= 1)
+  if (e.targetTouches.length == 1)
   {
     console.log("multitouh false");
     activeMouseClickx = e.changedTouches[0].clientX - activeMouseClicky;
@@ -271,7 +278,7 @@ canvas.addEventListener('touchend', function(e) {
   }
   else
   {
-    activeMouseClickx = e.changedTouches[0].clientX - activeMouseClicky;
+  activeMouseClickx = e.changedTouches[0].clientX - activeMouseClicky;
   activeMouseClicky = e.changedTouches[0].clientY - activeMouseClicky;
 
   activeEventClickx = e.changedTouches[1].clientX - activeMouseClicky;
@@ -280,6 +287,7 @@ canvas.addEventListener('touchend', function(e) {
   }
   //document.getElementById("positionMX").innerHTML= "Mouse X "+activeMouseClickx;
     //document.getElementById("positionMY").innerHTML= "Mouse Y "+activeMouseClicky;
+
 
   // Process the data ... 
 }, false);
@@ -297,7 +305,7 @@ function renderCanvas()
                     ObjectsGame[0].flagColision = false;
                     requestAnimationFrame(renderCanvas);
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(DisplaySetList[boardsLevel[activeLevel].number].BGPath, 0, 0, canvas.width, canvas.height);
                     drawBoard(boardsLevel[activeLevel]);
                     /* Step 3 of 3 */
                     /* Draw the animations */
@@ -327,10 +335,16 @@ function createColison(level)
         let j = 0;
         for (; lastF < (col)*i; lastF++)
         {
-            if(board[lastF] !=0 && board[lastF]!=-1)
-            {
-                let x = j*0.05*canvas.width;
+            let x = j*0.05*canvas.width;
                 let y =i*0.1 *canvas.height;
+            //relative collision
+            if(board[lastF] >=12 && board[lastF] <=16 )
+            {
+                colisionFigure.push(new Collsion_line(new Point(x,y),new Point(x+(0.05 *canvas.width), y), false)); 
+            }
+            //Down collision
+            else if(board[lastF] !=0 && board[lastF]!=-1)
+            {
                 if((lastF-col) >0)
                 {
                     if(board[lastF-20] ==0 || board[lastF-20] ==-1)
@@ -339,6 +353,7 @@ function createColison(level)
                     }
                 }
             }
+            
             j++;
         }
     }
@@ -363,7 +378,7 @@ function drawBoard(level)
             if(board[lastF] !=0 && board[lastF]!=-1)
             {
             let elements = new Image();
-            elements.src = "images/boardElemets/Tiles/"+board[lastF]+".png";
+            elements.src = DisplaySetList[boardsLevel[activeLevel].number].TilesPath+"/"+board[lastF]+".png";
             ctx.drawImage(elements,j*0.05*canvas.width, i*0.1 *canvas.height, 0.05*canvas.width, 0.1 *canvas.height);
             }
             j++;
@@ -389,13 +404,34 @@ function checkCoinColision()
                         }
                 }
 
+                // else if((ObjectsGame[0].centreX >= colisionFigure[i].point1.x)
+                //      && (ObjectsGame[0].centreX <= colisionFigure[i].point2.x)
+                //      && (ObjectsGame[0].centreY < colisionFigure[i].point2.y))
+                //     {
+                        
+                //         //Gravitation
+                //         if((ObjectsGame[0].centreY+(ObjectsGame[0].size/2) < colisionFigure[i].point1.y) && offgravity == false)
+                //         {
+                //             console.log("colison! Gravity");
+                //             gravity = true;
+                //             falseDelta += 0.3;
+                //             ObjectsGame[0].centreY+=falseDelta;
+                //         }
+                //         else
+                //         {
+                //             pushJump = false;
+                //             falseDelta =0;
+                //             gravity = false;
+                //         }
+                //         break;
+                //     }
                 //Graviti for Coin
             for(let j = 0; j < ObjectsGame.length; j++)
             {
                 for (let i = 0; i < colisionFigure.length; i++)
                 {
                     if((ObjectsGame[j].centreX >= colisionFigure[i].point1.x)
-                     && (ObjectsGame[j].centreX <= colisionFigure[i].point2.x) && 
+                     && (ObjectsGame[j].centreX <= colisionFigure[i].point2.x)&& 
                        ( ( ObjectsGame[j].Gameobject.name == "coin") || ( ObjectsGame[j].Gameobject.name == "portal")))
                     {
                         //Gravitation
@@ -634,14 +670,46 @@ function checkGravitiColison()
                                 break;
                             }
                     }
-                    else if((ObjectsGame[0].centreX >= colisionFigure[i].point1.x)
-                     && (ObjectsGame[0].centreX <= colisionFigure[i].point2.x))
+                    else  if((ObjectsGame[0].centreX >= colisionFigure[i].point1.x) &&
+                     ( colisionFigure[i].name == "line") && 
+                     (ObjectsGame[0].centreX <= colisionFigure[i].point2.x) &&
+                    (ObjectsGame[0].centreY <= colisionFigure[i].point1.y) &&
+                    (( ObjectsGame[j].Gameobject.name == "player")))
                     {
-                        console.log("colison! Gravity");
+                        let stepSize = 5;
+                        console.log("colison! line");
+                            if (ObjectsGame[0].direction === ObjectsGame[0].UP)
+                            {
+                                ObjectsGame[0].centreY += stepSize*3;
+                                break;
+                            } 
+                            else if (ObjectsGame[0].direction === ObjectsGame[0].LEFT)
+                            {
+                                break;
+                            }
+                            else if (ObjectsGame[0].direction === ObjectsGame[0].DOWN)
+                            {
+                                break;
+                            } 
+                            else if (ObjectsGame[0].direction === ObjectsGame[0].RIGHT)
+                            {
+                                break;
+                            }
+                            else if (ObjectsGame[0].direction === 0)
+                            {
+                                ObjectsGame[0].centreY = colisionFigure[i].point1.y -15;
+                                break;
+                            }
+                    }
+                    else if((ObjectsGame[0].centreX >= colisionFigure[i].point1.x)
+                     && (ObjectsGame[0].centreX <= colisionFigure[i].point2.x)
+                     && (ObjectsGame[0].centreY < colisionFigure[i].point2.y))
+                    {
+                        
                         //Gravitation
                         if((ObjectsGame[0].centreY+(ObjectsGame[0].size/2) < colisionFigure[i].point1.y) && offgravity == false)
                         {
-                            
+                            console.log("colison! Gravity");
                             gravity = true;
                             falseDelta += 0.3;
                             ObjectsGame[0].centreY+=falseDelta;
@@ -701,6 +769,23 @@ function drawLine()
                             ctx.beginPath();
                             ctx.moveTo(colisionFigure[i].point1.x, colisionFigure[i].point1.y);
                             ctx.lineTo(colisionFigure[i].point2.x, colisionFigure[i].point2.y);
+                            ctx.stroke();
+                    }
+                    else if(colisionFigure[i].name == "Line")
+                    {
+                            ctx.beginPath();
+                            ctx.moveTo(colisionFigure[i].point1.x, colisionFigure[i].point1.y);
+                            ctx.lineTo(colisionFigure[i].point2.x, colisionFigure[i].point2.y);
+                            ctx.stroke();
+                    }
+                    else if(colisionFigure[i].name == "RelativeCube")
+                    {
+                            ctx.beginPath();
+                            ctx.moveTo(colisionFigure[i].point1.x, colisionFigure[i].point1.y);
+                            ctx.lineTo(colisionFigure[i].point2.x, colisionFigure[i].point2.y);
+                            ctx.lineTo(colisionFigure[i].point4.x, colisionFigure[i].point4.y);
+                            ctx.lineTo(colisionFigure[i].point3.x, colisionFigure[i].point3.y);
+                            ctx.lineTo(colisionFigure[i].point1.x, colisionFigure[i].point1.y);
                             ctx.stroke();
                     }
                     //colisionFigure.point1.x *=2;
@@ -883,7 +968,6 @@ function psButton()
                         }
                         pushJump = true;
                     }
-                    multitouch = false;
                 }
                 //fire button
                 if(((activeMouseClickx >= xfire - (window.innerHeight* 0.05) &&
@@ -911,7 +995,6 @@ function psButton()
                         }
                         pushFire = true;
                     }
-                    multitouch = false;
                     
                 }
                 else

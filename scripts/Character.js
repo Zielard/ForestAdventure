@@ -101,3 +101,14 @@ class Enemy extends GameObject
         this.name = "enemy";
     }
 }
+
+class DisplaySet 
+{
+    constructor(BG,TilesPath,ObjectPath)
+    {
+    this.BGPath = new Image();
+    this.BGPath.src = BG;
+    this.TilesPath = TilesPath;
+    this.ObjectPath = ObjectPath;
+    }
+}
