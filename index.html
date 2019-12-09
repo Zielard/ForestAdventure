@@ -258,7 +258,8 @@ canvas.addEventListener('touchstart', function(e) {
   {
   activeMouseClickx = e.touches[0].clientX;
   activeMouseClicky = e.touches[0].clientY;
-
+  activeEventClickx = e.touches[1].clientX;
+  activeEventClicky = e.touches[1].clientY;
   multitouch = true;
   }
 }, false);
