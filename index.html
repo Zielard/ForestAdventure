@@ -272,21 +272,25 @@ canvas.addEventListener('touchend', function(e) {
   // The first touch point in the changedTouches
   // list is the touch point that was just removed from the surface.
 
-  if (e.targetTouches.length == 1)
+  if (e.targetTouches.length <= 1)
   {
-    console.log("multitouh false");
     activeMouseClickx = e.changedTouches[0].clientX - activeMouseClicky;
   activeMouseClicky = e.changedTouches[0].clientY - activeMouseClicky;
   multitouch =false;
   }
   else
   {
-      alert("multitouh true");
+
   activeMouseClickx = e.changedTouches[0].clientX - activeMouseClicky;
   activeMouseClicky = e.changedTouches[0].clientY - activeMouseClicky;
 
   activeEventClickx = e.touches[1].clientX - activeEventClickx;
   activeEventClicky = e.touches[1].clientY - activeEventClicky;
+
+  alert("move x : " + activeMouseClickx+ "\n" +
+  "move y : " + activeMouseClicky+ "\n" +
+  "Event y : " + activeEventClickx+ "\n" +
+  "Event y : " + activeEventClicky+ "\n");
   multitouch = true;
   }
   //document.getElementById("positionMX").innerHTML= "Mouse X "+activeMouseClickx;
