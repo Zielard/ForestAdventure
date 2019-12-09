@@ -272,10 +272,6 @@ canvas.addEventListener('touchstart', function(e) {
 canvas.addEventListener('touchend', function(e) {
   var deltaX, deltaY;
 
-  // Compute the change in X and Y coordinates. 
-  // The first touch point in the changedTouches
-  // list is the touch point that was just removed from the surface.
-
   if (e.targetTouches.length <= 1)
   {
     activeMouseClickx = e.changedTouches[0].clientX - activeMouseClicky;
@@ -288,8 +284,8 @@ canvas.addEventListener('touchend', function(e) {
   activeMouseClickx = e.changedTouches[0].clientX - activeMouseClicky;
   activeMouseClicky = e.changedTouches[0].clientY - activeMouseClicky;
 
-  activeEventClickx = e.touches[1].clientX - activeEventClickx;
-  activeEventClicky = e.touches[1].clientY - activeEventClicky;
+  activeEventClickx = e.touches[1].clientX;
+  activeEventClicky = e.touches[1].clientY;
 
   alert("move x : " + activeMouseClickx+ "\n" +
   "move y : " + activeMouseClicky+ "\n" +
