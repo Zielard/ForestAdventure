@@ -236,9 +236,9 @@ function onAllAssetsLoaded()
 
     document.addEventListener('keydown', keydownHandler);
 
-    canvas.addEventListener('mousemove', function(evt) {
-    var mousePos = getMousePos(canvas, evt);
-    }, false);
+    // canvas.addEventListener('mousemove', function(evt) {
+    // var mousePos = getMousePos(canvas, evt);
+    // }, false);
 
 
 var clientX, clientY;
@@ -249,8 +249,8 @@ canvas.addEventListener('touchstart', function(e) {
 
   if (e.targetTouches.length <= 1 )
   {
-      console.log("multitouh false");
-    activeMouseClickx = e.touches[0].clientX;
+  console.log("multitouh false");
+  activeMouseClickx = e.touches[0].clientX;
   activeMouseClicky = e.touches[0].clientY;
   multitouch =false;
   }
@@ -260,6 +260,10 @@ canvas.addEventListener('touchstart', function(e) {
   activeMouseClicky = e.touches[0].clientY;
   activeEventClickx = e.touches[1].clientX;
   activeEventClicky = e.touches[1].clientY;
+  alert("move x : " + activeMouseClickx+ "\n" +
+  "move y : " + activeMouseClicky+ "\n" +
+  "Event y : " + activeEventClickx+ "\n" +
+  "Event y : " + activeEventClicky+ "\n" +"start");
   multitouch = true;
   }
 }, false);
@@ -295,9 +299,9 @@ canvas.addEventListener('touchend', function(e) {
   // Process the data ... 
 }, false);
 
-    canvas.addEventListener("click", function (evt) {
-    var mousePos = getMousePos(canvas, evt);
-    }, false);
+    // canvas.addEventListener("click", function (evt) {
+    // var mousePos = getMousePos(canvas, evt);
+    // }, false);
     createColison(boardsLevel[activeLevel]);
     renderCanvas();
     
