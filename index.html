@@ -247,7 +247,7 @@ canvas.addEventListener('touchstart', function(e) {
   // Cache the client X/Y coordinates
 
 
-  if (e.targetTouches.length == 1 )
+  if (e.targetTouches.length <= 1 )
   {
       console.log("multitouh false");
     activeMouseClickx = e.touches[0].clientX;
@@ -261,6 +261,10 @@ canvas.addEventListener('touchstart', function(e) {
 
   activeEventClickx = e.touches[1].clientX;
   activeEventClicky = e.touches[1].clientY;
+  alert("move x : " + activeMouseClickx+ "\n" +
+  "move y : " + activeMouseClicky+ "\n" +
+  "Event y : " + activeEventClickx+ "\n" +
+  "Event y : " + activeEventClicky+ "\n" +"Start");
   multitouch = true;
   }
 }, false);
@@ -290,7 +294,7 @@ canvas.addEventListener('touchend', function(e) {
   alert("move x : " + activeMouseClickx+ "\n" +
   "move y : " + activeMouseClicky+ "\n" +
   "Event y : " + activeEventClickx+ "\n" +
-  "Event y : " + activeEventClicky+ "\n");
+  "Event y : " + activeEventClicky+ "\n" +"END");
   multitouch = true;
   }
   //document.getElementById("positionMX").innerHTML= "Mouse X "+activeMouseClickx;
