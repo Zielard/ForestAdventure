@@ -164,7 +164,7 @@ function onAllAssetsLoaded()
 {
 
 
-    //boardsLevel.push(new board(Level_1,Level_col_1,Level_row_1,0));
+    boardsLevel.push(new board(Level_1,Level_col_1,Level_row_1,0));
     boardsLevel.push(new board(Level_2,Level_col_2,Level_row_2,0));
     boardsLevel.push(new board(Level_3,Level_col_3,Level_row_3,0));
     boardsLevel.push(new board(Level_1,Level_col_1,Level_row_1,1));
@@ -186,18 +186,21 @@ function onAllAssetsLoaded()
 
     //Player
     ObjectsGame[0] = new PlayerAnimation(ctx, new Player( window.innerWidth*0.01, window.innerHeight*0.8, PlayerSprite) );  
-
-    //Coins
-    ObjectsGame[1] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.05, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
-    ObjectsGame[2] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.17, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
-    ObjectsGame[3] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.25, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
-    ObjectsGame[4] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.35, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
-    //ObjectsGame[5] = new CoinsAnimation(ctx, new Coin( 480, 270,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
-
     //Enemy
-    ObjectsGame[5] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.3,window.innerHeight*0.5,EnemySprite));  
+    ObjectsGame[1] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.3,window.innerHeight*0.5,EnemySprite));  
     //Portal
-    ObjectsGame[6] = new PortalAnimation(ctx, new Portal(window.innerWidth*0.85,0,PortalSprite));
+    ObjectsGame[2] = new PortalAnimation(ctx, new Portal(window.innerWidth*0.85,0,PortalSprite));
+    //Coins
+    ObjectsGame[3] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.05, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[4] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.17, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[5] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.25, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[6] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.35, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[7] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.45, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[8] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.55, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[9] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.65, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[10] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.75, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+ 
+    //ObjectsGame[5] = new CoinsAnimation(ctx, new Coin( 480, 270,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
 
     //change size for window
     const CANVAS_WIDTH = 1000;
@@ -278,11 +281,12 @@ canvas.addEventListener('touchend', function(e) {
   }
   else
   {
+      alert("multitouh true");
   activeMouseClickx = e.changedTouches[0].clientX - activeMouseClicky;
   activeMouseClicky = e.changedTouches[0].clientY - activeMouseClicky;
 
-  activeEventClickx = e.touches[1].clientX;
-  activeEventClicky = e.touches[1].clientY;
+  activeEventClickx = e.touches[1].clientX - activeEventClickx;
+  activeEventClicky = e.touches[1].clientY - activeEventClicky;
   multitouch = true;
   }
   //document.getElementById("positionMX").innerHTML= "Mouse X "+activeMouseClickx;
@@ -457,6 +461,10 @@ function checkCoinColision()
                             }
                             else if(( ObjectsGame[j].Gameobject.name == "portal"))
                             {
+                                if(score != 8)
+                                {
+                                    break;
+                                }
                                 ObjectsGame[j].Gameobject.Portalgravity = true;
                             }
 
@@ -500,9 +508,6 @@ function checkCoinColision()
                             ObjectsGame[0].stopAndHide();
                         }
                 }
-
-                
-
 }
 
 function checkColisionForEnemy()
@@ -1128,19 +1133,28 @@ function reset()
         //Player
         activeX =100;
         activeY =100;
-
+    score = 0;
+    ObjectsGame = [];
         //Player = new Player( window.innerWidth*0.1, window.innerHeight*0.5,"images/defaultperson.png","images/defaultpersonleft.png");
-        ObjectsGame[0] = new PlayerAnimation(ctx, new Player( window.innerWidth*0.1, window.innerHeight*0.5, PlayerSprite) );   
+    ObjectsGame[0] = new PlayerAnimation(ctx, new Player( window.innerWidth*0.01, window.innerHeight*0.8, PlayerSprite) ); 
     ObjectsGame[0].isdead = false;
-    //Coins
-    ObjectsGame[1] = new CoinsAnimation(ctx, new Coin(190, 410,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
-    ObjectsGame[2] = new CoinsAnimation(ctx, new Coin( 340, 380,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
-    ObjectsGame[3] = new CoinsAnimation(ctx, new Coin( 85, 270,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
-    ObjectsGame[4] = new CoinsAnimation(ctx, new Coin( 480, 270,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
-
+  //Player
+  ObjectsGame[0] = new PlayerAnimation(ctx, new Player( window.innerWidth*0.01, window.innerHeight*0.8, PlayerSprite) );  
     //Enemy
-        ObjectsGame[5] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.3,window.innerHeight*0.5,EnemySprite));  
-        ObjectsGame[6] = new PortalAnimation(ctx, new Portal(window.innerWidth*0.85,0,PortalSprite));
+    ObjectsGame[1] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.3,window.innerHeight*0.5,EnemySprite));  
+    //Portal
+    ObjectsGame[2] = new PortalAnimation(ctx, new Portal(window.innerWidth*0.85,0,PortalSprite));
+    //Coins
+    ObjectsGame[3] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.05, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[4] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.17, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[5] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.25, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[6] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.35, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[7] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.45, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[8] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.55, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[9] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.65, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[10] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.75, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+ 
+
 }
 
 </script>
