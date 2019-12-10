@@ -94,11 +94,25 @@ class Player extends GameObject
 
 class Enemy extends GameObject
 {
-    constructor(x,y,Sprite)
+    constructor(x,y,Sprite,Flagswitch)
     {
         super(x,y,Sprite.pathImage);
         this.sprite = Sprite;
         this.name = "enemy";
+        this.Flagswitch = Flagswitch;
+        this.deltaTime = 0;
+        this.Enemygravity = true;
+        this.Enemyoffgravity = false;
+    }
+}
+
+class BossEnemy extends GameObject
+{
+    constructor(x,y,Sprite)
+    {
+        super(x,y,Sprite.pathImage);
+        this.sprite = Sprite;
+        this.name = "bossenemy";
     }
 }
 

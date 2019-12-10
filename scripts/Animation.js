@@ -265,6 +265,7 @@
 
                     //this.animationStartDelay= false;
                     super(false, 50,2);
+                    this.Flagswitch_ = Gameobject.Flagswitch;
                     this.Gameobject = Gameobject;
                     this.centreX = Gameobject.x;
                     this.centreY = Gameobject.y;
@@ -293,15 +294,33 @@
                 setDirection(newDirection)
                 {
                     this.push = true;
-                    if(this.direction != newDirection)
+                    if(this.Flagswitch_  == true)
                     {
-                        this.direction = newDirection;
-                        this.startSprite = 4;
-                        this.endSprite = 8;
-                        this.currentSprite = this.startSprite;
-                        this.column = 3;
-                        this.row = this.direction;
+                        if(this.direction != newDirection)
+                        {
+                            console.log("1");
+                            this.direction = newDirection;
+                            this.startSprite = 4;
+                            this.endSprite = 8;
+                            this.currentSprite = this.startSprite;
+                            this.column = 3;
+                            this.row = this.direction;
+                        }
                     }
+                    else
+                    {
+                        if(this.direction != newDirection)
+                        {
+                            console.log("2");
+                            this.direction = newDirection;
+                            this.startSprite = 0;
+                            this.endSprite = 3;
+                            this.currentSprite = this.startSprite;
+                            this.column = 0;
+                            this.row = this.direction;
+                        }
+                    }
+
                   //renderCanvas();
                 };
                 update()
@@ -326,9 +345,16 @@
     
                     if (this.currentSprite >= this.endSprite)
                     {
-                        
+                        if(this.Flagswitch_ == true)
+                        {   
                         this.column = 3;
                         this.currentSprite = this.startSprite;
+                        }
+                        else
+                        {
+                            this.column = 0;
+                            this.currentSprite = this.startSprite;
+                        }
                         //this.endSprite = 0;
 
                     } else if (this.column >= this.NUMBER_OF_COLUMNS_IN_SPRITE_IMAGE)

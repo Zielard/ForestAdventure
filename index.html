@@ -119,6 +119,7 @@ var activeLevel = 0;
     //Template
     var CoinSprite = new Sprite("images/coin.png",window.innerWidth*0.02,10,1,10,0,10); 
     var EnemySprite = new Sprite("images/enemy/2enemy.png",window.innerWidth*0.03,9,4,36,4,8);  
+    var BossEnemySprite = new Sprite("images/enemy/boss.png",window.innerWidth*0.03,9,4,36,4,8);  
     var FireBallSprite = new Sprite("images/fireball/fireball_1.png",window.innerWidth*0.05,8,8,64,0,8);
     var PlayerSprite = new Sprite("images/Link.png",window.innerWidth*0.03,10,8,80,0,10);
     var PortalSprite = new Sprite("images/boardElemets/portal/portalSprite.png",100,4,4,16,0,4);
@@ -162,7 +163,7 @@ function getMousePos(canvas, evt) {
 
 function onAllAssetsLoaded()
 {
-
+    window.screen.orientation.lock('landscape-primary');
 
     boardsLevel.push(new board(Level_1,Level_col_1,Level_row_1,0));
     boardsLevel.push(new board(Level_2,Level_col_2,Level_row_2,0));
@@ -172,14 +173,12 @@ function onAllAssetsLoaded()
     boardsLevel.push(new board(Level_3,Level_col_3,Level_row_3,1));
     // hide the webpage loading message
     document.getElementById('loadingMessage').style.visibility = "hidden";
-
+    console.log(window.screen.orientation);
+   //window.screen.orientation = "";
     canvas = document.getElementById("keyboardCanvas");
     ctx = canvas.getContext("2d");
     canvas.width  = window.innerWidth;
     canvas.height = window.innerHeight;
-    console.log(window.screen.orientation);
-    window.screen.orientation = "landscape";
-    console.log(window.screen.orientation);
 
     var div = document.getElementById("keyboardCanvas");
     div.style.margin = "0"
@@ -187,7 +186,7 @@ function onAllAssetsLoaded()
     //Player
     ObjectsGame[0] = new PlayerAnimation(ctx, new Player( window.innerWidth*0.01, window.innerHeight*0.8, PlayerSprite) );  
     //Enemy
-    ObjectsGame[1] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.3,window.innerHeight*0.5,EnemySprite));  
+    ObjectsGame[1] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.3,window.innerHeight*0.5,EnemySprite,true));  
     //Portal
     ObjectsGame[2] = new PortalAnimation(ctx, new Portal(window.innerWidth*0.85,0,PortalSprite));
     //Coins
@@ -199,7 +198,10 @@ function onAllAssetsLoaded()
     ObjectsGame[8] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.55, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
     ObjectsGame[9] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.65, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
     ObjectsGame[10] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.75, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
- 
+    ObjectsGame[11] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.4,window.innerHeight*0.5,EnemySprite,false));  
+    ObjectsGame[12] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.45,window.innerHeight*0.5,EnemySprite,false));
+    ObjectsGame[13] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.48,window.innerHeight*0.5,EnemySprite,false));
+    //ObjectsGame[11] = new EnemyAnimation(ctx, new BossEnemy(window.innerWidth*0.3,window.innerHeight*0.5,BossEnemySprite));
     //ObjectsGame[5] = new CoinsAnimation(ctx, new Coin( 480, 270,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
 
     //change size for window
@@ -260,10 +262,10 @@ canvas.addEventListener('touchstart', function(e) {
   activeMouseClicky = e.touches[0].clientY;
   activeEventClickx = e.touches[1].clientX;
   activeEventClicky = e.touches[1].clientY;
-  alert("move x : " + activeMouseClickx+ "\n" +
-  "move y : " + activeMouseClicky+ "\n" +
-  "Event y : " + activeEventClickx+ "\n" +
-  "Event y : " + activeEventClicky+ "\n" +"start");
+//   alert("move x : " + activeMouseClickx+ "\n" +
+//   "move y : " + activeMouseClicky+ "\n" +
+//   "Event y : " + activeEventClickx+ "\n" +
+//   "Event y : " + activeEventClicky+ "\n" +"END");
   multitouch = true;
   }
 }, false);
@@ -549,17 +551,14 @@ function checkColisionForEnemy()
                         ( ObjectsGame[j].Gameobject.name == "enemy"))
                     {
                         //Gravitation
-                        if((ObjectsGame[j].centreY+(ObjectsGame[j].size/2) < colisionFigure[i].point1.y) && Enemyoffgravity == false)
+                        if((ObjectsGame[j].centreY+10 < colisionFigure[i].point1.y))
                         {
-                            console.log("colison! Gravity Enemy");
-                            Enemygravity = true;
-                            falseDeltaEnemy += 0.4;
-                            ObjectsGame[j].centreY+=falseDeltaEnemy;
+                            ObjectsGame[j].Gameobject.Enemygravity = true;
+                            ObjectsGame[j].centreY+=2;
                         }
                         else
                         {
-                            falseDeltaEnemy =0;
-                            Enemygravity = false;
+                            ObjectsGame[j].Gameobject.deltaTime = 0;
                         }
                     }
                 }
