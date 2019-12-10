@@ -268,6 +268,7 @@ canvas.addEventListener('touchstart', function(e) {
 //   "Event y : " + activeEventClicky+ "\n" +"END");
   multitouch = true;
   }
+  psButton();
 }, false);
 
 canvas.addEventListener('touchend', function(e) {
@@ -329,7 +330,6 @@ function renderCanvas()
                     checkGravitiColison();
                     checkColisionForEnemy();
                     checkCollisionForFireBall();
-                    psButton();
 }
 
 function createColison(level)
@@ -937,17 +937,17 @@ function vJoyFun()
             //{
                 vjoyX = FramevjoyX;
                 vjoyY = FramevjoyY;
-                line();
             //}
-}
-
-function psButton()
-{
-    ctx.globalAlpha = 0.5;
+            ctx.globalAlpha = 0.5;
     ctx.drawImage(reloadButton, window.innerWidth*0.9, window.innerHeight*0.1,window.innerHeight*0.1, window.innerHeight*0.1);
     ctx.drawImage(crossButton, window.innerWidth*0.8, window.innerHeight*0.9,window.innerHeight*0.1, window.innerHeight*0.1);
     ctx.drawImage(circleButton, window.innerWidth*0.9, window.innerHeight*0.9,window.innerHeight*0.1, window.innerHeight*0.1);
     ctx.globalAlpha = 1.0;
+    line();
+}
+
+function psButton()
+{
     let xjump =window.innerWidth*0.8 + window.innerHeight*0.05;
     let yjump = window.innerHeight*0.9 + window.innerHeight*0.05;
 
