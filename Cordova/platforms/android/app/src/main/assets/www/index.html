@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forest Adventure</title>
+    <script src="js/Animation.js"></script>
+    <script src="js/Collison.js"></script>
+    <script src="js/Character.js"></script>
+    <script src="js/boards.js"></script>
+    <style>
+#keyboardCanvas
+{
+    margin: 0;
+    width:  100%;
+  height: 100%;
+}
+
+#loadingMessage
+{
+    position:absolute;
+    top:100px;
+    left:100px;
+    z-index:100;
+    font-size:50px;
+}
+
+#body
+{
+
+}
+</style>
+
+    <script>
+window.screen.orientation.lock('landscape-primary');
+let backgroundImage = new Image();
+backgroundImage.src = "img/boardElemets/TILESET/BG/BG.png";
+
+let startImageHead = new Image();
+startImageHead.src = "img/start_Page/head_zelda.png";
+
+let arowButton = new Image();
+arowButton.src = "img/button/arrow.png";
+/* ObjectsGame array */
+let ObjectsGame = [];
+
+
+/* virtual joy*/
+            let activeX =100;
+            let activeY =100;
+
+            let vjoyX =window.innerWidth * 0.1;
+            let vjoyY =window.innerHeight* 0.9;
+
+            let FramevjoyX =window.innerWidth*  0.1;
+            let FramevjoyY =window.innerHeight* 0.9;
+
+            let newPositionx =700;
+            let newPositiony =200;
+
+            let activeMouseClickx = null;
+            let activeMouseClicky = null;
+
+            let activeEventClickx = null;
+            let activeEventClicky = null;
+
+/*Szablony dla sprite*/
+//(pathImage,size,spriteCol,spriteRow,numberSprite,spriteStart,spriteEnd)
+
+let circleButton = new Image();
+circleButton.src = "img/button/ps3-512.png";
+
+let crossButton = new Image();
+crossButton.src = "img/button/ps0-512.png";
+
+let reloadButton = new Image();
+reloadButton.src = "img/button/reload.png";
+
+
+
+let lastPushButton = 0;
+const CANVAS_WIDTH = 1000;
+const CANVAS_HEIGHT = 500;
+
+let canvas = null;
+let ctx = null;
+
+let animationIndex = 1;
+let flagNoAnimation = true;
+let showCollisonLine = false;
+let score = 0;
+
+let flagRight = true;
+
+var gravity = true;
+var offgravity = false;
+
+var Coingravity = true;
+var Coinoffgravity = false;
+
+var Enemygravity = true;
+var Enemyoffgravity = false;
+
+var falseDelta = 0;
+var falseDeltaUP =10;
+
+var pushJump = false;
+var pushFire = false;
+
+var multitouch =false;
+var falseDeltaEnemy = 0;
+var falseDeltaCoin = 0;
+var colisionFigure = [];
+var boardsLevel = [];
+var backgroundSong = new Audio();
+backgroundSong.src = 'mp3/Hyrule.mp3';
+
+var activeLevel = 0;
+    //Template
+    var CoinSprite = new Sprite("img/coin.png",window.innerWidth*0.02,10,1,10,0,10);
+    var EnemySprite = new Sprite("img/enemy/2enemy.png",window.innerWidth*0.03,9,4,36,4,8);
+    var BossEnemySprite = new Sprite("img/enemy/boss.png",window.innerWidth*0.03,9,4,36,4,8);
+    var FireBallSprite = new Sprite("img/fireball/fireball_1.png",window.innerWidth*0.05,8,8,64,0,8);
+    var PlayerSprite = new Sprite("img/Link.png",window.innerWidth*0.03,10,8,80,0,10);
+    var PortalSprite = new Sprite("img/boardElemets/portal/portalSprite.png",100,4,4,16,0,4);
+
+    //Active sprite board
+    var DisplaySetList = [];
+    DisplaySetList.push(new DisplaySet("img/boardElemets/TILESET/BG/BG.png",
+                                        "img/boardElemets/TILESET/Tiles",
+                                        "img/boardElemets/TILESET/Object",));
+    DisplaySetList.push(new DisplaySet("img/boardElemets/DESERTSET/BG.png",
+                                        "img/boardElemets/DESERTSET/Tile",
+                                        "img/boardElemets/DESERTSET/Objects",));
+
+function playAudio() {
+    //var x = document.getElementById("myAudio");
+  //x.play();
+}
+
+function pauseAudio() {
+    //var x = document.getElementById("myAudio");
+  //x.pause();
+}
+
+//Dla cordovy
+//document.addEventListener("load", onAllAssetsLoaded);
+window.onload = onAllAssetsLoaded;
+document.write("<div id='loadingMessage'>Loading...</div>");
+
+function getMousePos(canvas, evt) {
+        var rect = canvas.getBoundingClientRect();
+        return {
+          //x: evt.clientX - rect.left,
+         // y: evt.clientY - rect.top
+        };
+      }
+
+      Player.prototype.start = function ()
+            {
+                backgroundSong.play();
+            };
+
+function onAllAssetsLoaded()
+{
+
+    boardsLevel.push(new board(Level_1,Level_col_1,Level_row_1,0));
+    boardsLevel.push(new board(Level_2,Level_col_2,Level_row_2,0));
+    boardsLevel.push(new board(Level_3,Level_col_3,Level_row_3,0));
+    boardsLevel.push(new board(Level_1,Level_col_1,Level_row_1,1));
+    boardsLevel.push(new board(Level_2,Level_col_2,Level_row_2,1));
+    boardsLevel.push(new board(Level_3,Level_col_3,Level_row_3,1));
+    // hide the webpage loading message
+    document.getElementById('loadingMessage').style.visibility = "hidden";
+    console.log(window.screen.orientation);
+   //window.screen.orientation = "";
+    canvas = document.getElementById("keyboardCanvas");
+    ctx = canvas.getContext("2d");
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    var div = document.getElementById("keyboardCanvas");
+    div.style.margin = "0"
+
+    //Player
+    ObjectsGame[0] = new PlayerAnimation(ctx, new Player( window.innerWidth*0.01, window.innerHeight*0.8, PlayerSprite) );
+    //Enemy
+    ObjectsGame[1] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.3,window.innerHeight*0.5,EnemySprite,true));
+    //Portal
+    ObjectsGame[2] = new PortalAnimation(ctx, new Portal(window.innerWidth*0.85,0,PortalSprite));
+    //Coins
+    ObjectsGame[3] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.05, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton);
+    ObjectsGame[4] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.17, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton);
+    ObjectsGame[5] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.25, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton);
+    ObjectsGame[6] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.35, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton);
+    ObjectsGame[7] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.45, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton);
+    ObjectsGame[8] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.55, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton);
+    ObjectsGame[9] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.65, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton);
+    ObjectsGame[10] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.75, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton);
+    ObjectsGame[11] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.4,window.innerHeight*0.5,EnemySprite,false));
+    ObjectsGame[12] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.45,window.innerHeight*0.5,EnemySprite,false));
+    ObjectsGame[13] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.48,window.innerHeight*0.5,EnemySprite,false));
+    //ObjectsGame[11] = new EnemyAnimation(ctx, new BossEnemy(window.innerWidth*0.3,window.innerHeight*0.5,BossEnemySprite));
+    //ObjectsGame[5] = new CoinsAnimation(ctx, new Coin( 480, 270,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton);
+
+    //change size for window
+    const CANVAS_WIDTH = 1000;
+    const CANVAS_HEIGHT = 500;
+    var propx = (window.innerWidth*100)/CANVAS_WIDTH;
+    var propy = (window.innerHeight*100)/CANVAS_HEIGHT;
+    for(let i=0;i<colisionFigure.length;i++)
+    {
+        if(colisionFigure[i].name == "DownCube")
+        {
+        colisionFigure[i].point1.x*=propx/100.0;
+        colisionFigure[i].point1.y*=propy/100.0;
+        colisionFigure[i].point2.x*=propx/100.0;
+        colisionFigure[i].point2.y*=propy/100.0;
+        }
+        if(colisionFigure[i].name == "RelativeCube")
+        {
+        colisionFigure[i].point1.x*=propx/100.0;
+        colisionFigure[i].point1.y*=propy/100.0;
+        colisionFigure[i].point2.x*=propx/100.0;
+        colisionFigure[i].point2.y*=propy/100.0;
+        colisionFigure[i].point3.x*=propx/100.0;
+        colisionFigure[i].point3.y*=propy/100.0;
+        colisionFigure[i].point4.x*=propx/100.0;
+        colisionFigure[i].point4.y*=propy/100.0;
+        }
+    }
+    for(let i = 0; i < ObjectsGame.length; i++)
+    {
+        ObjectsGame[i].x*=propx/100.0;
+        ObjectsGame[i].y*=propy/100.0;
+    }
+
+    document.addEventListener('keydown', keydownHandler);
+
+    // canvas.addEventListener('mousemove', function(evt) {
+    // var mousePos = getMousePos(canvas, evt);
+    // }, false);
+
+
+var clientX, clientY;
+var multitouch =false;
+canvas.addEventListener('touchstart', function(e) {
+  // Cache the client X/Y coordinates
+
+
+  if (e.targetTouches.length == 1 )
+  {
+  console.log("multitouh false");
+  activeMouseClickx = e.touches[0].clientX;
+  activeMouseClicky = e.touches[0].clientY;
+  multitouch =false;
+  }
+  else
+  {
+  activeMouseClickx = e.touches[0].clientX;
+  activeMouseClicky = e.touches[0].clientY;
+  activeEventClickx = e.touches[1].clientX;
+  activeEventClicky = e.touches[1].clientY;
+//   alert("move x : " + activeMouseClickx+ "\n" +
+//   "move y : " + activeMouseClicky+ "\n" +
+//   "Event y : " + activeEventClickx+ "\n" +
+//   "Event y : " + activeEventClicky+ "\n" +"END");
+  multitouch = true;
+  console.log("move x : " + activeMouseClickx);
+  console.log("move y : " + activeMouseClicky);
+  console.log("event x : " + activeEventClickx);
+  console.log("event y : " + activeEventClicky);
+  console.log("multitouch : " + multitouch);
+  }
+}, false);
+
+canvas.addEventListener('touchend', function(e) {
+  var deltaX, deltaY;
+
+  if (e.targetTouches.length == 1)
+  {
+    activeMouseClickx = e.changedTouches[0].clientX - activeMouseClicky;
+  activeMouseClicky = e.changedTouches[0].clientY - activeMouseClicky;
+  multitouch =false;
+  }
+  else
+  {
+
+  activeMouseClickx = e.changedTouches[0].clientX - activeMouseClicky;
+  activeMouseClicky = e.changedTouches[0].clientY - activeMouseClicky;
+
+  activeEventClickx = e.touches[1].clientX;
+  activeEventClicky = e.touches[1].clientY;
+
+  alert("move x : " + activeMouseClickx+ "\n" +
+  "move y : " + activeMouseClicky+ "\n" +
+  "Event y : " + activeEventClickx+ "\n" +
+  "Event y : " + activeEventClicky+ "\n" +"END");
+  multitouch = true;
+  }
+  //document.getElementById("positionMX").innerHTML= "Mouse X "+activeMouseClickx;
+    //document.getElementById("positionMY").innerHTML= "Mouse Y "+activeMouseClicky;
+
+
+  // Process the data ... 
+}, false);
+
+    // canvas.addEventListener("click", function (evt) {
+    // var mousePos = getMousePos(canvas, evt);
+    // }, false);
+    createColison(boardsLevel[activeLevel]);
+    renderCanvas();
+    
+}
+
+function renderCanvas()
+{
+                    ObjectsGame[0].flagColision = false;
+                    requestAnimationFrame(renderCanvas);
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(DisplaySetList[boardsLevel[activeLevel].number].BGPath, 0, 0, canvas.width, canvas.height);
+                    drawBoard(boardsLevel[activeLevel]);
+                    /* Step 3 of 3 */
+                    /* Draw the animations */
+                    for (let i = 0; i < ObjectsGame.length; i++)
+                    {
+                        ObjectsGame[i].renderObject();
+                    }
+
+                    checkCoinColision();
+                    drawLine();
+                    vJoyFun();
+                      psButton();
+                    checkGravitiColison();
+                    checkColisionForEnemy();
+                    checkCollisionForFireBall();
+}
+
+function createColison(level)
+{
+    
+    let board = level.Level;
+    let col = level.Level_col;
+    let row = level.Level_row;
+    let lastF = 0;
+    for (let i = 0; i < row; i++)
+    {
+        let j = 0;
+        for (; lastF < (col)*i; lastF++)
+        {
+            let x = j*0.05*canvas.width;
+                let y =i*0.1 *canvas.height;
+            //relative collision
+            if(board[lastF] >=12 && board[lastF] <=16 )
+            {
+                colisionFigure.push(new Collsion_line(new Point(x,y),new Point(x+(0.05 *canvas.width), y), false)); 
+            }
+            //Down collision
+            else if(board[lastF] !=0 && board[lastF]!=-1)
+            {
+                if((lastF-col) >0)
+                {
+                    if(board[lastF-20] ==0 || board[lastF-20] == -1 || board[lastF-20] >= 18)
+                    {
+                        if(board[lastF] <= 18 || board[lastF] == 23)
+                        {
+                            colisionFigure.push(new Collsion_CubeDown(new Point(x,y),new Point(x+(0.05 *canvas.width), y),false)); 
+                        }
+                    }
+                }
+            }
+            
+            j++;
+        }
+    }
+}
+
+function dropcolison()
+{
+    colisionFigure=[];
+}
+
+function drawBoard(level)
+{
+    let board = level.Level;
+    let col = level.Level_col;
+    let row = level.Level_row;
+    let lastF = 0;
+    for (let i = 0; i < row; i++)
+    {
+        let j = 0;
+        for (; lastF < col*i; lastF++)
+        {
+            if(board[lastF] !=0 && board[lastF]!=-1)
+            {
+                //
+                if(board[lastF] <= 18)
+                {
+                let elements = new Image();
+                elements.src = DisplaySetList[boardsLevel[activeLevel].number].TilesPath+"/"+board[lastF]+".png";
+                ctx.drawImage(elements,j*0.05*canvas.width, i*0.1 *canvas.height, 0.05*canvas.width, 0.1 *canvas.height);
+                }
+                else
+                {
+                let elements = new Image();
+                elements.src = DisplaySetList[boardsLevel[activeLevel].number].ObjectPath+"/"+board[lastF]+".png";
+                ctx.drawImage(elements,j*0.05*canvas.width, i*0.1 *canvas.height, 0.05*canvas.width, 0.1 *canvas.height);
+                }
+            }
+            j++;
+        }
+    }
+
+}
+
+function checkCoinColision()
+{
+                //Get coin
+                for (let i = 1; i < ObjectsGame.length; i++)
+                {
+                        if((ObjectsGame[0].centreX < ObjectsGame[i].centreX + 20) &&
+                        (ObjectsGame[0].centreX > ObjectsGame[i].centreX - 20) && 
+                        (ObjectsGame[0].centreY < ObjectsGame[i].centreY + 20) &&
+                        (ObjectsGame[0].centreY > ObjectsGame[i].centreY - 20) &&
+                         (ObjectsGame[i].animationIsDisplayed == true) 
+                         && (ObjectsGame[i].Gameobject.name == "coin"))
+                        {
+                            score++;
+                            ObjectsGame[i].stopAndHide();
+                        }
+                }
+
+                // else if((ObjectsGame[0].centreX >= colisionFigure[i].point1.x)
+                //      && (ObjectsGame[0].centreX <= colisionFigure[i].point2.x)
+                //      && (ObjectsGame[0].centreY < colisionFigure[i].point2.y))
+                //     {
+                        
+                //         //Gravitation
+                //         if((ObjectsGame[0].centreY+(ObjectsGame[0].size/2) < colisionFigure[i].point1.y) && offgravity == false)
+                //         {
+                //             console.log("colison! Gravity");
+                //             gravity = true;
+                //             falseDelta += 0.3;
+                //             ObjectsGame[0].centreY+=falseDelta;
+                //         }
+                //         else
+                //         {
+                //             pushJump = false;
+                //             falseDelta =0;
+                //             gravity = false;
+                //         }
+                //         break;
+                //     }
+                //Graviti for Coin
+            for(let j = 0; j < ObjectsGame.length; j++)
+            {
+                for (let i = 0; i < colisionFigure.length; i++)
+                {
+                    if((ObjectsGame[j].centreX >= colisionFigure[i].point1.x)
+                     && (ObjectsGame[j].centreX <= colisionFigure[i].point2.x)&& 
+                       ( ( ObjectsGame[j].Gameobject.name == "coin") || ( ObjectsGame[j].Gameobject.name == "portal")))
+                    {
+                        //Gravitation
+                        if((ObjectsGame[j].centreY+15 < colisionFigure[i].point1.y))
+                        {
+                            //console.log("colison! Gravity Coin");
+                            if(( ObjectsGame[j].Gameobject.name == "coin"))
+                            {
+                                ObjectsGame[j].Gameobject.Coingravity = true;
+                            }
+                            else if(( ObjectsGame[j].Gameobject.name == "portal"))
+                            {
+                                if(score != 8)
+                                {
+                                    break;
+                                }
+                                ObjectsGame[j].Gameobject.Portalgravity = true;
+                            }
+
+                            ObjectsGame[j].centreY+=2;
+                        }
+                        else
+                        {
+                            ObjectsGame[j].Gameobject.deltaTime = 0;
+                            break;
+                        }
+                    }
+                }
+            }
+                //Get coin
+                for (let i = 1; i < ObjectsGame.length; i++)
+                {
+                        if((ObjectsGame[0].centreX < ObjectsGame[i].centreX + 20) &&
+                        (ObjectsGame[0].centreX > ObjectsGame[i].centreX - 20) && 
+                        (ObjectsGame[0].centreY < ObjectsGame[i].centreY + 20) &&
+                        (ObjectsGame[0].centreY > ObjectsGame[i].centreY - 20) &&
+                         (ObjectsGame[i].animationIsDisplayed == true) 
+                         && (ObjectsGame[i].Gameobject.name == "portal"))
+                        {
+                            score++;
+                            activeLevel++;
+                            ObjectsGame[i].stopAndHide();
+                            dropcolison();
+                            reset();
+                            createColison(boardsLevel[activeLevel]);
+                        }
+                }
+
+                //DEAD CUBE COLLISION
+                for (let i = 1; i < colisionFigure.length; i++)
+                {
+                    if((ObjectsGame[0].centreX >= colisionFigure[i].point1.x) && (ObjectsGame[0].centreX <= colisionFigure[i].point2.x)
+                    && (ObjectsGame[0].centreY+20 > colisionFigure[i].point1.y)
+                    && ( colisionFigure[i].name == "DownCube") && ( colisionFigure[i].deadColision == true))
+                        {
+                            ObjectsGame[0].isdead = true;
+                            ObjectsGame[0].stopAndHide();
+                        }
+                }
+}
+
+function checkColisionForEnemy()
+{
+
+            //GENERAL COLLISION "DownCube" ENEMY
+            let flagBreak = false;
+            for(let j = 0; j < ObjectsGame.length; j++)
+            {
+                for (let i = 0; i < colisionFigure.length; i++)
+                {
+                    if((ObjectsGame[j].centreX >= colisionFigure[i].point1.x) && (ObjectsGame[j].centreX <= colisionFigure[i].point2.x)
+                    && (ObjectsGame[j].centreY >= colisionFigure[i].point1.y) && (ObjectsGame[j].centreY <= colisionFigure[i].downY) 
+                    && ( colisionFigure[i].name == "DownCube") && 
+                        ( ObjectsGame[j].Gameobject.name == "enemy"))
+                    {
+                                if((ObjectsGame[j].direction == 1) && (ObjectsGame[j].Gameobject.name == "enemy"))
+                                {
+                                    //console.log("colison! enemy change to right");
+                                    ObjectsGame[j].centreX += 5;
+                                    ObjectsGame[j].setDirection(2);
+                                    flagBreak = true;
+                                    break;
+                                }
+                                else if((ObjectsGame[j].direction == 2) && (ObjectsGame[j].Gameobject.name == "enemy"))
+                                {
+                                    //console.log("colison! enemy change to left");
+                                    ObjectsGame[j].centreX -= 5;
+                                    ObjectsGame[j].setDirection(1);
+                                    flagBreak = true;
+                                    break;
+                                }
+                    }
+                    else if((ObjectsGame[j].centreX >= colisionFigure[i].point1.x)
+                     && (ObjectsGame[j].centreX <= colisionFigure[i].point2.x)&& 
+                        ( ObjectsGame[j].Gameobject.name == "enemy"))
+                    {
+                        //Gravitation
+                        if((ObjectsGame[j].centreY+10 < colisionFigure[i].point1.y))
+                        {
+                            ObjectsGame[j].Gameobject.Enemygravity = true;
+                            ObjectsGame[j].centreY+=2;
+                        }
+                        else
+                        {
+                            ObjectsGame[j].Gameobject.deltaTime = 0;
+                        }
+                    }
+                }
+                if(flagBreak == true)
+                {
+                    break;
+                }
+            }
+
+                            //ENEMY COLLISION
+                            for (let i = 1; i < ObjectsGame.length; i++)
+                {
+                        if((ObjectsGame[0].centreX < ObjectsGame[i].centreX + 20) &&
+                        (ObjectsGame[0].centreX > ObjectsGame[i].centreX - 20) && 
+                        (ObjectsGame[0].centreY < ObjectsGame[i].centreY + 20) &&
+                        (ObjectsGame[0].centreY > ObjectsGame[i].centreY - 20) &&
+                         (ObjectsGame[i].animationIsDisplayed == true) 
+                         && (ObjectsGame[i].Gameobject.name == "enemy"))
+                        {
+                            ObjectsGame[0].isdead = true;
+                            ObjectsGame[0].stopAndHide();
+                        }
+                }
+
+                for(let j = 0; j < ObjectsGame.length; j++)
+                {
+                    for (let i = 0; i <  ObjectsGame.length; i++)
+                    {
+                            if((ObjectsGame[j].centreX < ObjectsGame[i].centreX + 20) &&
+                            (ObjectsGame[j].centreX > ObjectsGame[i].centreX - 20) && 
+                            (ObjectsGame[j].centreY < ObjectsGame[i].centreY + 20) &&
+                            (ObjectsGame[j].centreY > ObjectsGame[i].centreY - 20) &&
+                            (ObjectsGame[j].animationIsDisplayed == true) 
+                            && (ObjectsGame[i].Gameobject.name == "enemy") && (ObjectsGame[i].animationIsDisplayed == true)
+                            && (ObjectsGame[j].Gameobject.name == "FireBall"))
+                            {
+                                //animationIsDisplayed
+                                ObjectsGame[i].stopAndHide();
+                                ObjectsGame[j].stopAndHide();
+                            }
+                    }
+                }
+                
+}
+
+function checkGravitiColison()
+{
+    //let flagBreak = false;
+                //GENERAL COLLISION
+                let stepSize = 5;
+                for (let i = 0; i < colisionFigure.length; i++)
+                {
+                    if((ObjectsGame[0].centreX >= colisionFigure[i].point1.x)&& ( colisionFigure[i].name == "DownCube") && (ObjectsGame[0].centreX <= colisionFigure[i].point2.x)
+                    && (ObjectsGame[0].centreY >= colisionFigure[i].point1.y) && (ObjectsGame[0].centreY <= colisionFigure[i].downY) 
+                     && (
+                        ( ObjectsGame[0].Gameobject.name == "player")))
+                    {
+                        console.log("colison! downcube");
+                        //console.log(ObjectsGame[0].direction);
+
+                            if (ObjectsGame[0].direction === ObjectsGame[0].UP)
+                            {
+                                console.log("Up direction");
+                                ObjectsGame[0].centreY += stepSize*3;
+                                break;
+                            } 
+                            else if (ObjectsGame[0].direction === ObjectsGame[0].LEFT)
+                            {
+                                //console.log("2");
+                                //ObjectsGame[0].centreX += stepSize*3;
+                                console.log("Left direction");
+                                ObjectsGame[0].stayPosition("left");
+                                //flagBreak = true;
+                                break;
+                            }
+                            else if (ObjectsGame[0].direction === ObjectsGame[0].DOWN)
+                            {
+                                //console.log("3");
+                                console.log("Down direction");
+                                ObjectsGame[j].centreY -= stepSize;
+                                break;
+                            } 
+                            else if (ObjectsGame[0].direction === ObjectsGame[0].RIGHT)
+                            {
+                                console.log("Right direction");
+                                //console.log("4");
+                               //ObjectsGame[0].centreX -= stepSize*3;
+                                ObjectsGame[0].stayPosition("right");
+                                //flagBreak = true;
+                                break;
+                            }
+                            else if (ObjectsGame[0].direction === 0)
+                            {
+                                if(lastPushButton === ObjectsGame[0].LEFT)
+                                {
+                                   ObjectsGame[0].centreX += stepSize;
+                                    break;
+                                }
+                                else if(lastPushButton === ObjectsGame[0].RIGHT)
+                                {
+                                    ObjectsGame[0].centreX -= stepSize;
+                                    break;
+                                }
+                            }
+                    }
+                    else  if((ObjectsGame[0].centreX >= colisionFigure[i].point1.x)&& ( colisionFigure[i].name == "RelativeCube") && (ObjectsGame[0].centreX <= colisionFigure[i].point2.x)
+                    && (ObjectsGame[0].centreY >= colisionFigure[i].point1.y) && (ObjectsGame[0].centreY <= colisionFigure[i].point4.y) 
+                    && (
+                        ( ObjectsGame[j].Gameobject.name == "player")))
+                    {
+                        let stepSize = 5;
+                        console.log("colison! Relative");
+                            if (ObjectsGame[0].direction === ObjectsGame[0].UP)
+                            {
+                                ObjectsGame[0].centreY += stepSize*3;
+                                break;
+                            } 
+                            else if (ObjectsGame[0].direction === ObjectsGame[0].LEFT)
+                            {
+                                break;
+                            }
+                            else if (ObjectsGame[0].direction === ObjectsGame[0].DOWN)
+                            {
+                                break;
+                            } 
+                            else if (ObjectsGame[0].direction === ObjectsGame[0].RIGHT)
+                            {
+                                break;
+                            }
+                            else if (ObjectsGame[0].direction === 0)
+                            {
+                                ObjectsGame[0].centreY = colisionFigure[i].point1.y -15;
+                                break;
+                            }
+                    }
+                    else  if((ObjectsGame[0].centreX >= colisionFigure[i].point1.x) &&
+                     ( colisionFigure[i].name == "line") && 
+                     (ObjectsGame[0].centreX <= colisionFigure[i].point2.x) &&
+                    (ObjectsGame[0].centreY <= colisionFigure[i].point1.y) &&
+                    (( ObjectsGame[j].Gameobject.name == "player")))
+                    {
+                        let stepSize = 5;
+                        console.log("colison! line");
+                            if (ObjectsGame[0].direction === ObjectsGame[0].UP)
+                            {
+                                ObjectsGame[0].centreY += stepSize*3;
+                                break;
+                            } 
+                            else if (ObjectsGame[0].direction === ObjectsGame[0].LEFT)
+                            {
+                                break;
+                            }
+                            else if (ObjectsGame[0].direction === ObjectsGame[0].DOWN)
+                            {
+                                break;
+                            } 
+                            else if (ObjectsGame[0].direction === ObjectsGame[0].RIGHT)
+                            {
+                                break;
+                            }
+                            else if (ObjectsGame[0].direction === 0)
+                            {
+                                ObjectsGame[0].centreY = colisionFigure[i].point1.y -15;
+                                break;
+                            }
+                    }
+                    else if(!(ObjectsGame[0].centreX >= 0 && ObjectsGame[0].centreX <= window.innerWidth))
+                    {
+                            if (ObjectsGame[0].direction === ObjectsGame[0].LEFT)
+                            {
+                                //console.log("2");
+                                //ObjectsGame[0].centreX += stepSize*3;
+                                console.log("Left direction");
+                                ObjectsGame[0].stayPosition("left");
+                                ObjectsGame[0].centreX = window.innerWidth;
+                                //ObjectsGame[0].centreX += stepSize*3;
+                                //flagBreak = true;
+                                break;
+                            }
+                            else if (ObjectsGame[0].direction === ObjectsGame[0].RIGHT)
+                            {
+                                console.log("Right direction");
+                                //console.log("4");
+                               //ObjectsGame[0].centreX -= stepSize*3;
+                               ObjectsGame[0].centreX = 0;
+                               //ObjectsGame[0].centreX -= stepSize*3;
+                                ObjectsGame[0].stayPosition("right");
+                                //flagBreak = true;
+                                break;
+                            }
+                    }
+                    else if((ObjectsGame[0].centreX >= colisionFigure[i].point1.x)
+                     && (ObjectsGame[0].centreX <= colisionFigure[i].point2.x)
+                     && (ObjectsGame[0].centreY < colisionFigure[i].point2.y))
+                    {
+                        
+                        //Gravitation
+                        if(((ObjectsGame[0].centreY+(ObjectsGame[0].size/2) < colisionFigure[i].point1.y) && offgravity == false) && 
+                        ((ObjectsGame[0].centreY + falseDelta) <= colisionFigure[i].point1.y))
+                        {
+                            console.log("colison! Gravity");
+                            gravity = true;
+                            falseDelta += 0.3;
+                            ObjectsGame[0].centreY+=falseDelta;
+                        }
+                        else
+                        {
+                            pushJump = false;
+                            falseDelta =0;
+                            gravity = false;
+                        }
+                        break;
+                    }
+                }
+           
+                        if(true == offgravity)
+                        {
+                        pushJump = true;
+                        this.falseDeltaUP -= 0.3;
+                        ObjectsGame[0].centreY -= falseDeltaUP;
+                            if( this.falseDeltaUP < 0)
+                            {
+                                this.falseDeltaUP = (0.025 * window.innerHeight);
+                                offgravity = false;
+                            }
+                        }
+}
+
+function checkCollisionForFireBall()
+{
+    for (let j = 0; j < ObjectsGame.length; j++)
+                {
+                for (let i = 0; i < colisionFigure.length; i++)
+                {
+                    if((ObjectsGame[j].centreX >= colisionFigure[i].point1.x) && (ObjectsGame[j].centreX <= colisionFigure[i].point2.x)
+                    && (ObjectsGame[j].centreY >= colisionFigure[i].point1.y) && (ObjectsGame[j].centreY <= colisionFigure[i].downY) 
+                    && ( colisionFigure[i].name == "DownCube") && (
+                        ( ObjectsGame[j].Gameobject.name == "FireBall")))
+                    {
+                        ObjectsGame[j].stopAndHide();
+                        //ObjectsGame.splice(j, 1);
+                        //j--;
+                    } 
+                }
+            }
+}
+
+function drawLine()
+{
+    if(true == showCollisonLine)
+                {
+                ctx.beginPath();
+                ctx.strokeStyle = "#FF0000";
+
+                for(let i=0;i<colisionFigure.length;i++)
+                {
+                    if(colisionFigure[i].name == "DownCube")
+                    {
+                            ctx.beginPath();
+                            ctx.moveTo(colisionFigure[i].point1.x, colisionFigure[i].point1.y);
+                            ctx.lineTo(colisionFigure[i].point1.x, window.innerHeight);
+                            ctx.lineTo(colisionFigure[i].point2.x, window.innerHeight);
+                            ctx.lineTo(colisionFigure[i].point2.x, colisionFigure[i].point2.y);
+                            ctx.lineTo(colisionFigure[i].point1.x, colisionFigure[i].point1.y);
+                            ctx.stroke();
+                    }
+                    else if(colisionFigure[i].name == "Line")
+                    {
+                            ctx.beginPath();
+                            ctx.moveTo(colisionFigure[i].point1.x, colisionFigure[i].point1.y);
+                            ctx.lineTo(colisionFigure[i].point2.x, colisionFigure[i].point2.y);
+                            ctx.stroke();
+                    }
+                    else if(colisionFigure[i].name == "RelativeCube")
+                    {
+                            ctx.beginPath();
+                            ctx.moveTo(colisionFigure[i].point1.x, colisionFigure[i].point1.y);
+                            ctx.lineTo(colisionFigure[i].point2.x, colisionFigure[i].point2.y);
+                            ctx.lineTo(colisionFigure[i].point4.x, colisionFigure[i].point4.y);
+                            ctx.lineTo(colisionFigure[i].point3.x, colisionFigure[i].point3.y);
+                            ctx.lineTo(colisionFigure[i].point1.x, colisionFigure[i].point1.y);
+                            ctx.stroke();
+                    }
+                    //colisionFigure.point1.x *=2;
+                    //colisionFigure.point1.y *=2;
+                }
+
+                //ctx.moveTo(0, 390);
+                // ctx.lineTo(15, 390);
+
+                // ctx.lineTo(15, 440);
+                // ctx.lineTo(50, 440);
+
+
+                // ctx.lineTo(50, 400);
+                // ctx.lineTo(130, 400);
+
+                // ctx.lineTo(130, 440);
+                // ctx.lineTo(250, 440);
+
+                // ctx.lineTo(250, 400);
+                // ctx.lineTo(460, 400);
+
+                // ctx.lineTo(460, 280);
+                // ctx.lineTo(520, 280);
+                // ctx.lineTo(520, 400);
+                // ctx.lineTo(640, 400);
+                // ctx.lineTo(640, 425);
+                // ctx.lineTo(691, 425);
+                // ctx.stroke();
+
+                // ctx.moveTo(650, 290);
+                // ctx.lineTo(690, 290);
+                // ctx.lineTo(650, 320);
+                // ctx.lineTo(690, 320);
+                ctx.stroke();
+
+                for(let j = 0; j < ObjectsGame.length; j++)
+                {
+                    ctx.beginPath();
+                    ctx.arc(ObjectsGame[j].centreX, ObjectsGame[j].centreY, ObjectsGame[j].size/2.0, 0, 2 * Math.PI);
+                    ctx.stroke();   
+                }
+                // ctx.beginPath();
+                // ctx.arc(ObjectsGame[0].centreX, ObjectsGame[0].centreY, 20, 0, 2 * Math.PI);
+                // ctx.stroke(); 
+
+                // ctx.beginPath();
+                // ctx.arc(ObjectsGame[5].centreX, ObjectsGame[5].centreY, 20, 0, 2 * Math.PI);
+                // ctx.stroke(); 
+                }
+}
+
+function keydownHandler(e)
+{
+    let UP = 0;
+let LEFT = 1;
+let DOWN = 2;
+let RIGHT = 3;
+let stepSize = 10;
+console.log(keydownHandler);
+
+                if (e.keyCode === 37)  // left
+                {
+                   // ObjectsGame[0].centreX -= stepSize;
+                    ObjectsGame[0].setDirection(5);
+                } else if (e.keyCode === 32) // attack
+                {
+                 //   ObjectsGame[0].centreX += stepSize;
+                 //ObjectsGame[0].ctx.scale(-1, 1);
+                    ObjectsGame[0].setDirection(3);
+                }
+                 else if (e.keyCode === 38) // up
+                {
+                    if(offgravity == false)
+                    {
+                        offgravity = true;
+                    ObjectsGame[0].setDirection(2);
+                    }
+
+                } else if (e.keyCode === 39 && flagRight == true) // right
+                {
+                  //  ObjectsGame[0].centreX += stepSize;
+                    ObjectsGame[0].setDirection(7);
+                } else if (e.keyCode === 40) // down
+                {
+                  //  ObjectsGame[0].centreY += stepSize;
+                    ObjectsGame[0].setDirection(3);
+                }
+                else if(e.keyCode === 102 || e.keyCode === 70)
+                {
+                    ObjectsGame.push(new FireBallAnimation(ctx,  new FireBall(ObjectsGame[0].centreX, ObjectsGame[0].centreY,FireBallSprite)));
+                    if(ObjectsGame[0].left == true)
+                    {
+                        ObjectsGame[ObjectsGame.length-1].setDirection(0);
+                        ObjectsGame[0].setDirection(2);
+                    }
+                    else
+                    {
+                        ObjectsGame[ObjectsGame.length-1].setDirection(4);
+                        ObjectsGame[0].setDirection(2);
+                    }
+
+                }
+                else if(e.keyCode === 67 || e.keyCode === 99)
+                {
+                    showCollisonLine = !showCollisonLine;
+                }
+                pushbutton = true;
+}
+
+function vJoyFun()
+{
+    ctx.strokeStyle = "yellow";
+                ctx.beginPath();
+                ctx.arc(FramevjoyX, FramevjoyY, (window.innerHeight* 0.15), 0, 2 * Math.PI);
+                ctx.stroke(); 
+                ctx.globalAlpha = 0.5;
+                ctx.drawImage(arowButton,FramevjoyX - ((window.innerHeight* 0.3)/2), FramevjoyY- ((window.innerHeight* 0.2)/2), (window.innerHeight* 0.3), (window.innerHeight* 0.2));
+                ctx.globalAlpha = 1.0;
+                ctx.beginPath();
+                ctx.arc(vjoyX, vjoyY, (window.innerHeight* 0.05), 0, 2 * Math.PI);
+                ctx.stroke();
+
+            //if((activeX > 0) && (activeX < 500) && (activeY > 0) && (activeY < 500))
+            //{
+                vjoyX = FramevjoyX;
+                vjoyY = FramevjoyY;
+            //}
+            ctx.globalAlpha = 0.5;
+    ctx.drawImage(reloadButton, window.innerWidth*0.9, window.innerHeight*0.1,window.innerHeight*0.1, window.innerHeight*0.1);
+    ctx.drawImage(crossButton, window.innerWidth*0.8, window.innerHeight*0.9,window.innerHeight*0.1, window.innerHeight*0.1);
+    ctx.drawImage(circleButton, window.innerWidth*0.9, window.innerHeight*0.9,window.innerHeight*0.1, window.innerHeight*0.1);
+    ctx.globalAlpha = 1.0;
+    line();
+}
+
+function psButton()
+{
+    let xjump =window.innerWidth*0.8 + window.innerHeight*0.05;
+    let yjump = window.innerHeight*0.9 + window.innerHeight*0.05;
+
+    let xfire =window.innerWidth*0.9 + window.innerHeight*0.05;
+    let yfire =window.innerHeight*0.9 + window.innerHeight*0.05;
+
+    let xreset =window.innerWidth*0.9 + window.innerHeight*0.05;
+    let yreset =window.innerHeight*0.1 + window.innerHeight*0.05;
+
+                ctx.strokeStyle = "yellow";
+                ctx.beginPath();
+                ctx.arc(xfire, yfire,  window.innerHeight*0.05, 0, 2 * Math.PI);
+                ctx.stroke(); 
+
+                ctx.beginPath();
+                ctx.arc(xjump, yjump,  window.innerHeight*0.05, 0, 2 * Math.PI);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(window.innerWidth*0.9 + window.innerHeight*0.05, window.innerHeight*0.1 + window.innerHeight*0.05,  window.innerHeight*0.05, 0, 2 * Math.PI);
+                ctx.stroke();
+
+                //jump button
+                if(((activeMouseClickx >= xjump - (window.innerHeight* 0.05) && 
+                activeMouseClickx <= xjump +  (window.innerHeight* 0.05)) && 
+                (activeMouseClicky >= yfire - (window.innerWidth* 0.05) && 
+                activeMouseClicky <= yfire + (window.innerWidth* 0.05)) && 
+                (multitouch == false)) ||
+                ((activeEventClickx >= xjump - (window.innerHeight* 0.05) && 
+                activeEventClickx <= xjump +  (window.innerHeight* 0.05)) && 
+                (activeEventClicky >= yfire - (window.innerWidth* 0.05) && 
+                activeEventClicky <= yfire + (window.innerWidth* 0.05)) && 
+                (multitouch == true)))
+                {
+                    console.log("jump");
+                    if(pushJump == false)
+                    {
+                        if(offgravity == false)
+                        {
+                        offgravity = true;
+                        ObjectsGame[0].setDirection(2);
+                        }
+                        pushJump = true;
+                    }
+                }
+                //fire button
+                if(((activeMouseClickx >= xfire - (window.innerHeight* 0.05) &&
+                 activeMouseClickx <= xfire +  (window.innerHeight* 0.05)) && 
+                 (activeMouseClicky >= yjump - (window.innerWidth* 0.05) && 
+                 activeMouseClicky <= yjump + (window.innerWidth* 0.05))&& 
+                 (multitouch == false)) || 
+                 ((activeEventClickx >= xfire - (window.innerHeight* 0.05) &&
+                 activeEventClickx <= xfire +  (window.innerHeight* 0.05)) && 
+                 (activeEventClicky >= yjump - (window.innerWidth* 0.05) && 
+                 activeEventClicky <= yjump + (window.innerWidth* 0.05))&& 
+                 (multitouch == true)))
+                {
+                    console.log("fire");
+                    if(pushFire == false)
+                    {
+                        ObjectsGame.push(new FireBallAnimation(ctx,  new FireBall(ObjectsGame[0].centreX, ObjectsGame[0].centreY,FireBallSprite)));
+                        if(ObjectsGame[0].left == true)
+                        {
+                            ObjectsGame[ObjectsGame.length-1].setDirection(0);
+                        }
+                        else
+                        {
+                            ObjectsGame[ObjectsGame.length-1].setDirection(4);
+                        }
+                        pushFire = true;
+                    }
+                    
+                }
+                else
+                {
+                    pushFire = false;
+                }
+                if((activeMouseClickx >= xreset - (window.innerHeight* 0.05) && activeMouseClickx <= xreset +  (window.innerHeight* 0.05)) && (activeMouseClicky >= yreset - (window.innerWidth* 0.05) && activeMouseClicky <= yreset + (window.innerWidth* 0.05)))
+                {
+                    reset();
+                }
+}
+
+function line()
+            {
+                if((activeMouseClickx >= vjoyX - (window.innerHeight* 0.15) && 
+                activeMouseClickx <= vjoyX +  (window.innerHeight* 0.15)) && 
+                (activeMouseClicky >= vjoyY - (window.innerWidth* 0.15) && 
+                activeMouseClicky <= vjoyY + (window.innerWidth* 0.15)))
+                {
+                    vjoyX = activeMouseClickx;
+                    vjoyY = activeMouseClicky;
+                    deltX = null;
+                    deltY = null;
+
+                    if(activeMouseClickx > FramevjoyX)
+                    {
+                        deltX = activeMouseClickx - FramevjoyX;
+                    }
+                    else
+                    {
+                        deltX = FramevjoyX - activeMouseClickx;
+                    }
+
+                    if( activeMouseClicky > FramevjoyY)
+                    {
+                        deltY = activeMouseClicky - FramevjoyY;
+                    }
+                    else
+                    {
+                        deltY = FramevjoyY - activeMouseClicky;
+                    }
+
+                   var a = ((FramevjoyY - activeMouseClicky) / (FramevjoyX - activeMouseClickx));
+                   var b =  activeY - (activeX*a);
+
+                    if(a <= 2 && a >= -2)
+                    {
+                        
+                        if(FramevjoyX < activeMouseClickx)
+                        {
+                            //newPositionx = 0;
+                            //activeX += 1;//(deltY+deltX)/2;
+                            ObjectsGame[0].setDirection(7);
+                            //document.getElementById("positionMX").innerHTML= "Right "+activeMouseClickx;
+                        }
+                        else if(FramevjoyX > activeMouseClickx)
+                        {
+                            //newPositionx = 500;
+                            //activeX -= 1;//(deltY+deltX)/2;
+                            ObjectsGame[0].setDirection(5);
+                            //document.getElementById("positionMX").innerHTML= "Left "+activeMouseClickx;         
+                        }
+
+                                console.log("a : " + a);
+                            //console.log("b : " + b);
+                            //console.log("activeX : " + activeX);
+                            //console.log("activeY : " + activeY);
+                            //activeY = (activeX*(-a)) - (b);
+                            //newPositiony = (newPositionx*(-a)) - (b);
+                            
+                            //if(activeY < 0)
+                            //{
+                           //     activeY = - activeY;
+                            //}
+                    }
+                    else(a <= 2 && a >= -2)
+                    {
+                        if(a > 0 && FramevjoyY > activeMouseClicky)
+                        {
+                            //activeY -= 1;//(deltY+deltX)/2;
+                        }
+                        else if(a < 0 && FramevjoyY > activeMouseClicky)
+                        {
+                            //activeY -= 1;//(deltY+deltX)/2;
+                        }
+                        else if(a < 0 && FramevjoyY < activeMouseClicky)
+                        {
+                            //activeY += 1;//(deltY+deltX)/2;
+                        }
+                        else if(a > 0 && FramevjoyY < activeMouseClicky)
+                        {
+                            //activeY += 1;//(deltY+deltX)/2;
+                        }
+
+                        //activeY = (activeX*(-a)) - (b);
+                        //newPositiony = (newPositionx*(-a)) - (b);
+                        //activeX = (activeY-b/a);
+                        
+                        
+                    }
+
+                        
+
+
+                    //s
+
+                }
+                
+
+            }
+
+function reset()
+{
+        //Player
+        activeX =100;
+        activeY =100;
+    score = 0;
+    ObjectsGame = [];
+        //Player = new Player( window.innerWidth*0.1, window.innerHeight*0.5,"img/defaultperson.png","img/defaultpersonleft.png");
+    ObjectsGame[0] = new PlayerAnimation(ctx, new Player( window.innerWidth*0.01, window.innerHeight*0.8, PlayerSprite) ); 
+    ObjectsGame[0].isdead = false;
+  //Player
+  ObjectsGame[0] = new PlayerAnimation(ctx, new Player( window.innerWidth*0.01, window.innerHeight*0.8, PlayerSprite) );  
+    //Enemy
+    ObjectsGame[1] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.3,window.innerHeight*0.5,EnemySprite));  
+    //Portal
+    ObjectsGame[2] = new PortalAnimation(ctx, new Portal(window.innerWidth*0.85,0,PortalSprite));
+    //Coins
+    ObjectsGame[3] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.05, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[4] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.17, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[5] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.25, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[6] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.35, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[7] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.45, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[8] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.55, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[9] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.65, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+    ObjectsGame[10] = new CoinsAnimation(ctx, new Coin(window.innerWidth*0.75, 0,CoinSprite));// 40, 40, 40,canvas.width, canvas.height, true,pushbutton); 
+ 
+
+}
+
+</script>
+</head>
+
+<body style="margin-top: 0px; margin-left: 0px; margin-right: 0px; margin-bottom: 0px;">
+<canvas id = "keyboardCanvas" tabindex="1">
+    Your browser does not support the HTML5 'Canvas' tag.
+</canvas>
+<audio id="myAudio">
+    <source src="mp3/Hyrule.mp3" />
+</audio>
+<audio autoplay loop>
+    <source src="mp3/Hyrule.mp3">
+</audio>
+</body>
+</html>
