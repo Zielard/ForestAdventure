@@ -8,6 +8,7 @@
     <script src="js/Collison.js"></script>
     <script src="js/Character.js"></script>
     <script src="js/boards.js"></script>
+    <script src="js/Button.js"></script>
     <style>
 #keyboardCanvas
 {
@@ -112,6 +113,7 @@ var falseDeltaEnemy = 0;
 var falseDeltaCoin = 0;
 var colisionFigure = [];
 var boardsLevel = [];
+var flagAccelo  = null;
 var backgroundSong = new Audio();
 backgroundSong.src = 'mp3/Hyrule.mp3';
 
@@ -161,7 +163,6 @@ function getMousePos(canvas, evt) {
                 backgroundSong.play();
             };
 
-var gyroscope = new Gyroscope({frequency: 60});
 
 
 function onAllAssetsLoaded()
@@ -203,7 +204,8 @@ function onAllAssetsLoaded()
     ObjectsGame[11] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.4,window.innerHeight*0.5,EnemySprite,false));
     ObjectsGame[12] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.45,window.innerHeight*0.5,EnemySprite,false));
     ObjectsGame[13] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.48,window.innerHeight*0.5,EnemySprite,false));
- 
+    ObjectsGame[14] = new Button(BUTTON_CENTRE, window.innerHeight*0.3, TEXT_WIDTH, TEXT_HEIGHT, "Start game - touch pad");
+    ObjectsGame[15] = new Button(BUTTON_CENTRE, window.innerHeight*0.6, TEXT_WIDTH, TEXT_HEIGHT, "Start game - deviceorientation");
     //change size for window
     const CANVAS_WIDTH = 1000;
     const CANVAS_HEIGHT = 500;
@@ -255,6 +257,23 @@ canvas.addEventListener('touchstart', function(e) {
   activeMouseClickx = e.touches[0].clientX;
   activeMouseClicky = e.touches[0].clientY;
   multitouch =false;
+
+            if (ObjectsGame[14].pointIsInsideBoundingRectangle(activeMouseClickx, activeMouseClicky))
+            {
+                console.log("Button 1");
+                ObjectsGame.pop();
+                ObjectsGame.pop();
+                flagAccelo = false;
+                //gameObjects[MESSAGE] = new StaticText("Text button was pressed", STATIC_TEXT_CENTRE, 490, "Times Roman", 30, "black");
+                //gameObjects[MESSAGE].start();
+            }
+            else if (ObjectsGame[15].pointIsInsideBoundingRectangle(activeMouseClickx, activeMouseClicky))
+            {
+                flagAccelo = true;
+                ObjectsGame.pop();
+                ObjectsGame.pop();
+                console.log("Button 2");
+            }
   }
   else
   {
@@ -278,7 +297,7 @@ canvas.addEventListener('touchstart', function(e) {
 canvas.addEventListener('touchend', function(e) {
   var deltaX, deltaY;
 
-  if (e.targetTouches.length == 1)
+  if (multitouch == false)
   {
     activeMouseClickx = e.changedTouches[0].clientX - activeMouseClicky;
   activeMouseClicky = e.changedTouches[0].clientY - activeMouseClicky;
@@ -287,11 +306,11 @@ canvas.addEventListener('touchend', function(e) {
   else
   {
 
-  activeMouseClickx = e.changedTouches[0].clientX - activeMouseClicky;
+  activeMouseClickx = e.changedTouches[0].clientX - activeMouseClickx;
   activeMouseClicky = e.changedTouches[0].clientY - activeMouseClicky;
 
-  activeEventClickx = e.touches[1].clientX;
-  activeEventClicky = e.touches[1].clientY;
+  activeEventClickx = e.changedTouches[1].clientX - activeEventClickx;
+  activeEventClicky = e.changedTouches[1].clientY - activeEventClicky;
 
   alert("move x : " + activeMouseClickx+ "\n" +
   "move y : " + activeMouseClicky+ "\n" +
@@ -317,12 +336,12 @@ window.addEventListener("deviceorientation", deviceMotionUpdate, true);
 }
 
 function deviceMotionUpdate(e) {
-//console.log("work");
-//console.log("Angular velocity along the X-axis " + e.gamma);
-//console.log("Angular velocity along the Y-axis " + e.alpha);
+console.log("Angular velocity along the X-axis " + e.gamma);
+console.log("Angular velocity along the Y-axis " + e.alpha);
 //console.log("Angular velocity along the Z-axis " + e.beta);
 
-
+ if(true == flagAccelo)
+ {
     if (e.beta > -1) {
         //left = false
         ObjectsGame[0].setDirection(7);
@@ -334,7 +353,7 @@ function deviceMotionUpdate(e) {
         //ObjectsGame[0].stayPosition(0);
     }
     
-    if (e.alpha < 90) 
+    if (e.gamma > 5) 
     {
         //left = false
         console.log("jump");
@@ -347,12 +366,12 @@ function deviceMotionUpdate(e) {
                         }
                         pushJump = true;
                     }
-    } else if (e.alpha > 90) 
+    } else if (e.gamma < -20)  
     {
 
         console.log("fire");
-                    if(pushFire == false)
-                    {
+                    //if(pushFire == false)
+                    //{
                         ObjectsGame.push(new FireBallAnimation(ctx,  new FireBall(ObjectsGame[0].centreX, ObjectsGame[0].centreY,FireBallSprite)));
                         if(ObjectsGame[0].left == true)
                         {
@@ -363,38 +382,12 @@ function deviceMotionUpdate(e) {
                             ObjectsGame[ObjectsGame.length-1].setDirection(4);
                         }
                         pushFire = true;
-                    }
+                    //}
     } 
         //ObjectsGame[0].stayPosition(0);
-    }
+ }
 
-
-
-                    
-
-// if (lvl <= 2) {
-
-//     if (e.gamma > 5) {
-//         left = false
-//         right = true
-//     } else if (e.gamma < -5) {
-
-//         right = false
-//         left = true
-//     } else {
-//         left = false
-//         right = false
-//     }
-// } else {
-//     if (e.alpha > 5) {
-//         right = true
-//         left = false
-//     } else if (e.alpha < 5) {
-//         left = true
-//         right = false
-//     }
-// }
-
+}
 
 function renderCanvas()
 {
@@ -410,10 +403,13 @@ function renderCanvas()
                         ObjectsGame[i].renderObject();
                     }
 
+                    if(false == flagAccelo)
+                    {
+                    vJoyFun();
+                    psButton();
+                    }
                     checkCoinColision();
                     drawLine();
-                    vJoyFun();
-                      psButton();
                     checkGravitiColison();
                     checkColisionForEnemy();
                     checkCollisionForFireBall();
