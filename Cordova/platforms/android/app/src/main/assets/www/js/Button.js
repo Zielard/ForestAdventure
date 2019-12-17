@@ -45,54 +45,39 @@ class Button
 
         if (this.x === BUTTON_CENTRE)
         {
-            this.x = (canvas.width - this.width) / 2.0;
+            //this.x = (canvas.width - this.width) / 2.0;
         }
     }
 
     renderObject()
     {
-        
-        /* the ImageButton's border */
-        // ctx.beginPath();
-        // ctx.strokeStyle = this.strokeStyle;
-        // ctx.lineWidth = this.borderWidth;
-        // ctx.moveTo(this.x, this.y);
-        // ctx.lineTo(this.x + this.width, this.y);
-        // ctx.lineTo(this.x + this.width, this.y + this.height);
-        // ctx.lineTo(this.x, this.y + this.height);
-        // ctx.lineTo(this.x, this.y);
-        // ctx.stroke();
-        // ctx.fillStyle = this.backgroundColour;
-        // ctx.fillRect(this.x, this.y, this.width, this.height);
-        // ctx.closePath();
-
                 /* the button's image */
                 if (this.backgroundImage !== null)
                 {
-                    ctx.drawImage(this.backgroundImage, this.x , this.y, this.width, this.height);
+                    ctx.drawImage(this.backgroundImage, (canvas.width - this.width) / 2.0, this.y, this.width, this.height);
                 }
         
         /* the button's text */
         ctx.fillStyle = this.textColour;
         ctx.font = this.fontSize + "px " + this.font; // need to set the font each time, as it might have been changed elsewhere
-        ctx.fillText(this.text, this.x + this.width * 0.05, this.y + this.height * 0.75);
+        ctx.fillText(this.text, ((canvas.width - this.width) / 2.0) + 20, this.y + this.height * 0.75);
     }
 
     pointIsInsideBoundingRectangle(pointX, pointY)
     {
 
-        if ((pointX > this.x) && (pointY > this.y))
+        if ((pointX > (canvas.width - this.width) / 2.0) && (pointY > this.y))
         {
-            if (pointX > this.x)
+            if (pointX >(canvas.width - this.width) / 2.0)
             {
-                if ((pointX - this.x) > this.width)
+                if ((pointX - (canvas.width - this.width) / 2.0) > this.width)
                 {
                     //this.isHovering = false;
                     return false; // to the right of this gameObject
                 }
             }
 
-            if ((pointY - this.y) > this.height)
+            if ((pointY -(canvas.width - this.width) / 2.0) > this.height)
             {
                 if (pointY > this.height)
                 {
