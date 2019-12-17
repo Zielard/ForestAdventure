@@ -42,6 +42,10 @@ startImageHead.src = "img/start_Page/head_zelda.png";
 
 let arowButton = new Image();
 arowButton.src = "img/button/arrow.png";
+
+let playButton = new Image();
+playButton.src = "img/button/button-bg.png";
+
 /* ObjectsGame array */
 let ObjectsGame = [];
 
@@ -204,8 +208,8 @@ function onAllAssetsLoaded()
     ObjectsGame[11] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.4,window.innerHeight*0.5,EnemySprite,false));
     ObjectsGame[12] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.45,window.innerHeight*0.5,EnemySprite,false));
     ObjectsGame[13] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.48,window.innerHeight*0.5,EnemySprite,false));
-    ObjectsGame[14] = new Button(BUTTON_CENTRE, window.innerHeight*0.3, TEXT_WIDTH, TEXT_HEIGHT, "Start game - touch pad");
-    ObjectsGame[15] = new Button(BUTTON_CENTRE, window.innerHeight*0.6, TEXT_WIDTH, TEXT_HEIGHT, "Start game - deviceorientation");
+    ObjectsGame[14] = new Button(BUTTON_CENTRE, window.innerHeight*0.3, TEXT_WIDTH, TEXT_HEIGHT, "Play - touch pad",playButton);
+    ObjectsGame[15] = new Button(BUTTON_CENTRE, window.innerHeight*0.6, TEXT_WIDTH, TEXT_HEIGHT, "Play - deviceorientation",playButton);
     //change size for window
     const CANVAS_WIDTH = 1000;
     const CANVAS_HEIGHT = 500;
@@ -258,22 +262,23 @@ canvas.addEventListener('touchstart', function(e) {
   activeMouseClicky = e.touches[0].clientY;
   multitouch =false;
 
-            if (ObjectsGame[14].pointIsInsideBoundingRectangle(activeMouseClickx, activeMouseClicky))
-            {
-                console.log("Button 1");
-                ObjectsGame.pop();
-                ObjectsGame.pop();
-                flagAccelo = false;
-                //gameObjects[MESSAGE] = new StaticText("Text button was pressed", STATIC_TEXT_CENTRE, 490, "Times Roman", 30, "black");
-                //gameObjects[MESSAGE].start();
-            }
-            else if (ObjectsGame[15].pointIsInsideBoundingRectangle(activeMouseClickx, activeMouseClicky))
-            {
-                flagAccelo = true;
-                ObjectsGame.pop();
-                ObjectsGame.pop();
-                console.log("Button 2");
-            }
+    if(flagAccelo == null)
+    {
+        if (ObjectsGame[14].pointIsInsideBoundingRectangle(activeMouseClickx, activeMouseClicky))
+                {
+                    ObjectsGame.pop();
+                    ObjectsGame.pop();
+                    flagAccelo = false;
+                    //console.log("Button 1");
+                }
+                else if (ObjectsGame[15].pointIsInsideBoundingRectangle(activeMouseClickx, activeMouseClicky))
+                {
+                    ObjectsGame.pop();
+                    ObjectsGame.pop();
+                    flagAccelo = true;
+                    //console.log("Button 2");
+                }
+    }
   }
   else
   {
@@ -281,10 +286,7 @@ canvas.addEventListener('touchstart', function(e) {
   activeMouseClicky = e.touches[0].clientY;
   activeEventClickx = e.touches[1].clientX;
   activeEventClicky = e.touches[1].clientY;
-//   alert("move x : " + activeMouseClickx+ "\n" +
-//   "move y : " + activeMouseClicky+ "\n" +
-//   "Event y : " + activeEventClickx+ "\n" +
-//   "Event y : " + activeEventClicky+ "\n" +"END");
+
   multitouch = true;
   console.log("move x : " + activeMouseClickx);
   console.log("move y : " + activeMouseClicky);

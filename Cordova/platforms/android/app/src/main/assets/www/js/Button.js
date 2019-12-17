@@ -9,7 +9,7 @@ class Button
     /* Each gameObject MUST have a constructor() and a render() method.        */
     /* If the object animates, then it must also have an updateState() method. */
 
-    constructor(x, y, width, height, text, backgroundImage = null, fontSize = 50, font = "Times Roman", textColour = "Black", backgroundColour = "#ccc", borderColour = "#999", borderWidth = 2)
+    constructor(x, y, width, height, text, backgroundImage = null, fontSize = 40, font = "Times Roman", textColour = "White", backgroundColour = "#ccc", borderColour = "#999", borderWidth = 2)
     {
 
         /* These variables depend on the object */
@@ -45,7 +45,7 @@ class Button
 
         if (this.x === BUTTON_CENTRE)
         {
-            this.x = (canvas.width - this.width) / 2;
+            this.x = (canvas.width - this.width) / 2.0;
         }
     }
 
@@ -53,40 +53,29 @@ class Button
     {
         
         /* the ImageButton's border */
-        ctx.beginPath();
-        ctx.strokeStyle = this.strokeStyle;
-        ctx.lineWidth = this.borderWidth;
-        ctx.moveTo(this.x, this.y);
-        ctx.lineTo(this.x + this.width, this.y);
-        ctx.lineTo(this.x + this.width, this.y + this.height);
-        ctx.lineTo(this.x, this.y + this.height);
-        ctx.lineTo(this.x, this.y);
-        ctx.stroke();
-        ctx.fillStyle = this.backgroundColour;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
-        ctx.closePath();
+        // ctx.beginPath();
+        // ctx.strokeStyle = this.strokeStyle;
+        // ctx.lineWidth = this.borderWidth;
+        // ctx.moveTo(this.x, this.y);
+        // ctx.lineTo(this.x + this.width, this.y);
+        // ctx.lineTo(this.x + this.width, this.y + this.height);
+        // ctx.lineTo(this.x, this.y + this.height);
+        // ctx.lineTo(this.x, this.y);
+        // ctx.stroke();
+        // ctx.fillStyle = this.backgroundColour;
+        // ctx.fillRect(this.x, this.y, this.width, this.height);
+        // ctx.closePath();
 
+                /* the button's image */
+                if (this.backgroundImage !== null)
+                {
+                    ctx.drawImage(this.backgroundImage, this.x , this.y, this.width, this.height);
+                }
+        
         /* the button's text */
         ctx.fillStyle = this.textColour;
         ctx.font = this.fontSize + "px " + this.font; // need to set the font each time, as it might have been changed elsewhere
         ctx.fillText(this.text, this.x + this.width * 0.05, this.y + this.height * 0.75);
-
-        /* brighten the image if the mouse is hovering over it */
-        if (this.isHovering)
-        {
-            let imageData = ctx.getImageData(this.x, this.y, this.width, this.height);
-            let data = imageData.data;
-
-            /* Manipulate the pixel data */
-            for (let i = 0; i < data.length; i += 4)
-            {
-                data[i + 0] = data[i + 0] + 30;
-                data[i + 1] = data[i + 1] + 30;
-                data[i + 2] = data[i + 2] + 30;
-            }
-
-            ctx.putImageData(imageData, this.x, this.y);
-        }
     }
 
     pointIsInsideBoundingRectangle(pointX, pointY)
