@@ -95,3 +95,111 @@ class Button
         return true; // inside this gameObject
     }
 }
+
+function vJoyFun()
+{
+    ctx.strokeStyle = "yellow";
+                ctx.beginPath();
+                ctx.arc(FramevjoyX, FramevjoyY, (window.innerHeight* 0.15), 0, 2 * Math.PI);
+                ctx.stroke(); 
+                ctx.globalAlpha = 0.5;
+                ctx.drawImage(arowButton,FramevjoyX - ((window.innerHeight* 0.3)/2), FramevjoyY- ((window.innerHeight* 0.2)/2), (window.innerHeight* 0.3), (window.innerHeight* 0.2));
+                ctx.globalAlpha = 1.0;
+                ctx.beginPath();
+                ctx.arc(vjoyX, vjoyY, (window.innerHeight* 0.05), 0, 2 * Math.PI);
+                ctx.stroke();
+
+                vjoyX = FramevjoyX;
+                vjoyY = FramevjoyY;
+            ctx.globalAlpha = 0.5;
+    ctx.drawImage(reloadButton, window.innerWidth*0.9, window.innerHeight*0.1,window.innerHeight*0.1, window.innerHeight*0.1);
+    ctx.drawImage(crossButton, window.innerWidth*0.8, window.innerHeight*0.9,window.innerHeight*0.1, window.innerHeight*0.1);
+    ctx.drawImage(circleButton, window.innerWidth*0.9, window.innerHeight*0.9,window.innerHeight*0.1, window.innerHeight*0.1);
+    ctx.globalAlpha = 1.0;
+    line();
+}
+
+function psButton()
+{
+    let xjump =window.innerWidth*0.8 + window.innerHeight*0.05;
+    let yjump = window.innerHeight*0.9 + window.innerHeight*0.05;
+
+    let xfire =window.innerWidth*0.9 + window.innerHeight*0.05;
+    let yfire =window.innerHeight*0.9 + window.innerHeight*0.05;
+
+    let xreset =window.innerWidth*0.9 + window.innerHeight*0.05;
+    let yreset =window.innerHeight*0.1 + window.innerHeight*0.05;
+
+                ctx.strokeStyle = "yellow";
+                ctx.beginPath();
+                ctx.arc(xfire, yfire,  window.innerHeight*0.05, 0, 2 * Math.PI);
+                ctx.stroke(); 
+
+                ctx.beginPath();
+                ctx.arc(xjump, yjump,  window.innerHeight*0.05, 0, 2 * Math.PI);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(window.innerWidth*0.9 + window.innerHeight*0.05, window.innerHeight*0.1 + window.innerHeight*0.05,  window.innerHeight*0.05, 0, 2 * Math.PI);
+                ctx.stroke();
+
+                //jump button
+                if(((activeMouseClickx >= xjump - (window.innerHeight* 0.05) && 
+                activeMouseClickx <= xjump +  (window.innerHeight* 0.05)) && 
+                (activeMouseClicky >= yfire - (window.innerWidth* 0.05) && 
+                activeMouseClicky <= yfire + (window.innerWidth* 0.05)) && 
+                (multitouch == false)) ||
+                ((activeEventClickx >= xjump - (window.innerHeight* 0.05) && 
+                activeEventClickx <= xjump +  (window.innerHeight* 0.05)) && 
+                (activeEventClicky >= yfire - (window.innerWidth* 0.05) && 
+                activeEventClicky <= yfire + (window.innerWidth* 0.05)) && 
+                (multitouch == true)))
+                {
+                    //console.log("jump");
+                    if(pushJump == false)
+                    {
+                        if(offgravity == false)
+                        {
+                        offgravity = true;
+                        ObjectsGame[0].setDirection(2);
+                        }
+                        pushJump = true;
+                    }
+                }
+                //fire button
+                if(((activeMouseClickx >= xfire - (window.innerHeight* 0.05) &&
+                 activeMouseClickx <= xfire +  (window.innerHeight* 0.05)) && 
+                 (activeMouseClicky >= yjump - (window.innerWidth* 0.05) && 
+                 activeMouseClicky <= yjump + (window.innerWidth* 0.05))&& 
+                 (multitouch == false)) || 
+                 ((activeEventClickx >= xfire - (window.innerHeight* 0.05) &&
+                 activeEventClickx <= xfire +  (window.innerHeight* 0.05)) && 
+                 (activeEventClicky >= yjump - (window.innerWidth* 0.05) && 
+                 activeEventClicky <= yjump + (window.innerWidth* 0.05))&& 
+                 (multitouch == true)))
+                {
+                    //console.log("fire");
+                    if(pushFire == false)
+                    {
+                        ObjectsGame.push(new FireBallAnimation(ctx,  new FireBall(ObjectsGame[0].centreX, ObjectsGame[0].centreY,FireBallSprite)));
+                        if(ObjectsGame[0].left == true)
+                        {
+                            ObjectsGame[ObjectsGame.length-1].setDirection(0);
+                        }
+                        else
+                        {
+                            ObjectsGame[ObjectsGame.length-1].setDirection(4);
+                        }
+                        pushFire = true;
+                    }
+                    
+                }
+                else
+                {
+                    pushFire = false;
+                }
+                if((activeMouseClickx >= xreset - (window.innerHeight* 0.05) && activeMouseClickx <= xreset +  (window.innerHeight* 0.05)) && (activeMouseClicky >= yreset - (window.innerWidth* 0.05) && activeMouseClicky <= yreset + (window.innerWidth* 0.05)))
+                {
+                    reset();
+                }
+}

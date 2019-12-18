@@ -53,7 +53,7 @@
                 }
             }
 
-            /* ImageAnimation Object */
+            /* PlayerAnimation Object */
             class PlayerAnimation extends Animation
             {
                //constructor(ctx, centreX, centreY, width, height, skeletonframeRate, canvasWidth, canvasHeight, person)
@@ -381,7 +381,7 @@
                }
             }
             /******************************************************************************/
-                        /* ImageAnimation Object */
+                        /* CoinsAnimation Object */
                         class CoinsAnimation extends Animation
                         {
                             constructor(ctx, Gameobject)
@@ -451,7 +451,7 @@
                            }
                         }
             /******************************************************************************/
-                        /* ImageAnimation Object */
+                        /* FireBallAnimation Object */
                         class FireBallAnimation extends Animation
                         {
                             constructor(ctx, Gameobject)
@@ -544,6 +544,8 @@
                                          this.size);
                            }
                         }
+            /******************************************************************************/
+                        /* PortalAnimation Object */
                         class PortalAnimation extends Animation
                         {
                             constructor(ctx, Gameobject)

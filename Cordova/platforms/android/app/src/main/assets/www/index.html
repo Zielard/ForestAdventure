@@ -9,6 +9,7 @@
     <script src="js/Character.js"></script>
     <script src="js/boards.js"></script>
     <script src="js/Button.js"></script>
+    <script src="js/Client.js"></script>
     <style>
 #keyboardCanvas
 {
@@ -174,17 +175,16 @@ function getMousePos(canvas, evt) {
 
 function onAllAssetsLoaded()
 {
-
+    this.connectToServer();
+    boardsLevel.push(new board(Level_3,Level_col_3,Level_row_3,2));
     boardsLevel.push(new board(Level_1,Level_col_1,Level_row_1,0));
     boardsLevel.push(new board(Level_2,Level_col_2,Level_row_2,1));
-    boardsLevel.push(new board(Level_3,Level_col_3,Level_row_3,2));
     //boardsLevel.push(new board(Level_1,Level_col_1,Level_row_1,1));
     //boardsLevel.push(new board(Level_2,Level_col_2,Level_row_2,1));
     //boardsLevel.push(new board(Level_3,Level_col_3,Level_row_3,1));
     // hide the webpage loading message
     document.getElementById('loadingMessage').style.visibility = "hidden";
-    console.log(window.screen.orientation);
-   //window.screen.orientation = "";
+
     canvas = document.getElementById("keyboardCanvas");
     ctx = canvas.getContext("2d");
     canvas.width  = window.innerWidth;
@@ -211,8 +211,10 @@ function onAllAssetsLoaded()
     ObjectsGame[11] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.4,window.innerHeight*0.5,EnemySprite,false));
     ObjectsGame[12] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.45,window.innerHeight*0.5,EnemySprite,false));
     ObjectsGame[13] = new EnemyAnimation(ctx,  new Enemy(window.innerWidth*0.48,window.innerHeight*0.5,EnemySprite,false));
-    ObjectsGame[14] = new Button(BUTTON_CENTRE, window.innerHeight*0.3, TEXT_WIDTH, TEXT_HEIGHT, "Play - touch pad",playButton);
-    ObjectsGame[15] = new Button(BUTTON_CENTRE, window.innerHeight*0.6, TEXT_WIDTH, TEXT_HEIGHT, "Play - deviceorientation",playButton);
+    ObjectsGame[14] = new Button(BUTTON_CENTRE, window.innerHeight*0.2, TEXT_WIDTH, TEXT_HEIGHT, "Play - touch pad ",playButton);
+    ObjectsGame[15] = new Button(BUTTON_CENTRE, window.innerHeight*0.4, TEXT_WIDTH, TEXT_HEIGHT, "Play - deviceorientation",playButton);
+    //ObjectsGame[16] = new Button(BUTTON_CENTRE, window.innerHeight*0.6, TEXT_WIDTH, TEXT_HEIGHT, "Play - Duel  ",playButton);
+    //ObjectsGame[17] = new Button(BUTTON_CENTRE, window.innerHeight*0.8, TEXT_WIDTH, TEXT_HEIGHT, "View ranking  ",playButton);
     //change size for window
     const CANVAS_WIDTH = 1000;
     const CANVAS_HEIGHT = 500;
@@ -270,14 +272,18 @@ canvas.addEventListener('touchstart', function(e) {
         if (ObjectsGame[14].pointIsInsideBoundingRectangle(activeMouseClickx, activeMouseClicky))
                 {
                     ObjectsGame.pop();
-                    ObjectsGame.pop();
+                    ObjectsGame.pop();                    
+                    //ObjectsGame.pop();
+                    //ObjectsGame.pop();
                     flagAccelo = false;
                     //console.log("Button 1");
                 }
                 else if (ObjectsGame[15].pointIsInsideBoundingRectangle(activeMouseClickx, activeMouseClicky))
                 {
                     ObjectsGame.pop();
-                    ObjectsGame.pop();
+                    ObjectsGame.pop();                    
+                    //ObjectsGame.pop();
+                    //ObjectsGame.pop();
                     flagAccelo = true;
                     //console.log("Button 2");
                 }
@@ -291,11 +297,11 @@ canvas.addEventListener('touchstart', function(e) {
   activeEventClicky = e.touches[1].clientY;
 
   multitouch = true;
-  console.log("move x : " + activeMouseClickx);
-  console.log("move y : " + activeMouseClicky);
-  console.log("event x : " + activeEventClickx);
-  console.log("event y : " + activeEventClicky);
-  console.log("multitouch : " + multitouch);
+//   console.log("move x : " + activeMouseClickx);
+//   console.log("move y : " + activeMouseClicky);
+//   console.log("event x : " + activeEventClickx);
+//   console.log("event y : " + activeEventClicky);
+//   console.log("multitouch : " + multitouch);
   }
 }, false);
 
@@ -317,27 +323,23 @@ canvas.addEventListener('touchend', function(e) {
   activeEventClickx = e.changedTouches[1].clientX - activeEventClickx;
   activeEventClicky = e.changedTouches[1].clientY - activeEventClicky;
 
-  alert("move x : " + activeMouseClickx+ "\n" +
-  "move y : " + activeMouseClicky+ "\n" +
-  "Event y : " + activeEventClickx+ "\n" +
-  "Event y : " + activeEventClicky+ "\n" +"END");
+//   alert("move x : " + activeMouseClickx+ "\n" +
+//   "move y : " + activeMouseClicky+ "\n" +
+//   "Event y : " + activeEventClickx+ "\n" +
+//   "Event y : " + activeEventClicky+ "\n" +"END");
   multitouch = true;
   }
 }, false);
 
 window.addEventListener("deviceorientation", deviceMotionUpdate, true);
 
-    // canvas.addEventListener("click", function (evt) {
-    // var mousePos = getMousePos(canvas, evt);
-    // }, false);
+
     createColison(boardsLevel[activeLevel]);
     renderCanvas();
     
 }
 
 function deviceMotionUpdate(e) {
-console.log("Angular velocity along the X-axis " + e.gamma);
-console.log("Angular velocity along the Y-axis " + e.alpha);
 //console.log("Angular velocity along the Z-axis " + e.beta);
 
  if(true == flagAccelo)
@@ -355,8 +357,7 @@ console.log("Angular velocity along the Y-axis " + e.alpha);
     
     if (e.gamma > 5) 
     {
-        //left = false
-        console.log("jump");
+        //console.log("jump");
                     if(pushJump == false)
                     {
                         if(offgravity == false)
@@ -368,10 +369,7 @@ console.log("Angular velocity along the Y-axis " + e.alpha);
                     }
     } else if (e.gamma < -20)  
     {
-
-        console.log("fire");
-                    //if(pushFire == false)
-                    //{
+        //console.log("fire");
                         ObjectsGame.push(new FireBallAnimation(ctx,  new FireBall(ObjectsGame[0].centreX, ObjectsGame[0].centreY,FireBallSprite)));
                         if(ObjectsGame[0].left == true)
                         {
@@ -382,9 +380,7 @@ console.log("Angular velocity along the Y-axis " + e.alpha);
                             ObjectsGame[ObjectsGame.length-1].setDirection(4);
                         }
                         pushFire = true;
-                    //}
     } 
-        //ObjectsGame[0].stayPosition(0);
  }
 
 }
@@ -394,7 +390,6 @@ function renderCanvas()
                     ObjectsGame[0].flagColision = false;
                     requestAnimationFrame(renderCanvas);
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
                     if(flagFinishGame)
                     {
                     ctx.drawImage(DisplaySetList[boardsLevel[activeLevel].number].BGPath, 0, 0, canvas.width, canvas.height);
@@ -432,50 +427,6 @@ function renderCanvas()
 
 }
 
-function createColison(level)
-{
-    
-    let board = level.Level;
-    let col = level.Level_col;
-    let row = level.Level_row;
-    let lastF = 0;
-    for (let i = 0; i < row; i++)
-    {
-        let j = 0;
-        for (; lastF < (col)*i; lastF++)
-        {
-            let x = j*0.05*canvas.width;
-                let y =i*0.1 *canvas.height;
-            //relative collision
-            if(board[lastF] >=12 && board[lastF] <=16 )
-            {
-                colisionFigure.push(new Collsion_line(new Point(x,y),new Point(x+(0.05 *canvas.width), y), false)); 
-            }
-            //Down collision
-            else if(board[lastF] !=0 && board[lastF]!=-1)
-            {
-                if((lastF-col) >0)
-                {
-                    if(board[lastF-20] ==0 || board[lastF-20] == -1 || board[lastF-20] >= 18)
-                    {
-                        if(board[lastF] <= 18 || board[lastF] == 23)
-                        {
-                            colisionFigure.push(new Collsion_CubeDown(new Point(x,y),new Point(x+(0.05 *canvas.width), y),false)); 
-                        }
-                    }
-                }
-            }
-            
-            j++;
-        }
-    }
-}
-
-function dropcolison()
-{
-    colisionFigure=[];
-}
-
 function drawBoard(level)
 {
     let board = level.Level;
@@ -507,400 +458,6 @@ function drawBoard(level)
         }
     }
 
-}
-
-function checkCoinColision()
-{
-                //Get coin
-                for (let i = 1; i < ObjectsGame.length; i++)
-                {
-                        if((ObjectsGame[0].centreX < ObjectsGame[i].centreX + 20) &&
-                        (ObjectsGame[0].centreX > ObjectsGame[i].centreX - 20) && 
-                        (ObjectsGame[0].centreY < ObjectsGame[i].centreY + 20) &&
-                        (ObjectsGame[0].centreY > ObjectsGame[i].centreY - 20) &&
-                         (ObjectsGame[i].animationIsDisplayed == true) 
-                         && (ObjectsGame[i].Gameobject.name == "coin"))
-                        {
-                            score++;
-                            ObjectsGame[i].stopAndHide();
-                        }
-                }
-                //Graviti for Coin
-            for(let j = 0; j < ObjectsGame.length; j++)
-            {
-                for (let i = 0; i < colisionFigure.length; i++)
-                {
-                    if((ObjectsGame[j].centreX >= colisionFigure[i].point1.x)
-                     && (ObjectsGame[j].centreX <= colisionFigure[i].point2.x)&& 
-                       ( ( ObjectsGame[j].Gameobject.name == "coin") || ( ObjectsGame[j].Gameobject.name == "portal")))
-                    {
-                        //Gravitation
-                        if((ObjectsGame[j].centreY+15 < colisionFigure[i].point1.y))
-                        {
-                            //console.log("colison! Gravity Coin");
-                            if(( ObjectsGame[j].Gameobject.name == "coin"))
-                            {
-                                ObjectsGame[j].Gameobject.Coingravity = true;
-                            }
-                            else if(( ObjectsGame[j].Gameobject.name == "portal"))
-                            {
-                                if(score != 8)
-                                {
-                                    break;
-                                }
-                                ObjectsGame[j].Gameobject.Portalgravity = true;
-                            }
-
-                            ObjectsGame[j].centreY+=2;
-                        }
-                        else
-                        {
-                            ObjectsGame[j].Gameobject.deltaTime = 0;
-                            break;
-                        }
-                    }
-                }
-            }
-                //Get coin
-                for (let i = 1; i < ObjectsGame.length; i++)
-                {
-                        if((ObjectsGame[0].centreX < ObjectsGame[i].centreX + 20) &&
-                        (ObjectsGame[0].centreX > ObjectsGame[i].centreX - 20) && 
-                        (ObjectsGame[0].centreY < ObjectsGame[i].centreY + 20) &&
-                        (ObjectsGame[0].centreY > ObjectsGame[i].centreY - 20) &&
-                         (ObjectsGame[i].animationIsDisplayed == true) 
-                         && (ObjectsGame[i].Gameobject.name == "portal"))
-                        {
-                            if(activeLevel > DisplaySetList.length)
-                            {
-                            activeLevel++;
-                            ObjectsGame[i].stopAndHide();
-                            dropcolison();
-                            reset();
-                            createColison(boardsLevel[activeLevel]);
-                            }
-                            else
-                            {
-                                flagFinishGame = true;
-                            }
-                        }
-                }
-
-                //DEAD CUBE COLLISION
-                for (let i = 1; i < colisionFigure.length; i++)
-                {
-                    if((ObjectsGame[0].centreX >= colisionFigure[i].point1.x) && (ObjectsGame[0].centreX <= colisionFigure[i].point2.x)
-                    && (ObjectsGame[0].centreY+20 > colisionFigure[i].point1.y)
-                    && ( colisionFigure[i].name == "DownCube") && ( colisionFigure[i].deadColision == true))
-                        {
-                            ObjectsGame[0].isdead = true;
-                            ObjectsGame[0].stopAndHide();
-                        }
-                }
-}
-
-function checkColisionForEnemy()
-{
-
-            //GENERAL COLLISION "DownCube" ENEMY
-            let flagBreak = false;
-            for(let j = 0; j < ObjectsGame.length; j++)
-            {
-                for (let i = 0; i < colisionFigure.length; i++)
-                {
-                    if((ObjectsGame[j].centreX >= colisionFigure[i].point1.x) && (ObjectsGame[j].centreX <= colisionFigure[i].point2.x)
-                    && (ObjectsGame[j].centreY >= colisionFigure[i].point1.y) && (ObjectsGame[j].centreY <= colisionFigure[i].downY) 
-                    && ( colisionFigure[i].name == "DownCube") && 
-                        ( ObjectsGame[j].Gameobject.name == "enemy"))
-                    {
-                                if((ObjectsGame[j].direction == 1) && (ObjectsGame[j].Gameobject.name == "enemy"))
-                                {
-                                    //console.log("colison! enemy change to right");
-                                    ObjectsGame[j].centreX += 5;
-                                    ObjectsGame[j].setDirection(2);
-                                    flagBreak = true;
-                                    break;
-                                }
-                                else if((ObjectsGame[j].direction == 2) && (ObjectsGame[j].Gameobject.name == "enemy"))
-                                {
-                                    //console.log("colison! enemy change to left");
-                                    ObjectsGame[j].centreX -= 5;
-                                    ObjectsGame[j].setDirection(1);
-                                    flagBreak = true;
-                                    break;
-                                }
-                    }
-                    else if(!(ObjectsGame[j].centreX >= 0 && ObjectsGame[j].centreX <= window.innerWidth))
-                                {
-                                    if (ObjectsGame[j].direction === 1)
-                                    {
-                                        ObjectsGame[j].centreX = window.innerWidth;
-                                        break;
-                                    }
-                                    else if (ObjectsGame[j].direction === 2)
-                                    {
-                                    ObjectsGame[j].centreX = 0;
-                                        break;
-                                    }
-                                }
-                    else if((ObjectsGame[j].centreX >= colisionFigure[i].point1.x)
-                     && (ObjectsGame[j].centreX <= colisionFigure[i].point2.x)&& 
-                        ( ObjectsGame[j].Gameobject.name == "enemy"))
-                    {
-                        //Gravitation
-                        if((ObjectsGame[j].centreY+10 < colisionFigure[i].point1.y))
-                        {
-                            ObjectsGame[j].Gameobject.Enemygravity = true;
-                            ObjectsGame[j].centreY+=2;
-                        }
-                        else
-                        {
-                            ObjectsGame[j].Gameobject.deltaTime = 0;
-                        }
-                    }
-                }
-                if(flagBreak == true)
-                {
-                    break;
-                }
-            }
-
-                            //ENEMY COLLISION
-                            for (let i = 1; i < ObjectsGame.length; i++)
-                {
-                        if((ObjectsGame[0].centreX < ObjectsGame[i].centreX + 20) &&
-                        (ObjectsGame[0].centreX > ObjectsGame[i].centreX - 20) && 
-                        (ObjectsGame[0].centreY < ObjectsGame[i].centreY + 20) &&
-                        (ObjectsGame[0].centreY > ObjectsGame[i].centreY - 20) &&
-                         (ObjectsGame[i].animationIsDisplayed == true) 
-                         && (ObjectsGame[i].Gameobject.name == "enemy"))
-                        {
-                            ObjectsGame[0].isdead = true;
-                            ObjectsGame[0].stopAndHide();
-                        }
-                }
-
-                for(let j = 0; j < ObjectsGame.length; j++)
-                {
-                    for (let i = 0; i <  ObjectsGame.length; i++)
-                    {
-                            if((ObjectsGame[j].centreX < ObjectsGame[i].centreX + 20) &&
-                            (ObjectsGame[j].centreX > ObjectsGame[i].centreX - 20) && 
-                            (ObjectsGame[j].centreY < ObjectsGame[i].centreY + 20) &&
-                            (ObjectsGame[j].centreY > ObjectsGame[i].centreY - 20) &&
-                            (ObjectsGame[j].animationIsDisplayed == true) 
-                            && (ObjectsGame[i].Gameobject.name == "enemy") && (ObjectsGame[i].animationIsDisplayed == true)
-                            && (ObjectsGame[j].Gameobject.name == "FireBall"))
-                            {
-                                //animationIsDisplayed
-                                ObjectsGame[i].stopAndHide();
-                                ObjectsGame[j].stopAndHide();
-                            }
-                    }
-                }
-                
-}
-
-function checkGravitiColison()
-{
-    //let flagBreak = false;
-                //GENERAL COLLISION
-                let stepSize = 5;
-                for (let i = 0; i < colisionFigure.length; i++)
-                {
-                    if((ObjectsGame[0].centreX >= colisionFigure[i].point1.x)&& ( colisionFigure[i].name == "DownCube") && (ObjectsGame[0].centreX <= colisionFigure[i].point2.x)
-                    && (ObjectsGame[0].centreY >= colisionFigure[i].point1.y) && (ObjectsGame[0].centreY <= colisionFigure[i].downY) 
-                     && (
-                        ( ObjectsGame[0].Gameobject.name == "player")))
-                    {
-                        console.log("colison! downcube");
-                        //console.log(ObjectsGame[0].direction);
-
-                            if (ObjectsGame[0].direction === ObjectsGame[0].UP)
-                            {
-                                console.log("Up direction");
-                                ObjectsGame[0].centreY += stepSize*3;
-                                break;
-                            } 
-                            else if (ObjectsGame[0].direction === ObjectsGame[0].LEFT)
-                            {
-                                //console.log("2");
-                                //ObjectsGame[0].centreX += stepSize*3;
-                                console.log("Left direction");
-                                ObjectsGame[0].stayPosition("left");
-                                //flagBreak = true;
-                                break;
-                            }
-                            else if (ObjectsGame[0].direction === ObjectsGame[0].DOWN)
-                            {
-                                //console.log("3");
-                                console.log("Down direction");
-                                ObjectsGame[j].centreY -= stepSize;
-                                break;
-                            } 
-                            else if (ObjectsGame[0].direction === ObjectsGame[0].RIGHT)
-                            {
-                                console.log("Right direction");
-                                //console.log("4");
-                               //ObjectsGame[0].centreX -= stepSize*3;
-                                ObjectsGame[0].stayPosition("right");
-                                //flagBreak = true;
-                                break;
-                            }
-                            else if (ObjectsGame[0].direction === 0)
-                            {
-                                if(lastPushButton === ObjectsGame[0].LEFT)
-                                {
-                                   ObjectsGame[0].centreX += stepSize;
-                                    break;
-                                }
-                                else if(lastPushButton === ObjectsGame[0].RIGHT)
-                                {
-                                    ObjectsGame[0].centreX -= stepSize;
-                                    break;
-                                }
-                            }
-                    }
-                    else  if((ObjectsGame[0].centreX >= colisionFigure[i].point1.x)&& ( colisionFigure[i].name == "RelativeCube") && (ObjectsGame[0].centreX <= colisionFigure[i].point2.x)
-                    && (ObjectsGame[0].centreY >= colisionFigure[i].point1.y) && (ObjectsGame[0].centreY <= colisionFigure[i].point4.y) 
-                    && (
-                        ( ObjectsGame[j].Gameobject.name == "player")))
-                    {
-                        let stepSize = 5;
-                        console.log("colison! Relative");
-                            if (ObjectsGame[0].direction === ObjectsGame[0].UP)
-                            {
-                                ObjectsGame[0].centreY += stepSize*3;
-                                break;
-                            } 
-                            else if (ObjectsGame[0].direction === ObjectsGame[0].LEFT)
-                            {
-                                break;
-                            }
-                            else if (ObjectsGame[0].direction === ObjectsGame[0].DOWN)
-                            {
-                                break;
-                            } 
-                            else if (ObjectsGame[0].direction === ObjectsGame[0].RIGHT)
-                            {
-                                break;
-                            }
-                            else if (ObjectsGame[0].direction === 0)
-                            {
-                                ObjectsGame[0].centreY = colisionFigure[i].point1.y -15;
-                                break;
-                            }
-                    }
-                    else  if((ObjectsGame[0].centreX >= colisionFigure[i].point1.x) &&
-                     ( colisionFigure[i].name == "line") && 
-                     (ObjectsGame[0].centreX <= colisionFigure[i].point2.x) &&
-                    (ObjectsGame[0].centreY <= colisionFigure[i].point1.y) &&
-                    (( ObjectsGame[j].Gameobject.name == "player")))
-                    {
-                        let stepSize = 5;
-                        console.log("colison! line");
-                            if (ObjectsGame[0].direction === ObjectsGame[0].UP)
-                            {
-                                ObjectsGame[0].centreY += stepSize*3;
-                                break;
-                            } 
-                            else if (ObjectsGame[0].direction === ObjectsGame[0].LEFT)
-                            {
-                                break;
-                            }
-                            else if (ObjectsGame[0].direction === ObjectsGame[0].DOWN)
-                            {
-                                break;
-                            } 
-                            else if (ObjectsGame[0].direction === ObjectsGame[0].RIGHT)
-                            {
-                                break;
-                            }
-                            else if (ObjectsGame[0].direction === 0)
-                            {
-                                ObjectsGame[0].centreY = colisionFigure[i].point1.y -15;
-                                break;
-                            }
-                    }
-                    else if(!(ObjectsGame[0].centreX >= 0 && ObjectsGame[0].centreX <= window.innerWidth))
-                    {
-                            if (ObjectsGame[0].direction === ObjectsGame[0].LEFT)
-                            {
-                                //console.log("2");
-                                //ObjectsGame[0].centreX += stepSize*3;
-                                console.log("Left direction");
-                                ObjectsGame[0].stayPosition("left");
-                                ObjectsGame[0].centreX = window.innerWidth;
-                                //ObjectsGame[0].centreX += stepSize*3;
-                                //flagBreak = true;
-                                break;
-                            }
-                            else if (ObjectsGame[0].direction === ObjectsGame[0].RIGHT)
-                            {
-                                console.log("Right direction");
-                                //console.log("4");
-                               //ObjectsGame[0].centreX -= stepSize*3;
-                               ObjectsGame[0].centreX = 0;
-                               //ObjectsGame[0].centreX -= stepSize*3;
-                                ObjectsGame[0].stayPosition("right");
-                                //flagBreak = true;
-                                break;
-                            }
-                    }
-                    else if((ObjectsGame[0].centreX >= colisionFigure[i].point1.x)
-                     && (ObjectsGame[0].centreX <= colisionFigure[i].point2.x)
-                     && (ObjectsGame[0].centreY < colisionFigure[i].point2.y))
-                    {
-                        
-                        //Gravitation
-                        if(((ObjectsGame[0].centreY+(ObjectsGame[0].size/2) < colisionFigure[i].point1.y) && offgravity == false) && 
-                        ((ObjectsGame[0].centreY + falseDelta) <= colisionFigure[i].point1.y))
-                        {
-                            console.log("colison! Gravity");
-                            gravity = true;
-                            falseDelta += 0.3;
-                            ObjectsGame[0].centreY+=falseDelta;
-                        }
-                        else
-                        {
-                            pushJump = false;
-                            falseDelta =0;
-                            gravity = false;
-                        }
-                        break;
-                    }
-                }
-           
-                        if(true == offgravity)
-                        {
-                        pushJump = true;
-                        this.falseDeltaUP -= 0.3;
-                        ObjectsGame[0].centreY -= falseDeltaUP;
-                            if( this.falseDeltaUP < 0)
-                            {
-                                this.falseDeltaUP = (0.025 * window.innerHeight);
-                                offgravity = false;
-                            }
-                        }
-}
-
-function checkCollisionForFireBall()
-{
-    for (let j = 0; j < ObjectsGame.length; j++)
-                {
-                for (let i = 0; i < colisionFigure.length; i++)
-                {
-                    if((ObjectsGame[j].centreX >= colisionFigure[i].point1.x) && (ObjectsGame[j].centreX <= colisionFigure[i].point2.x)
-                    && (ObjectsGame[j].centreY >= colisionFigure[i].point1.y) && (ObjectsGame[j].centreY <= colisionFigure[i].downY) 
-                    && ( colisionFigure[i].name == "DownCube") && (
-                        ( ObjectsGame[j].Gameobject.name == "FireBall")))
-                    {
-                        ObjectsGame[j].stopAndHide();
-                        //ObjectsGame.splice(j, 1);
-                        //j--;
-                    } 
-                }
-            }
 }
 
 function drawLine()
@@ -1045,114 +602,6 @@ console.log(keydownHandler);
                     showCollisonLine = !showCollisonLine;
                 }
                 pushbutton = true;
-}
-
-function vJoyFun()
-{
-    ctx.strokeStyle = "yellow";
-                ctx.beginPath();
-                ctx.arc(FramevjoyX, FramevjoyY, (window.innerHeight* 0.15), 0, 2 * Math.PI);
-                ctx.stroke(); 
-                ctx.globalAlpha = 0.5;
-                ctx.drawImage(arowButton,FramevjoyX - ((window.innerHeight* 0.3)/2), FramevjoyY- ((window.innerHeight* 0.2)/2), (window.innerHeight* 0.3), (window.innerHeight* 0.2));
-                ctx.globalAlpha = 1.0;
-                ctx.beginPath();
-                ctx.arc(vjoyX, vjoyY, (window.innerHeight* 0.05), 0, 2 * Math.PI);
-                ctx.stroke();
-
-                vjoyX = FramevjoyX;
-                vjoyY = FramevjoyY;
-            ctx.globalAlpha = 0.5;
-    ctx.drawImage(reloadButton, window.innerWidth*0.9, window.innerHeight*0.1,window.innerHeight*0.1, window.innerHeight*0.1);
-    ctx.drawImage(crossButton, window.innerWidth*0.8, window.innerHeight*0.9,window.innerHeight*0.1, window.innerHeight*0.1);
-    ctx.drawImage(circleButton, window.innerWidth*0.9, window.innerHeight*0.9,window.innerHeight*0.1, window.innerHeight*0.1);
-    ctx.globalAlpha = 1.0;
-    line();
-}
-
-function psButton()
-{
-    let xjump =window.innerWidth*0.8 + window.innerHeight*0.05;
-    let yjump = window.innerHeight*0.9 + window.innerHeight*0.05;
-
-    let xfire =window.innerWidth*0.9 + window.innerHeight*0.05;
-    let yfire =window.innerHeight*0.9 + window.innerHeight*0.05;
-
-    let xreset =window.innerWidth*0.9 + window.innerHeight*0.05;
-    let yreset =window.innerHeight*0.1 + window.innerHeight*0.05;
-
-                ctx.strokeStyle = "yellow";
-                ctx.beginPath();
-                ctx.arc(xfire, yfire,  window.innerHeight*0.05, 0, 2 * Math.PI);
-                ctx.stroke(); 
-
-                ctx.beginPath();
-                ctx.arc(xjump, yjump,  window.innerHeight*0.05, 0, 2 * Math.PI);
-                ctx.stroke();
-
-                ctx.beginPath();
-                ctx.arc(window.innerWidth*0.9 + window.innerHeight*0.05, window.innerHeight*0.1 + window.innerHeight*0.05,  window.innerHeight*0.05, 0, 2 * Math.PI);
-                ctx.stroke();
-
-                //jump button
-                if(((activeMouseClickx >= xjump - (window.innerHeight* 0.05) && 
-                activeMouseClickx <= xjump +  (window.innerHeight* 0.05)) && 
-                (activeMouseClicky >= yfire - (window.innerWidth* 0.05) && 
-                activeMouseClicky <= yfire + (window.innerWidth* 0.05)) && 
-                (multitouch == false)) ||
-                ((activeEventClickx >= xjump - (window.innerHeight* 0.05) && 
-                activeEventClickx <= xjump +  (window.innerHeight* 0.05)) && 
-                (activeEventClicky >= yfire - (window.innerWidth* 0.05) && 
-                activeEventClicky <= yfire + (window.innerWidth* 0.05)) && 
-                (multitouch == true)))
-                {
-                    //console.log("jump");
-                    if(pushJump == false)
-                    {
-                        if(offgravity == false)
-                        {
-                        offgravity = true;
-                        ObjectsGame[0].setDirection(2);
-                        }
-                        pushJump = true;
-                    }
-                }
-                //fire button
-                if(((activeMouseClickx >= xfire - (window.innerHeight* 0.05) &&
-                 activeMouseClickx <= xfire +  (window.innerHeight* 0.05)) && 
-                 (activeMouseClicky >= yjump - (window.innerWidth* 0.05) && 
-                 activeMouseClicky <= yjump + (window.innerWidth* 0.05))&& 
-                 (multitouch == false)) || 
-                 ((activeEventClickx >= xfire - (window.innerHeight* 0.05) &&
-                 activeEventClickx <= xfire +  (window.innerHeight* 0.05)) && 
-                 (activeEventClicky >= yjump - (window.innerWidth* 0.05) && 
-                 activeEventClicky <= yjump + (window.innerWidth* 0.05))&& 
-                 (multitouch == true)))
-                {
-                    //console.log("fire");
-                    if(pushFire == false)
-                    {
-                        ObjectsGame.push(new FireBallAnimation(ctx,  new FireBall(ObjectsGame[0].centreX, ObjectsGame[0].centreY,FireBallSprite)));
-                        if(ObjectsGame[0].left == true)
-                        {
-                            ObjectsGame[ObjectsGame.length-1].setDirection(0);
-                        }
-                        else
-                        {
-                            ObjectsGame[ObjectsGame.length-1].setDirection(4);
-                        }
-                        pushFire = true;
-                    }
-                    
-                }
-                else
-                {
-                    pushFire = false;
-                }
-                if((activeMouseClickx >= xreset - (window.innerHeight* 0.05) && activeMouseClickx <= xreset +  (window.innerHeight* 0.05)) && (activeMouseClicky >= yreset - (window.innerWidth* 0.05) && activeMouseClicky <= yreset + (window.innerWidth* 0.05)))
-                {
-                    reset();
-                }
 }
 
 function line()

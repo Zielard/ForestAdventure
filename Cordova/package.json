@@ -13,6 +13,7 @@
   "author": "Apache Cordova Team",
   "license": "Apache-2.0",
   "dependencies": {
+    "base": "^3.0.0",
     "cordova-android": "^8.1.0"
   },
   "devDependencies": {
