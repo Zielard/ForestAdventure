@@ -3,7 +3,8 @@
 var Server = require('ws').Server;
 var port = process.env.PORT || 9030;
 var ws = new Server({port: port});
- 
+var bestscore = 0;
+var globalsize = 0;
 console.log('START');
  
 class Data{
@@ -42,12 +43,14 @@ let number = 0;
  
 ws.on('connection', function(w){
  
-    w.id=number+1;
-    pair.push(w);
+    globalsize++;
+    w.id=globalsize;
+    //pair.push(w);
  
     console.log("Connected id: "+w.id);
+    w.send(JSON.stringify(new Information(bestscore,"newS")));
 
-    w.send(JSON.stringify("Hello client"));
+    //w.send(JSON.stringify("Hello client"));
  
     // if(player==2){
     //     err=false;
@@ -83,8 +86,14 @@ ws.on('connection', function(w){
         let data = JSON.parse(msg);
 
         if (data.type=="info"){
-            console.log("RAnking");
-            JSON.stringify(new Information(number,"close"))
+            console.log(data.number);
+            if(bestscore < data.number)
+            {
+                bestscore = data.number;
+                w.send(JSON.stringify(new Information(bestscore,"newS")));
+                w.send(JSON.stringify(new Information(globalsize,"playersN")));
+            }
+
             // if(data.msg=="close"){
             //     for(i=0;i<2;i++){
             //         // console.log("TUTEJ2!");

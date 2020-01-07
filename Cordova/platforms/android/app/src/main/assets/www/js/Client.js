@@ -18,15 +18,25 @@ function connectToServer(){
     // Open connection
     connection.onopen = function () {
         console.log('Connected');
-
+        connectClient = true;
         // Log messages from the server
         connection.onmessage = function (e) {
             console.log("ONMESSAGE");
-            console.log('message from server', e.data);
+            //console.log('message from server', e.data);
             d = JSON.parse(e.data);
-            console.log('message from server', d.type);
+            if(d.msg == "newS")
+            {
+                bestscoreServer = d.number;
+                console.log('message from server', d.type);
+            }
+            else if(d.msg == "playersN")
+            {
+                NumberOFLogins = d.number;
+                console.log('message from server', d.type);
+            }
+
  
-            connection.send(JSON.stringify(new Information(201,"Stats")));
+            //connection.send(JSON.stringify(new Information(201,"Stats")));
                 // if(d.type=="player"){
                 //     yourplayer = d.player;
                 //     player = 1;
@@ -60,11 +70,13 @@ function connectToServer(){
  
     // Log errors
     connection.onerror = function (error) {
+        connectClient = false;
         console.error('WebSocket Error ' + error);
         
     };
  
     connection.onclose = function (code, msg) {
+        connectClient = false;
         console.log("Close: "+code+" "+msg);
         connection.send(new Information(number,"close"));
     };

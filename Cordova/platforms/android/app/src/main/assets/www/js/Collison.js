@@ -117,6 +117,10 @@ function checkCoinColision()
                             dropcolison();
                             reset();
                             createColison(boardsLevel[activeLevel]);
+                                if(connectClient == true)
+                                {
+                                    connection.send(JSON.stringify(new Information((8*activeLevel),"Stats")));
+                                }
                             }
                             else
                             {

@@ -88,6 +88,7 @@ let lastPushButton = 0;
 const CANVAS_WIDTH = 1000;
 const CANVAS_HEIGHT = 500;
 
+var connectClient = false;
 let canvas = null;
 let ctx = null;
 
@@ -96,6 +97,8 @@ let flagNoAnimation = true;
 let showCollisonLine = false;
 let score = 0;
 
+var bestscoreServer = 0;
+var NumberOFLogins = 0;
 let flagRight = true;
 
 var gravity = true;
@@ -269,23 +272,17 @@ canvas.addEventListener('touchstart', function(e) {
 
     if(flagAccelo == null)
     {
-        if (ObjectsGame[14].pointIsInsideBoundingRectangle(activeMouseClickx, activeMouseClicky))
+                if (ObjectsGame[14].pointIsInsideBoundingRectangle(activeMouseClickx, activeMouseClicky))
                 {
                     ObjectsGame.pop();
                     ObjectsGame.pop();                    
-                    //ObjectsGame.pop();
-                    //ObjectsGame.pop();
                     flagAccelo = false;
-                    //console.log("Button 1");
                 }
                 else if (ObjectsGame[15].pointIsInsideBoundingRectangle(activeMouseClickx, activeMouseClicky))
                 {
                     ObjectsGame.pop();
                     ObjectsGame.pop();                    
-                    //ObjectsGame.pop();
-                    //ObjectsGame.pop();
                     flagAccelo = true;
-                    //console.log("Button 2");
                 }
     }
   }
@@ -297,11 +294,6 @@ canvas.addEventListener('touchstart', function(e) {
   activeEventClicky = e.touches[1].clientY;
 
   multitouch = true;
-//   console.log("move x : " + activeMouseClickx);
-//   console.log("move y : " + activeMouseClicky);
-//   console.log("event x : " + activeEventClickx);
-//   console.log("event y : " + activeEventClicky);
-//   console.log("multitouch : " + multitouch);
   }
 }, false);
 
@@ -405,7 +397,19 @@ function renderCanvas()
                         //Score text
                         ctx.fillStyle = "Black";
                         ctx.font = "30px Arial";
-                        ctx.fillText("Coin : "+score +"/8", 10, 50);
+                        if(connectClient == true)
+                        {
+                            ctx.fillStyle = "green";
+                            ctx.fillText("Online player", 0.05*canvas.width, 0.2 *canvas.height); 
+                            ctx.fillText("Best score on server : "+bestscoreServer, 0.05*canvas.width, 0.3 *canvas.height); 
+                            ctx.fillText("Users Online : "+NumberOFLogins, 0.05*canvas.width, 0.4 *canvas.height); 
+                        }
+                        else
+                        {
+                            ctx.fillStyle = "red";
+                            ctx.fillText("Client - Offline", 0.05*canvas.width, 0.2 *canvas.height);  
+                        }
+                        ctx.fillText("Coin : "+score +"/8", 0.05*canvas.width, 0.1 *canvas.height);
                         /* Step 3 of 3 */
                         /* Draw the animations */
                         for (let i = 0; i < ObjectsGame.length; i++)

@@ -19,7 +19,7 @@ class Button
         this.height = height;
         this.text = text;
         this.backgroundImage = backgroundImage;
-
+        this.type="Normal";
         this.isHovering = false;
 
         /* set default text values */
