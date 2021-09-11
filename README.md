@@ -1,14 +1,11 @@
 # ForestAdventure - old project
 http://pzcv.cba.pl/ForestAdventure/index.html
 
-The game is written on the basis of canvas. Can be exported to Andorid applications using by cordova.
+The game is written on the basis of canvas. Can be exported to Andorid applications using by cordova. application created for studies
 
-control:
-
+Control : 
 arrows - move,
-
 "c" - show collision,
-
 "f" - fireball
 
 Game view :
